@@ -1,5 +1,5 @@
 {
-    "name": "naoyuki1019/ore",
+    "name": "naoyuki1019/ore-lib",
     "type": "library",
     "license": "MIT",
     "authors": [{
@@ -9,6 +9,6 @@
     "minimum-stability": "stable",
     "require": {},
     "autoload": {
-        "files": ["core/ORE_Require.php"]
+        "files": ["ORE_Require.php"]
     }
 }

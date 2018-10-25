@@ -1,0 +1,14 @@
+{
+    "name": "naoyuki1019/ore",
+    "type": "library",
+    "license": "MIT",
+    "authors": [{
+        "name": "naoyuki onishi",
+        "email": "naoyuki1019@gmail.com"
+    }],
+    "minimum-stability": "stable",
+    "require": {},
+    "autoload": {
+        "files": ["core/ORE_Require.php"]
+    }
+}

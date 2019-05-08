@@ -8,17 +8,16 @@
 namespace ore;
 
 /**
- * Class ORE_ExecutionTime
+ * Class ORE_MemoryUsage
  *
- * @package ore
+ * @author naoyuki onishi
  */
-class ORE_ExecutionTime {
+class ORE_MemoryUsage {
 
 	/**
 	 * @var array
 	 */
 	protected static $_arr = array();
-	public static $threshold = 0.1;
 
 	private static $_ENABLE = NULL;
 	private static $_INSTANCE = NULL;
@@ -69,38 +68,16 @@ class ORE_ExecutionTime {
 	}
 
 	/**
-	 * @return mixed
-	 */
-	protected static function _time() {
-		return microtime(true);
-	}
-
-	/**
 	 * @param $name
 	 * @return mixed
 	 */
-	public static function START($name) {
+	public static function CHECK($name) {
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
-
-		$o = new ORE_ExecutionTimeVolume();
+		$o = new ORE_MemoryUsageVolume();
+		$o->usage = memory_get_usage();
 		$o->name = $name;
-		$o->start = self::_time();
-		self::$_arr[$name] = $o;
-	}
-
-	/**
-	 * @param $name
-	 * @return mixed
-	 */
-	public static function END($name) {
-		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
-
-		/** @var ORE_ExecutionTimeVolume $o */
-		$o = self::$_arr[$name];
-		$o->end = self::_time();
-		$o->time = $o->end - $o->start;
+		self::$_arr[] = $o;
 	}
 
 	/**
@@ -119,16 +96,15 @@ class ORE_ExecutionTime {
 		if (TRUE !== self::$_ENABLE) return;
 
 		if (! empty(self::$_arr)) {
-			echo '<div style="background-color:white;margin:20px 0;" class="ore_executiontime">';
-
-			foreach (self::$_arr as $name => $o) {
-				/** @var ORE_ExecutionTimeVolume $o */
-				$str = "{$name}={$o->time}";
-				if (self::$threshold < $o->time) {
-					$str = "<span style='color:red;'>{$str}</span>";
-				}
-				echo "{$str}<br>";
+			echo '<div style="background-color:white;margin:20px 0;" class="ore_memoryusage">';
+			echo '<div>メモリー使用量</div>';
+			$tmp = array();
+			foreach (self::$_arr as $o) {
+				/** @var ORE_MemoryUsageVolume $o */
+				$usage = round($o->usage / pow(1024, 2)).'MB';
+				$tmp[] = "<span style='color:red;'>{$o->name}: {$usage}</span>";
 			}
+			echo implode('<br>', $tmp);
 			echo '</div>';
 		}
 	}
@@ -144,13 +120,12 @@ class ORE_ExecutionTime {
 }
 
 /**
- * Class ORE_ExecutionTimeVolume
+ * Class ORE_MemoryUsageVolume
  *
  * @package ore
  */
-class ORE_ExecutionTimeVolume {
+class ORE_MemoryUsageVolume {
 	public $name = 'name';
-	public $start = 0;
-	public $end = 0;
-	public $time = 0;
+	public $usage = 0;
 }
+

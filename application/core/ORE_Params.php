@@ -8,16 +8,28 @@
 
 namespace ore;
 
+/**
+ * 現在のスコープからアクセスできるプロパティのみ（Publicのみ）取得
+ *
+ * @param $object
+ * @return array
+ */
+if (! function_exists('get_object_public_vars')) {
+	function get_object_public_vars($object) {
+		return get_object_vars($object);
+	}
+}
 
 /**
  * Class ORE_Params
+ *
  * @package ore
  */
 class ORE_Params {
 
-
 	/**
 	 * ORE_Params constructor.
+	 *
 	 * @param array $params
 	 */
 	public function __construct($params = array()) {
@@ -25,29 +37,28 @@ class ORE_Params {
 		$this->set($params);
 	}
 
-
 	/**
 	 * @param array $params
 	 */
-	public function set ($params = array()) {
+	public function set($params = array()) {
 
-		if ('array' === gettype($params) OR 'object' === gettype ($params)) {
+		if ('array' === gettype($params) OR 'object' === gettype($params)) {
 
 			foreach ($params as $key => $val) {
 
 				$this->$key = $val;
 			}
 		}
+		
+		return $this;
 	}
-
 
 	/**
 	 * @return array
 	 */
-	public function to_array () {
-
+	public function to_array() {
 		$tmp = array();
-		$array = get_object_vars($this);
+        $array = get_object_vars($this);
 		$this->_to_array($tmp, $array);
 		return $tmp;
 	}
@@ -55,8 +66,7 @@ class ORE_Params {
 	/**
 	 * @return array
 	 */
-	public function to_public_array () {
-
+	public function to_public_array() {
 		$tmp = array();
 		$array = get_object_public_vars($this);
 		$this->_to_array($tmp, $array);
@@ -94,20 +104,29 @@ class ORE_Params {
 		}
 	}
 
-
 	/**
 	 * @param array $remove_keys
 	 * @return string
 	 */
-	public function to_uri ($remove_keys = array()) {
+	public function to_uri($remove_keys = array(), $public=false) {
 
 		if (! is_array($remove_keys)) {
-			$remove_keys = array($remove_keys);
+			if ('' === strval($remove_keys)) {
+				$remove_keys = array();
+			}
+			else {
+				$remove_keys = array($remove_keys);
+			}
 		}
 
 		$keys = array();
 		$tmp = array();
-		$array = $this->to_array();
+		if (TRUE === $public) {
+			$array = $this->to_public_array();
+		}
+		else {
+			$array = $this->to_array();
+		}
 
 		foreach ($array as $key => $val) {
 			if (in_array($key, $remove_keys)) {
@@ -118,13 +137,12 @@ class ORE_Params {
 		$this->_to_uri($keys, $tmp, $array);
 
 		if (0 < count($tmp)) {
-			return implode('/', $tmp);
+            return implode('/', $tmp);
 		}
 		else {
 			return "";
 		}
 	}
-
 
 	/**
 	 * @param $keys
@@ -161,12 +179,11 @@ class ORE_Params {
 					$uri_key = array_shift($uri_keys);
 
 					foreach ($uri_keys as $uri_key2) {
-						$uri_key .= "[" . urlencode($uri_key2) . "]";
+						$uri_key .= "[".urlencode($uri_key2)."]";
 					}
 
-					$tmp[] = $uri_key;
-
-					$tmp[] = urlencode($val);
+                    $tmp[] = $uri_key;
+                    $tmp[] = urlencode($val);
 				}
 			}
 
@@ -174,19 +191,17 @@ class ORE_Params {
 		}
 	}
 
-
 	/**
 	 * @param array $pointing_keys
 	 * @return string
 	 */
-	public function to_pointing_uri ($pointing_keys = array()) {
+	public function to_pointing_uri($pointing_keys = array()) {
 
 		if (! is_array($pointing_keys)) {
 			$pointing_keys = array($pointing_keys);
 		}
 
 		$array = $this->to_array();
-
 
 		$keys = array();
 		$tmp = array();

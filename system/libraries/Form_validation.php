@@ -1,4 +1,19 @@
 <?php
+
+/**
+ *
+ * @package Ore
+ * @author naoyuki onishi
+ */
+namespace ore;
+
+class ORE_CI {
+	/**
+	 * @var CI_Lang
+	 */
+	public $lang = null;
+}
+
 /**
  * CodeIgniter
  *
@@ -24,7 +39,7 @@
  * @since		Version 1.0
  * @filesource
  */
-defined('BASEPATH') OR exit('No direct script access allowed');
+//defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * Form Validation Class
@@ -115,7 +130,9 @@ class CI_Form_validation {
 	 */
 	public function __construct($rules = array())
 	{
-		$this->CI =& get_instance();
+//		$this->CI =& get_instance();
+		$this->CI = new ORE_CI();
+		$this->CI->lang = new CI_Lang();
 
 		// applies delimiters set in config file.
 		if (isset($rules['error_prefix']))
@@ -133,9 +150,9 @@ class CI_Form_validation {
 		$this->_config_rules = $rules;
 
 		// Automatically load the form helper
-		$this->CI->load->helper('form');
+//		$this->CI->load->helper('form');
 
-		log_message('info', 'Form Validation Class Initialized');
+//		log_message('info', 'Form Validation Class Initialized');
 	}
 
 	// --------------------------------------------------------------------
@@ -155,10 +172,10 @@ class CI_Form_validation {
 	{
 		// No reason to set rules if we have no POST data
 		// or a validation array has not been specified
-		if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
-		{
-			return $this;
-		}
+//		if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
+//		{
+//			return $this;
+//		}
 
 		// If an array was passed via the first parameter instead of individual string
 		// values we cycle through it and recursively call this function.
@@ -306,12 +323,13 @@ class CI_Form_validation {
 	 *
 	 * @param	string	the field name
 	 * @param	string	the html start tag
-	 * @param 	strign	the html end tag
+	 * @param	strign	the html end tag
 	 * @return	string
 	 */
 	public function error($field = '', $prefix = '', $suffix = '')
 	{
-		if (empty($this->_field_data[$field]['error']))
+		if (! array_key_exists($field, $this->_field_data)
+			OR empty($this->_field_data[$field]['error']))
 		{
 			return '';
 		}
@@ -414,17 +432,17 @@ class CI_Form_validation {
 				return FALSE;
 			}
 
-			// Is there a validation rule for the particular URI being accessed?
-			$uri = ($group === '') ? trim($this->CI->uri->ruri_string(), '/') : $group;
-
-			if ($uri !== '' && isset($this->_config_rules[$uri]))
-			{
-				$this->set_rules($this->_config_rules[$uri]);
-			}
-			else
-			{
+//			// Is there a validation rule for the particular URI being accessed?
+//			$uri = ($group === '') ? trim($this->CI->uri->ruri_string(), '/') : $group;
+//
+//			if ($uri !== '' && isset($this->_config_rules[$uri]))
+//			{
+//				$this->set_rules($this->_config_rules[$uri]);
+//			}
+//			else
+//			{
 				$this->set_rules($this->_config_rules);
-			}
+//			}
 
 			// Were we able to set the rules correctly?
 			if (count($this->_field_data) === 0)
@@ -581,41 +599,57 @@ class CI_Form_validation {
 			return;
 		}
 		else {
-			if ( ! in_array('isset', $rules))
-			{
-				if (is_null($postdata)) {
-					return ;
-				}
-
-				if ( ! in_array('required', $rules) AND $postdata == "") {
-					return ;
-				}
-			}
+//			if ( ! in_array('isset', $rules))
+//			{
+//				if (is_null($postdata)) {
+//					return ;
+//				}
+//
+//				if ( ! in_array('required', $rules) AND $postdata == "") {
+//					return ;
+//				}
+//			}
 		}
 
 		// If the field is blank, but NOT required, no further tests are necessary
 		$callback = FALSE;
-		if ( ! in_array('required', $rules) && ($postdata === NULL OR $postdata === ''))
-		{
-			// Before we bail out, does the rule contain a callback?
-			if (preg_match('/(callback_\w+(\[.*?\])?)/', implode(' ', $rules), $match))
-			{
-				$callback = TRUE;
-				$rules = array(1 => $match[1]);
-			}
-			else
-			{
-				return;
-			}
-		}
 
 		// Isset Test. Typically this rule will only apply to checkboxes.
 		if (($postdata === NULL OR $postdata === '') && $callback === FALSE)
 		{
-			if (in_array('isset', $rules, TRUE) OR in_array('required', $rules))
+			$err_isset = false;
+			$err_required = false;
+
+			if (in_array('isset', $rules, TRUE))
 			{
+				if (! isset($postdata)) {
+					$err_isset = true;
+				}
+
+				if (in_array('required', $rules) AND '' === $postdata) {
+					$err_required = true;
+				}
+
+				if (! $err_isset AND ! $err_required) {
+					return;
+				}
+
+			}
+			else {
+				if (in_array('required', $rules) AND '' === $postdata)
+				{
+					$err_required = true;
+				}
+				else {
+					return;
+				}
+			}
+
+			if ($err_isset OR $err_required) {
+
 				// Set the message type
-				$type = in_array('required', $rules) ? 'required' : 'isset';
+//				$type = in_array('required', $rules) ? 'required' : 'isset';
+				$type = ($err_isset) ? 'isset' : 'required';
 
 				if (isset($this->_error_messages[$type]))
 				{
@@ -740,9 +774,18 @@ class CI_Form_validation {
 				}
 				else
 				{
-					if ('isset' !== $rule) {
-						log_message('debug', 'Unable to find validation rule: '.$rule);
-						$result = FALSE;
+					if ('isset' === $rule) {
+						if (isset($this->_field_data[$row['field']]['postdata'])) {
+							$result = TRUE;
+						}
+						else {
+							$result = FALSE;
+						}
+					}
+					else {
+//						log_message('debug', 'Unable to find validation rule: '.$rule);
+						throw new \Exception('Unable to find validation rule: '.$rule);
+//						$result = FALSE;
 					}
 				}
 			}
@@ -1275,19 +1318,6 @@ class CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Alpha-numeric w/ spaces
-	 *
-	 * @param	string
-	 * @return	bool
-	 */
-	public function alpha_numeric_spaces($str)
-	{
-		return (bool) preg_match('/^[A-Z0-9 ]+$/i', $str);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Alpha-numeric with underscores and dashes
 	 *
 	 * @param	string
@@ -1397,7 +1427,7 @@ class CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Is a Natural number  (0,1,2,3, etc.)
+	 * Is a Natural number	(0,1,2,3, etc.)
 	 *
 	 * @param	string
 	 * @return	bool
@@ -1410,7 +1440,7 @@ class CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Is a Natural number, but not a zero  (1,2,3, etc.)
+	 * Is a Natural number, but not a zero	(1,2,3, etc.)
 	 *
 	 * @param	string
 	 * @return	bool

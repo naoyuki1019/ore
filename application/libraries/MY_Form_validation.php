@@ -1,5 +1,17 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
+/**
+ *
+ * @package Ore
+ * @author naoyuki onishi
+ */
+namespace ore;
+
+/**
+ * Class MY_Form_validation
+ *
+ * @author naoyuki onishi
+ */
 class MY_Form_validation extends CI_Form_validation {
 
 	/**
@@ -7,15 +19,17 @@ class MY_Form_validation extends CI_Form_validation {
 	 */
 	public $CI = null;
 
-	public $_error_prefix = '<p class="form-error">';
+	public $_error_prefix = '<p class="formError">';
 	public $_error_suffix = '</p>';
+
+	public $_encoding = 'UTF-8';
 
 	/**
 	 *
 	 */
 	public function __construct($rules = array()) {
 		//ここで先読みさせてフォームバリデーションオブジェクトの取得関数を定義
-		get_instance()->load->helper('my_form');
+//		get_instance()->load->helper('my_form');
 		parent::__construct($rules);
 	}
 
@@ -103,14 +117,14 @@ class MY_Form_validation extends CI_Form_validation {
 	* @return string
 	*
 	*
-	* 半角文字列 -> ras
+	* 半角文字列 -> as
 	* 全角文字列 -> ASKV
 	* 全角カタカナ -> KVC
 	* 半角カタカナ -> kh
 	* ひらがな -> HVc
 	*/
 	public function mb_convert_kana($str, $val) {
-		return mb_convert_kana($str, $val);
+		return mb_convert_kana($str, $val, $this->_encoding);
 	}
 
 
@@ -128,17 +142,17 @@ class MY_Form_validation extends CI_Form_validation {
 	}
 
 
- 	/**
+	/**
 	 * オーバーライド
 	 */
 	public function required($str) {
 
 		if (is_array($str)) {
-			return ( ! empty($str));
+			return (! empty($str));
 		}
 
 		else {
-			return (mb_trim($str) == '') ? FALSE : TRUE;
+			return ($this->mb_trim($str) == '') ? FALSE : TRUE;
 		}
 	}
 
@@ -280,17 +294,115 @@ class MY_Form_validation extends CI_Form_validation {
 	 * 電話番号チェック
 	 *
 	 * @access public
-	 * @param   string
+	 * @param	string
 	 * @return bool
 	 *
 	 */
 	public function valid_phone($str) {
 
 		if ('' == $str) {
-
 			return TRUE;
 		}
+
 		return ( ! preg_match("/^\d{2,5}[-]?\d{1,4}[-]?\d{1,4}$/", $str)) ? FALSE : TRUE;
 		//return ( ! preg_match("/^\d{2,5}\-\d{1,4}\-\d{1,4}$/", $str)) ? FALSE : TRUE;
+	}
+
+
+	/**
+	 * 郵便番号チェック
+	 *
+	 * @access public
+	 * @param	string
+	 * @return bool
+	 *
+	 */
+	public function valid_zip($str, $no_hyphen) {
+
+		if ('' == $str) {
+			return TRUE;
+		}
+
+		if ('1' == $no_hyphen) {
+			return (preg_match("/^\d{7}$/", $str)) ? TRUE : FALSE;
+		}
+		else {
+			return (preg_match("/^\d{3}\-\d{4}$/", $str)) ? TRUE : FALSE;
+		}
+	}
+
+
+	/**
+	 * @param $string
+	 * @return string
+	 */
+	public function mb_trim ($string) {
+		$whitespace = '[\s\0\x0b\p{Zs}\p{Zl}\p{Zp}]';
+		$ret = preg_replace(sprintf('/(^%s+|%s+$)/u', $whitespace, $whitespace),'', $string);
+		return $ret;
+	}
+
+
+	/**
+	 * コンマを削除する…だけ
+	 * @param $number
+	 * @return mixed
+	 */
+	public function rm_comma($number) {
+		$ret = str_replace(',', '', $number);
+		return $ret;
+	}
+
+
+	/**
+	 * スペースを半角一つにする…だけ
+	 * @param $str
+	 * @return mixed
+	 */
+	public function onespace($str) {
+		$str = preg_replace('/\s+/', ' ', preg_replace('/　/', ' ', $str));
+		return $str;
+
+	}
+
+
+	/**
+	 * Alpha-numeric w/ spaces
+	 *
+	 * @param	string
+	 * @return	bool
+	 */
+	public function alpha_numeric_spaces($str)
+	{
+		if ('' == $str) {
+			return TRUE;
+		}
+
+		return (bool) preg_match('/^[A-Z0-9 ]+$/i', $str);
+	}
+
+
+	/**
+	 * halfwidth
+	 *
+	 * @param	string
+	 * @return	bool
+	 */
+	public function halfwidth($str)
+	{
+		if ('' == $str) {
+			return TRUE;
+		}
+
+		return (bool) preg_match('/^[!-~ ]+$/i', $str);
+	}
+
+	/**
+	 * @param $str
+	 * @param $field
+	 * @return bool
+	 */
+	public function field_greater_than($str, $field) {
+		return (isset($this->_field_data[$field]) && $this->_field_data[$field]['postdata'] < $str);
 	}
 }

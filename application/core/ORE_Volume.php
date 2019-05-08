@@ -10,34 +10,44 @@ namespace ore;
 
 /**
  * Class ORE_Volume
+ *
  * @package ore
  */
 class ORE_Volume extends ORE_Params {
 
 	protected $_result = null;
 
-	public $find_fileds = "*";
+	public $find_fileds = '*';
 	public $entries = array();
 	public $entry = null;
 
 	protected $_page = 1;
 	protected $_limit = 20;
 	protected $_total = 0;
-	protected $_sort_ud = "asc";
-	protected $_sort_key = "created";
-	protected $_sort_key_allows = array("created", "modified");
+	protected $_sort_ud = 'asc';
+	protected $_sort_key = 1;
+	protected $_sort_key_allows = array(
+		1 => array(
+			'label' => '登録日時',
+			'query' => 'created {sort_ud}',
+		),
+		2 => array(
+			'label' => '更新日時',
+			'query' => 'modified {sort_ud}',
+		),
+	);
 
 	protected $_errors = array();
 	protected $_messages = array();
 
 	/**
 	 * ORE_Volume constructor.
+	 *
 	 * @param array $params
 	 */
 	public function __construct($params = array()) {
 		parent::__construct($params);
 	}
-
 
 	/**
 	 * @param array $params
@@ -75,8 +85,9 @@ class ORE_Volume extends ORE_Params {
 				$this->$key = $val;
 			}
 		}
-	}
 
+		return $this;
+	}
 
 	/**
 	 * @return string
@@ -97,7 +108,6 @@ class ORE_Volume extends ORE_Params {
 		return "*";
 	}
 
-
 	/**
 	 *
 	 */
@@ -105,14 +115,12 @@ class ORE_Volume extends ORE_Params {
 		$this->_result = $result;
 	}
 
-
 	/**
 	 *
 	 */
 	public function result() {
 		return $this->_result;
 	}
-
 
 	/**
 	 *
@@ -122,14 +130,12 @@ class ORE_Volume extends ORE_Params {
 		if (preg_match('/^[1-9]\d*$/', $page)) $this->_page = $page;
 	}
 
-
 	/**
 	 *
 	 */
 	public function page() {
 		return $this->_page;
 	}
-
 
 	/**
 	 *
@@ -139,7 +145,6 @@ class ORE_Volume extends ORE_Params {
 		if (preg_match('/^[1-9]\d*$/', $limit)) $this->_limit = $limit;
 	}
 
-
 	/**
 	 *
 	 */
@@ -147,14 +152,12 @@ class ORE_Volume extends ORE_Params {
 		return $this->_limit;
 	}
 
-
 	/**
 	 * 入力値規制
 	 */
 	public function set_total($total) {
-		$this->_total = (preg_match('/^[1-9]\d*$/', $total)) ? $total : 0 ;
+		$this->_total = (preg_match('/^[1-9]\d*$/', $total)) ? $total : 0;
 	}
-
 
 	/**
 	 *
@@ -163,18 +166,16 @@ class ORE_Volume extends ORE_Params {
 		return $this->_total;
 	}
 
-
 	/**
 	 * 入力値規制
 	 */
 	public function set_sort_ud($sort_ud) {
-
 		$sort_ud = strtolower($sort_ud);
-		if ($sort_ud == "desc" OR $sort_ud == "asc" ) {
-			$this->_sort_ud = $sort_ud;
+		if ('desc' !== $sort_ud AND 'asc' !== $sort_ud) {
+			$sort_ud = 'asc';
 		}
+		$this->_sort_ud = $sort_ud;
 	}
-
 
 	/**
 	 *
@@ -183,26 +184,141 @@ class ORE_Volume extends ORE_Params {
 		return $this->_sort_ud;
 	}
 
-
 	/**
-	 * 入力値規制
-	 * @param $sort_key
+	 * @param $allows
 	 */
-	public function set_sort_key($sort_key) {
-
-		if ('ALL' === $this->_sort_key_allows) {
-			$this->_sort_key = $sort_key;
-			return;
+	public function set_sort_key_allows($allows) {
+		if ('ALL' === $allows) {
+			$this->_sort_key_allows = 'ALL';
 		}
-
-		if (TRUE === in_array($sort_key, $this->_sort_key_allows)) {
-			$this->_sort_key = $sort_key;
-			return;
+		else if (is_array($allows)) {
+			$this->_sort_key_allows = $allows;
 		}
-
-		throw new \Exception("sort key value error: '{$sort_key}' not allowed");
 	}
 
+	/**
+	 * @param $allows
+	 */
+	public function sort_key_allows() {
+		return $this->_sort_key_allows;
+	}
+
+	/**
+	 * @param $sort_key
+	 * @param string $sort_ud
+	 * @return mixed|null
+	 */
+	public function sort_query($sort_key, $sort_ud = 'asc') {
+
+		if (true !== ctype_digit((string)$sort_key)) {
+			return null;
+		}
+		
+        $sort_ud = strtolower($sort_ud);
+		if ('desc' !== $sort_ud AND 'asc' !== $sort_ud) {
+			$sort_ud = 'asc';
+		}
+
+		if (is_array($this->_sort_key_allows)) {
+			if (array_key_exists($sort_key, $this->_sort_key_allows)) {
+				if (array_key_exists('query', $this->_sort_key_allows[$sort_key])) {
+					$query = $this->_sort_key_allows[$sort_key]['query'];
+					$query = str_replace('{sort_ud}', $sort_ud, $query);
+					return $query;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * ソート
+	 *
+	 * @param $sort_key
+	 */
+	public function set_sort_key($sort_key, $sort_ud = null) {
+		$bk = $this->_sort_key;
+		$this->_sort_key = array();
+		$this->add_sort_key($sort_key, $sort_ud);
+		if ((TRUE !== is_object($this->_sort_key) AND TRUE !== is_array($this->_sort_key) AND '' !== strval($this->_sort_key))
+			OR (TRUE === is_array($this->_sort_key) AND 0 < count($this->_sort_key))) {
+			return;
+		}
+		$this->_sort_key = $bk;
+	}
+
+	/**
+	 * ソートキー制限
+	 *
+	 * @param $sort_key
+	 */
+	public function add_sort_key($sort_key, $sort_ud = null) {
+		if (is_array($sort_key)) {
+			foreach ($sort_key as $tmp => $sort_ud) {
+				$this->_set_sort_key($tmp, $sort_ud);
+			}
+		}
+		else {
+			$this->_set_sort_key($sort_key, $sort_ud);
+		}
+	}
+
+	/**
+	 * @param $sort_key
+	 * @return bool
+	 */
+	public function is_allowed_key($sort_key) {
+
+		$type = gettype($sort_key);
+		if ('object' === $type OR 'array' === $type OR '' === strval($sort_key)) {
+			return false;
+		}
+
+		if ('string' === gettype($this->_sort_key_allows)) {
+			if ('ALL' === strtoupper($this->_sort_key_allows)) {
+				return true;
+			}
+			else {
+				if ($sort_key === $this->_sort_key_allows) {
+					return true;
+				}
+			}
+		}
+		else {
+			if (is_array($this->_sort_key_allows)) {
+				if (TRUE === array_key_exists($sort_key, $this->_sort_key_allows)) {
+					return true;
+				}
+				else if (TRUE === in_array($sort_key, $this->_sort_key_allows, true)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param $sort_key
+	 * @param $sort_ud
+	 */
+	private function _set_sort_key($sort_key, $sort_ud) {
+		if ($this->is_allowed_key($sort_key)) {
+			if (is_null($sort_ud)) {
+				$this->_sort_key = $sort_key;
+			}
+			else {
+				$sort_ud = strtolower($sort_ud);
+				if ('desc' !== $sort_ud AND 'asc' !== $sort_ud) {
+					$sort_ud = 'asc';
+				}
+				if (! is_array($this->_sort_key)) {
+					$this->_sort_key = array();
+				}
+				$this->_sort_key[$sort_key] = $sort_ud;
+			}
+		}
+	}
 
 	/**
 	 * @return string
@@ -211,21 +327,19 @@ class ORE_Volume extends ORE_Params {
 		return $this->_sort_key;
 	}
 
-
 	/**
 	 * @return float|int
 	 */
 	public function offset() {
 
 		// ページがリンクに存在しないページ番号の時は最終ページとする
-		$offset = ($this->_page -1) * $this->_limit;
+		$offset = ($this->_page - 1) * $this->_limit;
 		if ($this->_total <= $offset) {
 			$this->set_page(ceil($this->_total / $this->_limit));
 		}
 
-		return ($this->_page -1) * $this->_limit;
+		return ($this->_page - 1) * $this->_limit;
 	}
-
 
 	/**
 	 * @return float
@@ -238,11 +352,25 @@ class ORE_Volume extends ORE_Params {
 	 * @param $key
 	 * @param $msg
 	 */
-	public function add_error($key, $msg) {
-		if (! array_key_exists($key, $this->_errors)) {
-			$this->_errors[$key] = array();
+	public function add_error($key, $msg = '') {
+		if (is_array($key)) {
+			foreach ($key as $key2 => $msg2) {
+				$this->add_error($key2, $msg2);
+			}
 		}
-		$this->_errors[$key][] = $msg;
+		else {
+
+			if ('' === $msg) {
+				$msg = 'error';
+			}
+
+			if (! array_key_exists($key, $this->_errors)) {
+				$this->_errors[$key] = array();
+			}
+			if (! in_array($msg, $this->_errors[$key])) {
+				$this->_errors[$key][] = $msg;
+			}
+		}
 	}
 
 	/**
@@ -260,13 +388,64 @@ class ORE_Volume extends ORE_Params {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function errors() {
+		return $this->_errors;
+	}
+
+	/**
 	 * @param $key
 	 * @param $msg
 	 */
-	public function add_message($key, $msg) {
-		if (! array_key_exists($key, $this->_messages)) {
-			$this->_messages[$key] = array();
+	public function add_message($key, $msg = '') {
+		if (is_array($key)) {
+			foreach ($key as $key2 => $msg2) {
+				$this->add_message($key2, $msg2);
+			}
 		}
-		$this->_messages[$key][] = $msg;
+		else {
+			if ('' === $msg) {
+				$msg = 'message';
+			}
+
+			if (! array_key_exists($key, $this->_messages)) {
+				$this->_messages[$key] = array();
+			}
+			if (! in_array($msg, $this->_messages[$key])) {
+				$this->_messages[$key][] = $msg;
+			}
+		}
 	}
+
+	/**
+	 * @return int
+	 */
+	public function message_count() {
+		return count($this->_messages);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function has_message() {
+		return (bool)(0 < $this->message_count());
+	}
+
+	/**
+	 * @return array
+	 */
+	public function messages() {
+		return $this->_messages;
+	}
+
+	/**
+	 * for valx
+	 *
+	 * @var array
+	 */
+	public $where_add_raws = array();
+	public $arr_key = '';
+	public $arr_label = '';
+	public $arr_label_sufix = '';
 }

@@ -1,19 +1,37 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
 /**
  *
  * @package Ore
  * @author naoyuki onishi
  */
+namespace ore;
+
+/**
+ * Class ORE_Object_validation
+ *
+ * @author naoyuki onishi
+ */
 class ORE_Object_validation extends MY_Form_validation {
 
 	private $_object = null;
+
+	/**
+	 *
+	 * @see CI_Form_validation::set_data()
+	 */
+	public function set_data($data=array()) {
+		throw new \Exception('do not use set_data');
+	}
 
 
 	/**
 	 *
 	 */
 	public function set_object(& $object) {
+		if (! isset($object) OR ! is_object($object)) {
+			throw new \Exception('$object is not object');
+		}
 		$this->_object = $object;
 		return $this;
 	}
@@ -82,6 +100,7 @@ class ORE_Object_validation extends MY_Form_validation {
 		// Is the field name an array? If it is an array, we break it apart
 		// into its components so that we can fetch the corresponding POST data later
 		$indexes = array();
+		$matches = array();
 		if (preg_match_all('/\[(.*?)\]/', $field, $matches))
 		{
 			sscanf($field, '%[^[][', $indexes[0]);
@@ -154,7 +173,7 @@ class ORE_Object_validation extends MY_Form_validation {
 		}
 
 		// Load the language file containing error messages
-		$this->CI->lang->load('form_validation');
+		$this->CI->lang->load('validation');
 
 		// Cycle through the rules for each field and match the corresponding $validation_data item
 		foreach ($this->_field_data as $field => $row)
@@ -165,6 +184,10 @@ class ORE_Object_validation extends MY_Form_validation {
 			if (isset($this->_object->{$field}))
 			{
 				$this->_field_data[$field]['postdata'] = $this->_object->{$field};
+			}
+			else
+			{
+				$this->_field_data[$field]['postdata'] = null;
 			}
 
 			$this->_execute($row, explode('|', $row['rules']), $this->_field_data[$field]['postdata']);

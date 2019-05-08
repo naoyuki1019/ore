@@ -1,9 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-//ルール"isset"が入っていない時にキーが存在しない場合はrequiredでブランクのチェックはしない
+<?php
 
 /**
  *
  * @package Ore
+ * @author naoyuki onishi
+ */
+namespace ore;
+
+/**
+ * Class ORE_Data_validation
+ *
  * @author naoyuki onishi
  */
 class ORE_Data_validation extends MY_Form_validation {
@@ -13,7 +19,7 @@ class ORE_Data_validation extends MY_Form_validation {
 	/**
 	 *
 	 */
-	public function set_data($arr) {
+	public function set_data($arr = '') {
 		$this->_data_array = $arr;
 		return $this;
 	}
@@ -72,9 +78,11 @@ class ORE_Data_validation extends MY_Form_validation {
 		// If the field label wasn't passed we use the field name
 		$label = ($label == '') ? $field : $label;
 
-		// Is the field name an array?  We test for the existence of a bracket "[" in
+		// Is the field name an array?	We test for the existence of a bracket "[" in
 		// the field name to determine this.  If it is an array, we break it apart
 		// into its components so that we can fetch the corresponding POST data later
+		$matches = array();
+		$indexes = array();
 		if (strpos($field, '[') !== FALSE AND preg_match_all('/\[(.*?)\]/', $field, $matches))
 		{
 			// Note: Due to a bug in current() that affects some versions
@@ -94,7 +102,6 @@ class ORE_Data_validation extends MY_Form_validation {
 		}
 		else
 		{
-			$indexes	= array();
 			$is_array	= FALSE;
 		}
 
@@ -126,10 +133,10 @@ class ORE_Data_validation extends MY_Form_validation {
 	function run($group = '')
 	{
 		// Do we even have any data to process?  Mm?
-		if (count($this->_data_array) == 0)
-		{
-			return FALSE;
-		}
+//		if (count($this->_data_array) == 0)
+//		{
+//			return FALSE;
+//		}
 
 		// Does the _field_data array containing the validation rules exist?
 		// If not, we look to see if they were assigned via a config file
@@ -167,7 +174,7 @@ class ORE_Data_validation extends MY_Form_validation {
 			}
 			else
 			{
-				if (isset($this->_data_array[$field]) AND $this->_data_array[$field] != "")
+				if (isset($this->_data_array[$field]))
 				{
 					$this->_field_data[$field]['postdata'] = $this->_data_array[$field];
 				}
@@ -206,7 +213,7 @@ class ORE_Data_validation extends MY_Form_validation {
 	 * @access	private
 	 * @return	null
 	 */
-	function _reset_post_array()
+	protected function _reset_post_array()
 	{
 		foreach ($this->_field_data as $field => $row)
 		{
@@ -255,40 +262,6 @@ class ORE_Data_validation extends MY_Form_validation {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Executes the Validation routines
-	 *
-	 * @access	private
-	 * @param	array
-	 * @param	array
-	 * @param	mixed
-	 * @param	integer
-	 * @return	mixed
-	 */
-	function _execute($row, $rules, $postdata = NULL, $cycles = 0)
-	{
-
-		if ( ! is_array($postdata))
-		{
-			if ( ! in_array('isset', $rules))
-			{
-				if (is_null($postdata)) {
-					return ;
-				}
-
-				if ( ! in_array('required', $rules) AND $postdata == "") {
-					return ;
-				}
-			}
-		}
-
-		parent::_execute($row, $rules, $postdata, $cycles);
-
-	}
-
 
 	// --------------------------------------------------------------------
 

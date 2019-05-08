@@ -5,16 +5,12 @@
  * @package Ore
  * @author naoyuki onishi
  */
-
 namespace ore;
 
 /**
+ * Class ORE_HttpPost
  *
  * @author naoyuki onishi
- *
- * Class ORE_HttpPost
- * @package ore
- * @version 1.0
  */
 class ORE_HttpPost {
 
@@ -168,9 +164,9 @@ class ORE_HttpPost {
 	 */
 	public function add_file($form_name, $file_path, $file_name = "", $file_type = "") {
 
-	    if (! is_readable($file_path)) {
-	        throw new \Exception("NOT FOUND: {$file_path}");
-        }
+		if (! is_readable($file_path)) {
+			throw new \Exception("NOT FOUND: {$file_path}");
+		}
 
 		if ("" == $file_name) {
 			$file_name = basename($file_path);
@@ -190,17 +186,17 @@ class ORE_HttpPost {
 		$this->_file_list[] = $file_dict;
 	}
 
-    /**
-     * @return int
-     */
+	/**
+	 * @return int
+	 */
 	public function get_file_count() {
-	    return count($this->_file_list);
-    }
+		return count($this->_file_list);
+	}
 
-    /**
-     *
-     * @return bool|string
-     */
+	/**
+	 *
+	 * @return bool|string
+	 */
 	public function submit() {
 
 

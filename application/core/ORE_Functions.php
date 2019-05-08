@@ -1,5 +1,17 @@
 <?php
 
+if (! function_exists('mb_trim')) {
+	/**
+	 * @param $string
+	 * @return string
+	 */
+	function mb_trim($string) {
+		$whitespace = '[\s\0\x0b\p{Zs}\p{Zl}\p{Zp}]';
+		$ret = preg_replace(sprintf('/(^%s+|%s+$)/u', $whitespace, $whitespace), '', $string);
+		return $ret;
+	}
+}
+
 if (! function_exists('get_class_public_vars')) {
 	/**
 	 * @param $class_name

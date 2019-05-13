@@ -1286,7 +1286,20 @@ class CI_Form_validation {
 	 */
 	public function valid_ip($ip, $which = '')
 	{
-		return $this->CI->input->valid_ip($ip, $which);
+		switch (strtolower($which))
+		{
+			case 'ipv4':
+				$which = 1048576;
+				break;
+			case 'ipv6':
+				$which = 2097152;
+				break;
+			default:
+				$which = NULL;
+				break;
+		}
+
+		return (bool) filter_var($ip, 275, $which);
 	}
 
 	// --------------------------------------------------------------------

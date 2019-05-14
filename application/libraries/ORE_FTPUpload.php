@@ -164,7 +164,6 @@ exit 0
 		$pass = escapeshellarg($this->pass);
 		$command = "/bin/bash {$sh_path} {$host} {$port} {$uid} {$pass}";
 		$command_log = "/bin/bash {$sh_path} {$host} {$port} #uid# #pass#";
-		$command_log = "/bin/bash {$sh_path} {$host} {$port} {$uid} {$pass}";
 		$this->_set_message("<div>コマンド実行: {$command_log}</div>");
 
 		$output = array();
@@ -177,7 +176,7 @@ exit 0
 			}
 			else {
 				if (! empty($output)) {
-					$this->_set_message("<div>Error: ".implode('', $output)."</div>");
+					$this->_set_message("<div>Error: 不明なエラー $output=".implode('', $output)."</div>");
 				}
 				else {
 					$this->_set_message("<div>Error: 不明なエラー</div>");
@@ -190,12 +189,12 @@ exit 0
 
 		$cnt226msg = 0;
 		foreach ($output as $ftp_message) {
-			if ('226 Transfer complete' === $ftp_message) {
+			if (FALSE !== strpos($ftp_message, '226 Transfer complete')) {
 				$cnt226msg++;
 			}
 		}
 
-		if (0 === $cnt226msg OR $cnt226msg != count($this->files)) {
+		if (0 === $cnt226msg OR $cnt226msg !== count($this->_files)) {
 			$this->_set_message("<div>Error: ファイル転送失敗</div>");
 			return false;
 		}

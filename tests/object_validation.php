@@ -1,13 +1,7 @@
 <?php
-
-/**
- *
- * @package Ore
- * @author naoyuki onishi
- */
 namespace ore;
-
 require  dirname(__FILE__) . '/../ORE_Require.php';
+
 
 $vo = new \stdClass();
 $vo->user_password = '  dddaaad  ';

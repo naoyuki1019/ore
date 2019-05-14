@@ -2,34 +2,33 @@
 namespace ore;
 require  dirname(__FILE__) . '/../ORE_Require.php';
 
-
 $array = array(
-	'name' => '  名前三郎  ',
-	'age' => 30,
-	'zip' => '　460-0011　',
-	'address' => 'abcdefgﾊﾝｶｸ　ｼﾞｭｳｼｮ',
-	'child' => array(
-		'name' => '  abc名前四郎c  ',
+	'hankaku' => 'ﾊﾝｶｸｶﾀｶﾅABC123',
+	'lowercase' => 'abcdefg',
+	'recursive' => array(
+		'trim' => '  trim  ',
+		'hoge1' => 'abcﾊﾝｶｸﾍﾝｶﾝ',
+		'hoge2' => 'edfﾊﾝｶｸﾍﾝｶﾝ',
 	),
 );
-echo (__FILE__.':('.__LINE__.')'."\n".'$array='.print_r($array, true))."\n";
+echo 'before ='.print_r($array, true)."\n";
 
 $obj_arr = new ORE_Array($array);
-$array = $obj_arr->array_map('mb_trim')
+$array = $obj_arr
+	->array_map('trim')
 	->strtoupper()
 	->mb_convert_kana('CKVas')
 	->get_array();
 
+echo 'after  ='.print_r($array, true)."\n";
 
-echo (__FILE__.':('.__LINE__.')'."\n".'$array='.print_r($array, true))."\n";
 
 // キー値アクセス
-echo '$obj_arr->name='.$obj_arr->name."\n";
-echo '$obj_arr->address='.$obj_arr->address."\n";
+echo '$obj_arr->hankaku='.$obj_arr->hankaku."\n";
+echo '$obj_arr->lowercase='.$obj_arr->lowercase."\n";
 
-
-$obj_arr->str_replace('四郎', '一郎', true);
-$obj_arr->str_replace('三郎', 'FALSE');
+// str_replace
+$obj_arr->str_replace('ﾊﾝｶｸﾍﾝｶﾝ', '全角になりました', true);
 $array = $obj_arr->get_array();
-echo (__FILE__.':('.__LINE__.')'."\n".'$array='.print_r($array, true))."\n";
+echo 'str_replace ='.print_r($array, true)."\n";
 

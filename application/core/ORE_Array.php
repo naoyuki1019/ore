@@ -206,8 +206,20 @@ class ORE_Array {
 	 * @return $this
 	 */
 	public function array_map($callback) {
-		$this->_array = array_map($callback, $this->_array);
+		//$this->_array = array_map($callback, $this->_array);
+		$this->_recursive($this->_array, $callback);
 		return $this;
+	}
+	protected function _recursive(& $array, $callback) {
+		foreach ($array as & $val) {
+			$type = gettype($val);
+			if ('array' === $type OR 'object' === $type) {
+				$this->_recursive($val, $callback);
+			}
+			else {
+				$val = $callback($val);
+			}
+		}
 	}
 
 	/**

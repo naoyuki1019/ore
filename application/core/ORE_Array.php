@@ -51,7 +51,7 @@ class ORE_Array {
 
 	/**
 	 * @param $key
-	 * @return mixed
+	 * @return mixed|null
 	 * @throws \Exception
 	 */
 	public function __get($key) {
@@ -67,6 +67,7 @@ class ORE_Array {
 
 	/**
 	 * @param $key
+	 * @param $val
 	 * @return $this
 	 */
 	public function __set($key, $val) {
@@ -96,12 +97,13 @@ class ORE_Array {
 
 	/**
 	 * @param $option
+	 * @param bool $recursive
 	 * @return $this
 	 */
 	public function mb_convert_kana($option, $recursive = true) {
 		$this->__option = $option;
 		$this->__recursive = $recursive;
-        array_map(array($this,'_mb_convert_kana'), $this->_array);
+		array_map(array($this, '_mb_convert_kana'), $this->_array);
 		return $this;
 	}
 
@@ -114,7 +116,7 @@ class ORE_Array {
 		if ('object' !== $type) {
 			if ('array' === $type) {
 				if (TRUE == $this->__recursive) {
-					$val = array_map(array($this,'_mb_convert_kana'), $val);
+					$val = array_map(array($this, '_mb_convert_kana'), $val);
 				}
 			}
 			else {
@@ -125,6 +127,7 @@ class ORE_Array {
 	}
 
 	/**
+	 * @param bool $recursive
 	 * @return $this
 	 */
 	public function strtolower($recursive = true) {
@@ -146,6 +149,7 @@ class ORE_Array {
 	}
 
 	/**
+	 * @param bool $recursive
 	 * @return $this
 	 */
 	public function strtoupper($recursive = true) {
@@ -176,6 +180,7 @@ class ORE_Array {
 
 	protected $__search = '';
 	protected $__replace = '';
+
 	/**
 	 * @param $search Array|String|Number
 	 * @param $replace

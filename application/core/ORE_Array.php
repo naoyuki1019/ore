@@ -39,7 +39,13 @@ class ORE_Array {
 	 * @param $array
 	 */
 	public function __construct($array) {
-		$this->_array = $array;
+		$type = gettype($array);
+		if ('array' === $type) {
+			$this->_array = $array;
+		}
+		else if ('object' === $type) {
+			$this->_array = (array)$array;
+		}
 	}
 
 	/**
@@ -103,7 +109,7 @@ class ORE_Array {
 	public function mb_convert_kana($option, $recursive = true) {
 		$this->__option = $option;
 		$this->__recursive = $recursive;
-		array_map(array($this, '_mb_convert_kana'), $this->_array);
+		$this->_array = array_map(array($this, '_mb_convert_kana'), $this->_array);
 		return $this;
 	}
 
@@ -223,6 +229,7 @@ class ORE_Array {
 	}
 
 	/**
+	 * 自分用の超限定的な使い方　そのうち消す
 	 * @param $search
 	 * @return mixed|null
 	 */

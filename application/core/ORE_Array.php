@@ -88,7 +88,7 @@ class ORE_Array {
 	 * @return $this
 	 */
 	public function mb_convert_variables($to_enc, $from_enc) {
-		$this->_array = mb_convert_variables('UTF-8', 'SJIS-win', $this->_array);
+		$this->_array = mb_convert_variables($to_enc, $from_enc, $this->_array);
 		return $this;
 	}
 

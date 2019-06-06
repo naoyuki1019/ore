@@ -72,8 +72,15 @@ class ORE_DBInsert {
 			@fputs($this->tsv_option->handle, $row."\n");
 		}
 		else {
-			$str = "('".implode("','", ($arr))."')";
-			$str = str_replace("'NULL'", "NULL", $str);
+			foreach ($arr as & $val) {
+				if (is_null($val)) {
+					$val = 'NULL';
+				}
+				else {
+					$val = "'{$val}'";
+				}
+			}
+			$str = '('.implode(',', $arr).')';
 			$this->values[] = $str;
 			if ($this->threshold <= $this->values_cnt) {
 				$this->insertAll();

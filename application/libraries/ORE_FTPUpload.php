@@ -156,7 +156,7 @@ exit 0
 		}
 
 		$sh_path = $this->_sh_dir.$this->sh_file_nm;
-        $script = $this->_make_script($sh_path, $this->_script, $this->_files);
+        $this->_make_script($sh_path, $this->_script, $this->_files);
 		$sh_path = escapeshellarg($sh_path);
 		$host = escapeshellarg($this->host);
 		$port = (ctype_digit((string)$this->port)) ? $this->port : 21;

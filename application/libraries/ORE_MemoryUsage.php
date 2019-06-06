@@ -96,7 +96,7 @@ class ORE_MemoryUsage {
 		if (TRUE !== self::$_ENABLE) return;
 
 		if (! empty(self::$_arr)) {
-			echo '<div style="background-color:white;margin:20px 0;" class="ore_memoryusage">';
+			echo '<div style="background-color:white;margin:20px 0;width:100%;overflow-x:scroll;" class="ore_memoryusage">';
 			echo '<div>メモリー使用量</div>';
 			$tmp = array();
 			foreach (self::$_arr as $o) {

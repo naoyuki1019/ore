@@ -227,17 +227,4 @@ class ORE_Array {
 			}
 		}
 	}
-
-	/**
-	 * 自分用の超限定的な使い方　そのうち消す
-	 * @param $search
-	 * @return mixed|null
-	 */
-	public function fuzzy_search_by_key($search) {
-		foreach ($this->_array as $key => $val) {
-			if (FALSE !== strpos($key, $search)) return $val;
-			if (FALSE !== strpos($search, $key)) return $val;
-		}
-		return null;
-	}
 }

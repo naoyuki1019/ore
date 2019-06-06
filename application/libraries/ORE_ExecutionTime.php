@@ -119,7 +119,7 @@ class ORE_ExecutionTime {
 		if (TRUE !== self::$_ENABLE) return;
 
 		if (! empty(self::$_arr)) {
-			echo '<div style="background-color:white;margin:20px 0;" class="ore_executiontime">';
+			echo '<div style="background-color:white;margin:20px 0;width:100%;overflow-x:scroll;" class="ore_executiontime">';
 
 			foreach (self::$_arr as $name => $o) {
 				/** @var ORE_ExecutionTimeVolume $o */

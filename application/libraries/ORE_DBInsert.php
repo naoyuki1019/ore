@@ -50,12 +50,14 @@ class ORE_DBInsert {
 				throw new \Exception($msg);
 			}
 			$val = $cols[$col_nm];
-			if (! is_null($this->tsv_option)) {
-				$val = str_replace('"', '""', $val);
-			}
-			else {
-				$val = str_replace("'", "''", $val);
-				$val = str_replace("\\", "\\\\", $val);
+			if (! is_null($val)) {
+				if (! is_null($this->tsv_option)) {
+					$val = str_replace('"', '""', $val);
+				}
+				else {
+					$val = str_replace("'", "''", $val);
+					$val = str_replace("\\", "\\\\", $val);
+				}
 			}
 			$arr[] = $val;
 			unset($cols[$col_nm]);

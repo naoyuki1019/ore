@@ -54,8 +54,8 @@ class ORE_Volume extends ORE_Params {
 	 */
 	public function set($params = array()) {
 
-		if (is_array($params) OR is_object($params)) {
-
+		$type = gettype($params);
+		if ('array' === $type OR 'object' === $type) {
 			foreach ($params as $key => $val) {
 
 				if ('_result' === $key OR '_total' === $key OR '_sort_key_allows' === $key) {

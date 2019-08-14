@@ -134,7 +134,7 @@ class SC_Debug {
 	 *
 	 * @return void
 	 */
-	public static function sfVarDump($prefix = '<div style="background-color:white;">', $sufix = '</div>') {
+	public static function sfVarDump($prefix = '<div style="background-color:white;width:100%;overflow-x:auto;">', $sufix = '</div>') {
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
 

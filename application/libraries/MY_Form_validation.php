@@ -207,10 +207,15 @@ class MY_Form_validation extends CI_Form_validation {
 	 * 日付の妥当性チェック
 	 * @param string $date yyyy/mm/dd
 	 */
-	public function is_date($date) {
+	public function is_date($date, $checkdate=1) {
 		if (preg_match("/^\d{4}\/\d{2}\/\d{2}$/", $date)
 		 OR preg_match("/^\d{4}\-\d{2}\-\d{2}$/", $date)) {
-			return checkdate(substr($date ,5 ,2), substr($date ,8 ,2), substr($date ,0 ,4));
+			if (1 == $checkdate) {
+				return checkdate(substr($date ,5 ,2), substr($date ,8 ,2), substr($date ,0 ,4));
+			}
+			else {
+				return TRUE;
+			}
 		}
 		return FALSE;
 	}
@@ -220,11 +225,15 @@ class MY_Form_validation extends CI_Form_validation {
 	 * 日時の妥当性チェック
 	 * @param string $date yyyy/mm/dd hh:mm:ss
 	 */
-	public function is_datetime($datetime) {
-
+	public function is_datetime($datetime, $checkdate=1) {
 		if (preg_match("/^\d{4}\/\d{2}\/\d{2}\ ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $datetime)
 		 OR preg_match("/^\d{4}\-\d{2}\-\d{2}\ ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $datetime)) {
-			return checkdate(substr($datetime ,5 ,2), substr($datetime ,8 ,2), substr($datetime ,0 ,4));
+			if (1 == $checkdate) {
+				return checkdate(substr($datetime ,5 ,2), substr($datetime ,8 ,2), substr($datetime ,0 ,4));
+			}
+			else {
+				return TRUE;
+			}
 		}
 		return FALSE;
 	}

@@ -414,4 +414,20 @@ class MY_Form_validation extends CI_Form_validation {
 	public function field_greater_than($str, $field) {
 		return (isset($this->_field_data[$field]) && $this->_field_data[$field]['postdata'] < $str);
 	}
+
+	/**
+	 * @param $str
+	 * @return bool
+	 */
+	public function less_than_4byte($str) {
+		$encoding = 'UTF-8';
+		$cnt = mb_strlen($str, $encoding);
+		for ($i = 0; $i < $cnt; $i++) {
+			$s = mb_substr($str, $i, 1, $encoding);
+			if (3 < strlen($s)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

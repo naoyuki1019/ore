@@ -40,6 +40,7 @@ $lang['valid_phone'] = "%sには正しい電話番号を入力してください
 $lang['valid_zip'] = "%sには正しい郵便番号を入力してください。";
 $lang['alpha_numeric_spaces'] = "%sには半角英数字、スペース以外は入力できません。";
 $lang['halfwidth'] = "%sには半角以外は入力できません。";
+$lang['less_than_4byte'] = "%sには入力できない特殊文字が含まれています。";
 
 
 $lang['set_validation'] = "ルール %s 用のmethodが設定されていません。";

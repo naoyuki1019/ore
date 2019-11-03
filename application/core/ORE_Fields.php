@@ -81,11 +81,7 @@ class ORE_Fields extends ORE_Params {
 		foreach ($public_vars as $key => $default) {
 			$param_key = $param_key_prefix.$key;
 			if (TRUE === property_exists($params, $param_key)) {
-				$val = $params->{$param_key};
-				if ($this->is_btnf($key) AND '' === strval($val)) {
-					$val = NULL;
-				}
-				$data[$key] = $val;
+				$data[$key] = $params->{$param_key};
 			}
 		}
 

@@ -181,7 +181,7 @@ class ORE_Object_validation extends MY_Form_validation {
 			// Fetch the data from the corresponding $this->_object array item and cache it in the _field_data array.
 			// Depending on whether the field name is an array or a string will determine where we get it from.
 
-			if (isset($this->_object->{$field}))
+			if (property_exists($this->_object, $field))
 			{
 				$this->_field_data[$field]['postdata'] = $this->_object->{$field};
 			}

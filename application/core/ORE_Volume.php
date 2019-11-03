@@ -379,16 +379,26 @@ class ORE_Volume extends ORE_Params {
 			}
 		}
 		else {
-
-			if ('' === $msg) {
-				$msg = 'error';
+			if (is_array($msg) AND ! empty($msg)) {
+				if (! array_key_exists($key, $this->_errors)) {
+					$this->_errors[$key] = array();
+				}
+				foreach ($msg as $m) {
+					if (! in_array($m, $this->_errors[$key])) {
+						$this->_errors[$key][] = $m;
+					}
+				}
 			}
-
-			if (! array_key_exists($key, $this->_errors)) {
-				$this->_errors[$key] = array();
-			}
-			if (! in_array($msg, $this->_errors[$key])) {
-				$this->_errors[$key][] = $msg;
+			else {
+				if ('' === $msg) {
+					$msg = 'error';
+				}
+				if (! array_key_exists($key, $this->_errors)) {
+					$this->_errors[$key] = array();
+				}
+				if (! in_array($msg, $this->_errors[$key])) {
+					$this->_errors[$key][] = $msg;
+				}
 			}
 		}
 	}
@@ -425,16 +435,28 @@ class ORE_Volume extends ORE_Params {
 			}
 		}
 		else {
-			if ('' === $msg) {
-				$msg = 'message';
+			if (is_array($msg) AND ! empty($msg)) {
+				if (! array_key_exists($key, $this->_messages)) {
+					$this->_messages[$key] = array();
+				}
+				foreach ($msg as $m) {
+					if (! in_array($m, $this->_messages[$key])) {
+						$this->_messages[$key][] = $m;
+					}
+				}
 			}
-
-			if (! array_key_exists($key, $this->_messages)) {
-				$this->_messages[$key] = array();
+			else {
+				if ('' === $msg) {
+					$msg = 'message';
+				}
+				if (! array_key_exists($key, $this->_messages)) {
+					$this->_messages[$key] = array();
+				}
+				if (! in_array($msg, $this->_messages[$key])) {
+					$this->_messages[$key][] = $msg;
+				}
 			}
-			if (! in_array($msg, $this->_messages[$key])) {
-				$this->_messages[$key][] = $msg;
-			}
+			
 		}
 	}
 

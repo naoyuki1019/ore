@@ -340,6 +340,16 @@ class MY_Form_validation extends CI_Form_validation {
 		}
 	}
 
+	/**
+	 * @param string $str
+	 * @return bool
+	 */
+	public function valid_url($str) {
+		if ('#' === $str) {
+			return TRUE;
+		}
+		return parent::valid_url($str);
+	}
 
 	/**
 	 * @param $string

@@ -54,18 +54,18 @@ class ORE_ImageUtil {
 	public static function resize_image(resize_volume $o) {
 
 		if (! is_file($o->org_path)) {
-			throw new \Exception("ファイル[{$o->org_path}]が存在しません");
+			throw new \Exception("ファイル[{$o->org_path}]が存在しません。");
 		}
 
 		if (! is_readable($o->org_path)) {
-			throw new \Exception("ファイル[{$o->org_path}]が読み込めません");
+			throw new \Exception("ファイル[{$o->org_path}]が読み込めません。");
 		}
 
 		if (IMAGETYPE_JPEG != $o->mime_type OR IMAGETYPE_PNG != $o->mime_type OR IMAGETYPE_GIF != $o->mime_type) {
 			list($o->org_width, $o->org_height, $o->mime_type) = getimagesize($o->org_path);
 		}
 		if (0 == $o->to_width OR 0 == $o->to_height) {
-			throw new \Exception('ターゲットサイズの設定をしてください');
+			throw new \Exception('ターゲットサイズの設定をしてください。');
 		}
 
 		list($o->to_width, $o->to_height) = self::calc_image_size($o->org_path, $o->to_width, $o->to_height);

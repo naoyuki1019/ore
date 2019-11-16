@@ -43,7 +43,6 @@ class ORE_Object_validation extends MY_Form_validation {
 		return $this->_object;
 	}
 
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -59,6 +58,12 @@ class ORE_Object_validation extends MY_Form_validation {
 	 */
 	public function set_rules($field, $label = '', $rules = '')
 	{
+		// No reason to set rules if we have no POST data
+		// or a validation array has not been specified
+//		if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
+//		{
+//			return $this;
+//		}
 
 		// If an array was passed via the first parameter instead of individual string
 		// values we cycle through it and recursively call this function.
@@ -100,7 +105,6 @@ class ORE_Object_validation extends MY_Form_validation {
 		// Is the field name an array? If it is an array, we break it apart
 		// into its components so that we can fetch the corresponding POST data later
 		$indexes = array();
-		$matches = array();
 		if (preg_match_all('/\[(.*?)\]/', $field, $matches))
 		{
 			sscanf($field, '%[^[][', $indexes[0]);
@@ -147,8 +151,8 @@ class ORE_Object_validation extends MY_Form_validation {
 	 */
 	public function run($group = '')
 	{
-
-		if ( ! is_object($this->_object)) {
+		// Do we even have any data to process?  Mm?
+		if (! is_object($this->_object)) {
 			return FALSE;
 		}
 
@@ -162,7 +166,17 @@ class ORE_Object_validation extends MY_Form_validation {
 				return FALSE;
 			}
 
-			$this->set_rules($this->_config_rules);
+//			// Is there a validation rule for the particular URI being accessed?
+//			$uri = ($group === '') ? trim($this->CI->uri->ruri_string(), '/') : $group;
+//
+//			if ($uri !== '' && isset($this->_config_rules[$uri]))
+//			{
+//				$this->set_rules($this->_config_rules[$uri]);
+//			}
+//			else
+//			{
+				$this->set_rules($this->_config_rules);
+//			}
 
 			// Were we able to set the rules correctly?
 			if (count($this->_field_data) === 0)
@@ -175,19 +189,30 @@ class ORE_Object_validation extends MY_Form_validation {
 		// Load the language file containing error messages
 		$this->CI->lang->load('validation');
 
-		// Cycle through the rules for each field and match the corresponding $validation_data item
+		// Cycle through the rules for each field and match the corresponding $validation_data item  
 		foreach ($this->_field_data as $field => $row)
 		{
-			// Fetch the data from the corresponding $this->_object array item and cache it in the _field_data array.
+			// Fetch the data from the validation_data array item and cache it in the _field_data array.
 			// Depending on whether the field name is an array or a string will determine where we get it from.
-
-			if (property_exists($this->_object, $field))
+			if ($row['is_array'] === TRUE)
+			{
+				$this->_field_data[$field]['postdata'] = $this->_reduce_array($this->_object, $row['keys']);
+			}
+			elseif (property_exists($this->_object, $field))
 			{
 				$this->_field_data[$field]['postdata'] = $this->_object->{$field};
 			}
-			else
+		}
+
+		// Execute validation rules
+		// Note: A second foreach (for now) is required in order to avoid false-positives
+		//	 for rules like 'matches', which correlate to other validation fields.
+		foreach ($this->_field_data as $field => $row)
+		{
+			// Don't try to validate if we have no rules set
+			if (empty($row['rules']))
 			{
-				$this->_field_data[$field]['postdata'] = null;
+				continue;
 			}
 
 			$this->_execute($row, explode('|', $row['rules']), $this->_field_data[$field]['postdata']);
@@ -206,11 +231,32 @@ class ORE_Object_validation extends MY_Form_validation {
 		return ($total_errors === 0);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Traverse a multidimensional $this->_object index until the data is found
+	 *
+	 * @param	object
+	 * @param	array
+	 * @param	int
+	 * @return	mixed
+	 */
+	protected function _reduce_array($obj, $keys, $i = 0)
+	{
+		if (is_object($obj) && isset($keys[$i]))
+		{
+			$k = $keys[$i];
+			return isset($obj->{$k}) ? $this->_reduce_array($obj->{$k}, $keys, ($i+1)) : NULL;
+		}
+
+		// NULL must be returned for empty fields
+		return ($obj === '') ? NULL : $obj;
+	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Re-populate the $this->data with our finalized and processed data
+	 * Re-populate the $this->_object with our finalized and processed data
 	 *
 	 * @return	void
 	 */
@@ -218,11 +264,48 @@ class ORE_Object_validation extends MY_Form_validation {
 	{
 		foreach ($this->_field_data as $field => $row)
 		{
-			if ( ! is_null($row['postdata']))
+			
+			
+			if ($row['postdata'] !== NULL)
 			{
-				if (isset($this->_object->{$row['field']}))
+				if ($row['is_array'] === FALSE)
 				{
-					$this->_object->{$row['field']} = $row['postdata'];
+					if (isset($this->_object->{$row['field']}))
+					{
+						$this->_object->{$row['field']} = $row['postdata'];
+					}
+				}
+				else
+				{
+					// start with a reference
+					$post_ref =$this->_object;
+
+					// before we assign values, make a reference to the right POST key
+					if (count($row['keys']) === 1)
+					{
+					}
+					else
+					{
+						foreach ($row['keys'] as $val)
+						{
+							$post_ref =& $post_ref->{$val};
+						}
+					}
+
+					if (is_array($row['postdata']))
+					{
+						$array = array();
+						foreach ($row['postdata'] as $k => $v)
+						{
+							$array[$k] = $v;
+						}
+						$f = preg_replace('/\[[^\]]*\]/', '', $row['field']);
+						$post_ref->{$f} = $array;
+					}
+					else
+					{
+						$post_ref = $row['postdata'];
+					}
 				}
 			}
 		}

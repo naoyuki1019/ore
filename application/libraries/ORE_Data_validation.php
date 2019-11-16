@@ -40,61 +40,69 @@ class ORE_Data_validation extends MY_Form_validation {
 	 * This function takes an array of field names and validation
 	 * rules as input, validates the info, and stores it
 	 *
-	 * @access	public
-	 * @param	mixed
-	 * @param	string
-	 * @return	void
+	 * @param	mixed	$field
+	 * @param	string	$label
+	 * @param	mixed	$rules
+	 * @return ORE_Data_validation
 	 */
-	function set_rules($field, $label = '', $rules = '')
+	public function set_rules($field, $label = '', $rules = '')
 	{
+		// No reason to set rules if we have no POST data
+		// or a validation array has not been specified
+//		if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
+//		{
+//			return $this;
+//		}
 
-		// If an array was passed via the first parameter instead of indidual string
+		// If an array was passed via the first parameter instead of individual string
 		// values we cycle through it and recursively call this function.
 		if (is_array($field))
 		{
 			foreach ($field as $row)
 			{
 				// Houston, we have a problem...
-				if ( ! isset($row['field']) OR ! isset($row['rules']))
+				if ( ! isset($row['field'], $row['rules']))
 				{
 					continue;
 				}
 
 				// If the field label wasn't passed we use the field name
-				$label = ( ! isset($row['label'])) ? $row['field'] : $row['label'];
+				$label = isset($row['label']) ? $row['label'] : $row['field'];
 
 				// Here we go!
 				$this->set_rules($row['field'], $label, $row['rules']);
 			}
+
 			return $this;
 		}
 
+		// Convert an array of rules to a string
+		if (is_array($rules))
+		{
+			$rules = implode('|', $rules);
+		}
+
 		// No fields? Nothing to do...
-		if ( ! is_string($field) OR  ! is_string($rules) OR $field == '')
+		if ( ! is_string($field) OR ! is_string($rules) OR $field === '')
 		{
 			return $this;
 		}
 
 		// If the field label wasn't passed we use the field name
-		$label = ($label == '') ? $field : $label;
+		$label = ($label === '') ? $field : $label;
 
-		// Is the field name an array?	We test for the existence of a bracket "[" in
-		// the field name to determine this.  If it is an array, we break it apart
+		// Is the field name an array? If it is an array, we break it apart
 		// into its components so that we can fetch the corresponding POST data later
-		$matches = array();
 		$indexes = array();
-		if (strpos($field, '[') !== FALSE AND preg_match_all('/\[(.*?)\]/', $field, $matches))
+		if (preg_match_all('/\[(.*?)\]/', $field, $matches))
 		{
-			// Note: Due to a bug in current() that affects some versions
-			// of PHP we can not pass function call directly into it
-			$x = explode('[', $field);
-			$indexes[] = current($x);
+			sscanf($field, '%[^[][', $indexes[0]);
 
-			for ($i = 0; $i < count($matches['0']); $i++)
+			for ($i = 0, $c = count($matches[0]); $i < $c; $i++)
 			{
-				if ($matches['1'][$i] != '')
+				if ($matches[1][$i] !== '')
 				{
-					$indexes[] = $matches['1'][$i];
+					$indexes[] = $matches[1][$i];
 				}
 			}
 
@@ -107,13 +115,13 @@ class ORE_Data_validation extends MY_Form_validation {
 
 		// Build our master array
 		$this->_field_data[$field] = array(
-			'field'				=> $field,
-			'label'				=> $label,
-			'rules'				=> $rules,
-			'is_array'			=> $is_array,
-			'keys'				=> $indexes,
-			'postdata'			=> NULL,
-			'error'				=> '',
+			'field'		=> $field,
+			'label'		=> $label,
+			'rules'		=> $rules,
+			'is_array'	=> $is_array,
+			'keys'		=> $indexes,
+			'postdata'	=> NULL,
+			'error'		=> ''
 		);
 
 		return $this;
@@ -127,33 +135,43 @@ class ORE_Data_validation extends MY_Form_validation {
 	 *
 	 * This function does all the work.
 	 *
-	 * @access	public
+	 * @param	string	$group
 	 * @return	bool
 	 */
-	function run($group = '')
+	public function run($group = '')
 	{
 		// Do we even have any data to process?  Mm?
-//		if (count($this->_data_array) == 0)
-//		{
-//			return FALSE;
-//		}
+		if (count($this->_data_array) === 0)
+		{
+			return FALSE;
+		}
 
 		// Does the _field_data array containing the validation rules exist?
 		// If not, we look to see if they were assigned via a config file
-		if (count($this->_field_data) == 0)
+		if (count($this->_field_data) === 0)
 		{
 			// No validation rules?  We're done...
-			if (count($this->_config_rules) == 0)
+			if (count($this->_config_rules) === 0)
 			{
 				return FALSE;
 			}
 
+//			// Is there a validation rule for the particular URI being accessed?
+//			$uri = ($group === '') ? trim($this->CI->uri->ruri_string(), '/') : $group;
+//
+//			if ($uri !== '' && isset($this->_config_rules[$uri]))
+//			{
+//				$this->set_rules($this->_config_rules[$uri]);
+//			}
+//			else
+//			{
 				$this->set_rules($this->_config_rules);
+//			}
 
-			// We're we able to set the rules correctly?
-			if (count($this->_field_data) == 0)
+			// Were we able to set the rules correctly?
+			if (count($this->_field_data) === 0)
 			{
-				log_message('debug', "Unable to find validation rules");
+				log_message('debug', 'Unable to find validation rules');
 				return FALSE;
 			}
 		}
@@ -161,23 +179,30 @@ class ORE_Data_validation extends MY_Form_validation {
 		// Load the language file containing error messages
 		$this->CI->lang->load('form_validation');
 
-		// Cycle through the rules for each field, match the
-		// corresponding $this->_data_array item and test for errors
+		// Cycle through the rules for each field and match the corresponding $validation_data item
 		foreach ($this->_field_data as $field => $row)
 		{
-			// Fetch the data from the corresponding $this->_data_array array and cache it in the _field_data array.
+			// Fetch the data from the validation_data array item and cache it in the _field_data array.
 			// Depending on whether the field name is an array or a string will determine where we get it from.
-
-			if ($row['is_array'] == TRUE)
+			if ($row['is_array'] === TRUE)
 			{
 				$this->_field_data[$field]['postdata'] = $this->_reduce_array($this->_data_array, $row['keys']);
 			}
-			else
+			elseif (isset($this->_data_array[$field]))
 			{
-				if (isset($this->_data_array[$field]))
-				{
-					$this->_field_data[$field]['postdata'] = $this->_data_array[$field];
-				}
+				$this->_field_data[$field]['postdata'] = $this->_data_array[$field];
+			}
+		}
+
+		// Execute validation rules
+		// Note: A second foreach (for now) is required in order to avoid false-positives
+		//	 for rules like 'matches', which correlate to other validation fields.
+		foreach ($this->_field_data as $field => $row)
+		{
+			// Don't try to validate if we have no rules set
+			if (empty($row['rules']))
+			{
+				continue;
 			}
 
 			$this->_execute($row, explode('|', $row['rules']), $this->_field_data[$field]['postdata']);
@@ -185,7 +210,6 @@ class ORE_Data_validation extends MY_Form_validation {
 
 		// Did we end up with any errors?
 		$total_errors = count($this->_error_array);
-
 		if ($total_errors > 0)
 		{
 			$this->_safe_form_data = TRUE;
@@ -194,36 +218,28 @@ class ORE_Data_validation extends MY_Form_validation {
 		// Now we need to re-set the POST data with the new, processed data
 		$this->_reset_post_array();
 
-		// No errors, validation passes!
-		if ($total_errors == 0)
-		{
-			return TRUE;
-		}
-
-		// Validation fails
-		return FALSE;
+		return ($total_errors === 0);
 	}
 
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Re-populate the _data array with our finalized and processed data
+	 * Re-populate the _POST array with our finalized and processed data
 	 *
-	 * @access	private
-	 * @return	null
+	 * @return	void
 	 */
 	protected function _reset_post_array()
 	{
 		foreach ($this->_field_data as $field => $row)
 		{
-			if ( ! is_null($row['postdata']))
+			if ($row['postdata'] !== NULL)
 			{
-				if ($row['is_array'] == FALSE)
+				if ($row['is_array'] === FALSE)
 				{
 					if (isset($this->_data_array[$row['field']]))
 					{
-						$this->_data_array[$row['field']] = $this->prep_for_form($row['postdata']);
+						$this->_data_array[$row['field']] = $row['postdata'];
 					}
 				}
 				else
@@ -232,7 +248,7 @@ class ORE_Data_validation extends MY_Form_validation {
 					$post_ref =& $this->_data_array;
 
 					// before we assign values, make a reference to the right POST key
-					if (count($row['keys']) == 1)
+					if (count($row['keys']) === 1)
 					{
 						$post_ref =& $post_ref[current($row['keys'])];
 					}
@@ -249,14 +265,14 @@ class ORE_Data_validation extends MY_Form_validation {
 						$array = array();
 						foreach ($row['postdata'] as $k => $v)
 						{
-							$array[$k] = $this->prep_for_form($v);
+							$array[$k] = $v;
 						}
 
 						$post_ref = $array;
 					}
 					else
 					{
-						$post_ref = $this->prep_for_form($row['postdata']);
+						$post_ref = $row['postdata'];
 					}
 				}
 			}

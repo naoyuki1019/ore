@@ -20,6 +20,7 @@ class ORE_Volume extends ORE_Params {
 	public $find_fileds = '*';
 	public $entries = array();
 	public $entry = null;
+	public $data = null;
 
 	protected $_page = 1;
 	protected $_limit = 20;

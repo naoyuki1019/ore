@@ -105,6 +105,282 @@ class MY_Form_validation extends CI_Form_validation {
 		return array_flip($this->field_data_keys());
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Executes the Validation routines
+	 *
+	 * @param	array
+	 * @param	array
+	 * @param	mixed
+	 * @param	int
+	 * @return	mixed
+	 */
+	protected function _execute($row, $rules, $postdata = NULL, $cycles = 0)
+	{
+		// If the $_POST data is an array we will run a recursive call
+		if (is_array($postdata))
+		{
+			foreach ($postdata as $key => $val)
+			{
+				$this->_execute($row, $rules, $val, $key);
+			}
+
+			return;
+		}
+		else {
+//			if ( ! in_array('isset', $rules))
+//			{
+//				if (is_null($postdata)) {
+//					return ;
+//				}
+//
+//				if ( ! in_array('required', $rules) AND $postdata == "") {
+//					return ;
+//				}
+//			}
+		}
+
+		// If the field is blank, but NOT required, no further tests are necessary
+		$callback = FALSE;
+
+		// Isset Test. Typically this rule will only apply to checkboxes.
+		if (($postdata === NULL OR $postdata === '') && $callback === FALSE)
+		{
+			$err_isset = false;
+			$err_required = false;
+
+			if (in_array('isset', $rules, TRUE))
+			{
+				if (! isset($postdata)) {
+					$err_isset = true;
+				}
+
+				if (in_array('required', $rules) AND '' === $postdata) {
+					$err_required = true;
+				}
+
+				if (! $err_isset AND ! $err_required) {
+					return;
+				}
+
+			}
+			else {
+				if (in_array('required', $rules) AND '' === $postdata)
+				{
+					$err_required = true;
+				}
+				else {
+					return;
+				}
+			}
+
+			if ($err_isset OR $err_required) {
+
+				// Set the message type
+//				$type = in_array('required', $rules) ? 'required' : 'isset';
+				$type = ($err_isset) ? 'isset' : 'required';
+
+				if (isset($this->_error_messages[$type]))
+				{
+					$line = $this->_error_messages[$type];
+				}
+				elseif (FALSE === ($line = $this->CI->lang->line('form_validation_'.$type))
+					// DEPRECATED support for non-prefixed keys
+					&& FALSE === ($line = $this->CI->lang->line($type, FALSE)))
+				{
+					$line = 'The field was not set';
+				}
+
+				// Build the error message
+				$message = $this->_build_error_msg($line, $this->_translate_fieldname($row['label']));
+
+				// Save the error message
+				$this->_field_data[$row['field']]['error'] = $message;
+
+				if ( ! isset($this->_error_array[$row['field']]))
+				{
+					if ($row['is_array'] === TRUE && is_array($this->_field_data[$row['field']]['postdata']))
+					{
+						// 配列の添字またはキーが存在しない場合（例：inputname[]）はcycles（index）にする
+						$field = str_replace('[]', "[{$cycles}]", $row['field']);
+						$this->_error_array[$field] = $message;
+					}
+					else
+					{
+						$this->_error_array[$row['field']] = $message;
+					}
+				}
+			}
+
+			return;
+		}
+
+		// --------------------------------------------------------------------
+
+		// Cycle through each rule and run it
+		foreach ($rules as $rule)
+		{
+			$_in_array = FALSE;
+
+			// We set the $postdata variable with the current data in our master array so that
+			// each cycle of the loop is dealing with the processed data from the last cycle
+			if ($row['is_array'] === TRUE && is_array($this->_field_data[$row['field']]['postdata']))
+			{
+				// We shouldn't need this safety, but just in case there isn't an array index
+				// associated with this cycle we'll bail out
+				if ( ! isset($this->_field_data[$row['field']]['postdata'][$cycles]))
+				{
+					continue;
+				}
+
+				$postdata = $this->_field_data[$row['field']]['postdata'][$cycles];
+				$_in_array = TRUE;
+			}
+			else
+			{
+				// If we get an array field, but it's not expected - then it is most likely
+				// somebody messing with the form on the client side, so we'll just consider
+				// it an empty field
+				$postdata = is_array($this->_field_data[$row['field']]['postdata'])
+						? NULL
+						: $this->_field_data[$row['field']]['postdata'];
+			}
+
+			// Is the rule a callback?
+			$callback = FALSE;
+			if (strpos($rule, 'callback_') === 0)
+			{
+				$rule = substr($rule, 9);
+				$callback = TRUE;
+			}
+
+			// Strip the parameter (if exists) from the rule
+			// Rules can contain a parameter: max_length[5]
+			$param = FALSE;
+			if (preg_match('/(.*?)\[(.*)\]/', $rule, $match))
+			{
+				$rule = $match[1];
+				$param = $match[2];
+			}
+
+			// Call the function that corresponds to the rule
+			if ($callback === TRUE)
+			{
+				if ( ! method_exists($this->CI, $rule))
+				{
+					log_message('debug', 'Unable to find callback validation rule: '.$rule);
+					$result = FALSE;
+				}
+				else
+				{
+					// Run the function and grab the result
+					$result = $this->CI->$rule($postdata, $param);
+				}
+
+				// Re-assign the result to the master data array
+				if ($_in_array === TRUE)
+				{
+					$this->_field_data[$row['field']]['postdata'][$cycles] = is_bool($result) ? $postdata : $result;
+				}
+				else
+				{
+					$this->_field_data[$row['field']]['postdata'] = is_bool($result) ? $postdata : $result;
+				}
+
+				// If the field isn't required and we just processed a callback we'll move on...
+				if ( ! in_array('required', $rules, TRUE) && $result !== FALSE)
+				{
+					continue;
+				}
+			}
+			elseif ( ! method_exists($this, $rule))
+			{
+				// If our own wrapper function doesn't exist we see if a native PHP function does.
+				// Users can use any native PHP function call that has one param.
+				if (function_exists($rule))
+				{
+					$result = ($param !== FALSE) ? $rule($postdata, $param) : $rule($postdata);
+
+					if ($_in_array === TRUE)
+					{
+						$this->_field_data[$row['field']]['postdata'][$cycles] = is_bool($result) ? $postdata : $result;
+					}
+					else
+					{
+						$this->_field_data[$row['field']]['postdata'] = is_bool($result) ? $postdata : $result;
+					}
+				}
+				else
+				{
+					if ('isset' === $rule) {
+						if (isset($this->_field_data[$row['field']]['postdata'])) {
+							$result = TRUE;
+						}
+						else {
+							$result = FALSE;
+						}
+					}
+					else {
+//						log_message('debug', 'Unable to find validation rule: '.$rule);
+						throw new \Exception('Unable to find validation rule: '.$rule);
+//						$result = FALSE;
+					}
+				}
+			}
+			else
+			{
+				$result = $this->$rule($postdata, $param);
+
+				if ($_in_array === TRUE)
+				{
+					$this->_field_data[$row['field']]['postdata'][$cycles] = is_bool($result) ? $postdata : $result;
+				}
+				else
+				{
+					$this->_field_data[$row['field']]['postdata'] = is_bool($result) ? $postdata : $result;
+				}
+			}
+
+			// Did the rule test negatively? If so, grab the error.
+			if ($result === FALSE)
+			{
+				if ( ! isset($this->_error_messages[$rule]))
+				{
+					if (FALSE === ($line = $this->CI->lang->line('form_validation_'.$rule))
+						// DEPRECATED support for non-prefixed keys
+						&& FALSE === ($line = $this->CI->lang->line($rule, FALSE)))
+					{
+						$line = 'Unable to access an error message corresponding to your field name.';
+					}
+				}
+				else
+				{
+					$line = $this->_error_messages[$rule];
+				}
+
+				// Is the parameter we are inserting into the error message the name
+				// of another field? If so we need to grab its "field label"
+				if (isset($this->_field_data[$param], $this->_field_data[$param]['label']))
+				{
+					$param = $this->_translate_fieldname($this->_field_data[$param]['label']);
+				}
+
+				// Build the error message
+				$message = $this->_build_error_msg($line, $this->_translate_fieldname($row['label']), $param);
+
+				// Save the error message
+				$this->_field_data[$row['field']]['error'] = $message;
+
+				if ( ! isset($this->_error_array[$row['field']]))
+				{
+					$this->_error_array[$row['field']] = $message;
+				}
+
+				return;
+			}
+		}
+	}
 
 	// --------------------------------------------------------------------
 

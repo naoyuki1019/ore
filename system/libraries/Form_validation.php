@@ -812,7 +812,7 @@ class CI_Form_validation {
 						// DEPRECATED support for non-prefixed keys
 						&& FALSE === ($line = $this->CI->lang->line($rule, FALSE)))
 					{
-						$line = 'Unable to access an error message corresponding to your field name.';
+						$line = "Unable to access an error message [{$rule}] corresponding to your field name.";
 					}
 				}
 				else

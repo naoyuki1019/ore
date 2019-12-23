@@ -351,7 +351,7 @@ class MY_Form_validation extends CI_Form_validation {
 						// DEPRECATED support for non-prefixed keys
 						&& FALSE === ($line = $this->CI->lang->line($rule, FALSE)))
 					{
-						$line = 'Unable to access an error message corresponding to your field name.';
+						$line = "Unable to access an error message [{$rule}] corresponding to your field name.";
 					}
 				}
 				else
@@ -374,7 +374,16 @@ class MY_Form_validation extends CI_Form_validation {
 
 				if ( ! isset($this->_error_array[$row['field']]))
 				{
-					$this->_error_array[$row['field']] = $message;
+					if ($row['is_array'] === TRUE && is_array($this->_field_data[$row['field']]['postdata']))
+					{
+						// 配列の添字またはキーが存在しない場合（例：inputname[]）はcycles（index）にする
+						$field = str_replace('[]', "[{$cycles}]", $row['field']);
+						$this->_error_array[$field] = $message;
+					}
+					else
+					{
+						$this->_error_array[$row['field']] = $message;
+					}
 				}
 
 				return;
@@ -385,34 +394,34 @@ class MY_Form_validation extends CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
-	* 入力値の変換
-	*
-	* @access public
-	* @param string
-	* @param string
-	* @return string
-	*
-	*
-	* 半角文字列 -> as
-	* 全角文字列 -> ASKV
-	* 全角カタカナ -> KVC
-	* 半角カタカナ -> kh
-	* ひらがな -> HVc
-	*/
+	 * 入力値の変換
+	 *
+	 * @access public
+	 * @param string
+	 * @param string
+	 * @return string
+	 *
+	 *
+	 * 半角文字列 -> as
+	 * 全角文字列 -> ASKV
+	 * 全角カタカナ -> KVC
+	 * 半角カタカナ -> kh
+	 * ひらがな -> HVc
+	 */
 	public function mb_convert_kana($str, $val) {
 		return mb_convert_kana($str, $val, $this->_encoding);
 	}
 
 
 	/**
-	* 入力値の変換
-	*
-	* @access public
-	* @param string
-	* @param string
-	* @return string
-	*
-	*/
+	 * 入力値の変換
+	 *
+	 * @access public
+	 * @param string
+	 * @param string
+	 * @return string
+	 *
+	 */
 	public function sprintf($str, $format) {
 		return sprintf($format, $str);
 	}
@@ -608,7 +617,7 @@ class MY_Form_validation extends CI_Form_validation {
 			return TRUE;
 		}
 
-		if ('1' == $no_hyphen) {
+		if (1 == $no_hyphen) {
 			return (preg_match("/^\d{7}$/", $str)) ? TRUE : FALSE;
 		}
 		else {
@@ -692,6 +701,7 @@ class MY_Form_validation extends CI_Form_validation {
 		return (bool) preg_match('/^[!-~ ]+$/i', $str);
 	}
 
+	
 	/**
 	 * @param $str
 	 * @param $field
@@ -701,6 +711,7 @@ class MY_Form_validation extends CI_Form_validation {
 		return (isset($this->_field_data[$field]) && $this->_field_data[$field]['postdata'] < $str);
 	}
 
+	
 	/**
 	 * @param $str
 	 * @return bool

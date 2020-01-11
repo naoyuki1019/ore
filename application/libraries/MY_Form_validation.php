@@ -713,6 +713,8 @@ class MY_Form_validation extends CI_Form_validation {
 
 	
 	/**
+	 * DBの文字コードがutf8mb4でしか対応できない文字をお断りする
+	 * 	  
 	 * @param $str
 	 * @return bool
 	 */

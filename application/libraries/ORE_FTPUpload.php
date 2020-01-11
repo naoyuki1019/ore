@@ -41,6 +41,7 @@ ftp -nv << EOF
 open ${1} ${2}
 user ${3} ${4}
 binary
+cd /
 {This string will be replaced}
 close
 bye

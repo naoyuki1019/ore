@@ -28,7 +28,7 @@ echo '$obj_arr->hankaku='.$obj_arr->hankaku."\n";
 echo '$obj_arr->lowercase='.$obj_arr->lowercase."\n";
 
 // str_replace
-$obj_arr->str_replace('ハンカクヘンカン', '全角になりました。', true);
+$obj_arr->str_replace('ハンカクヘンカン', '全角になりました', true);
 $array = $obj_arr->get_array();
 echo 'str_replace ='.print_r($array, true)."\n";
 

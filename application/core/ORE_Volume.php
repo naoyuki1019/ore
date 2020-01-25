@@ -17,6 +17,7 @@ class ORE_Volume extends ORE_Params {
 
 	protected $_result = null;
 
+	public $debug = 0;
 	public $find_fileds = '*';
 	public $entries = array();
 	public $entry = null;
@@ -214,8 +215,8 @@ class ORE_Volume extends ORE_Params {
 		if (true !== ctype_digit((string)$sort_key)) {
 			return null;
 		}
-		
-        $sort_ud = strtolower($sort_ud);
+
+		$sort_ud = strtolower($sort_ud);
 		if ('desc' !== $sort_ud AND 'asc' !== $sort_ud) {
 			$sort_ud = 'asc';
 		}
@@ -342,7 +343,7 @@ class ORE_Volume extends ORE_Params {
 					$query = $sort_key_allows[$no]['query'];
 					$query = str_replace('{sort_ud}', $this->sort_ud(), $query);
 					return $query;
-                }
+				}
 			}
 		}
 		return '';
@@ -457,7 +458,7 @@ class ORE_Volume extends ORE_Params {
 					$this->_messages[$key][] = $msg;
 				}
 			}
-			
+
 		}
 	}
 
@@ -480,6 +481,49 @@ class ORE_Volume extends ORE_Params {
 	 */
 	public function messages() {
 		return $this->_messages;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function message_string($glue = "\n") {
+		return $this->__string('messages', $glue);
+	}
+
+	/**
+	 * @param string $glue
+	 * @return mixed
+	 */
+	public function error_string($glue = "\n") {
+		return $this->__string('errors', $glue);
+	}
+
+	/**
+	 * @param $type
+	 * @param $glue
+	 * @return string
+	 * @throws \Exception
+	 */
+	public function __string($type, $glue) {
+
+		$key = '_'.$type;
+
+		if (! property_exists($this, $key)) {
+			throw new \Exception('key not found');
+		}
+
+		$arr = [];
+		foreach ($this->{$key} as $msg) {
+			if (is_array($msg)) {
+				foreach ($msg as $m) {
+					$arr[] = $m;
+				}
+			}
+			else {
+				$arr[] = $msg;
+			}
+		}
+		return implode($glue, $arr);
 	}
 
 	/**

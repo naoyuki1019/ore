@@ -44,7 +44,7 @@ class ORE_Params {
 		$type = gettype($params);
 		if ('array' === $type OR 'object' === $type) {
 			foreach ($params as $key => $val) {
-				$this->$key = $val;
+				$this->{$key} = $val;
 			}
 		}
 		return $this;

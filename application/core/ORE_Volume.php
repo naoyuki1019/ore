@@ -84,7 +84,7 @@ class ORE_Volume extends ORE_Params {
 					continue;
 				}
 
-				$this->$key = $val;
+				$this->{$key} = $val;
 			}
 		}
 
@@ -129,7 +129,12 @@ class ORE_Volume extends ORE_Params {
 	 * @param integer $page 明細ページング処理のページ番号
 	 */
 	public function set_page($page) {
-		if (preg_match('/^[1-9]\d*$/', $page)) $this->_page = $page;
+		if (preg_match('/^[1-9]\d*$/', $page)) {
+			$this->_page = $page;
+		}
+		else if (0 > $page) {
+			$this->_page = 1;
+		}
 	}
 
 	/**

@@ -238,7 +238,7 @@ class SC_Debug {
 //			log_message('debug', "\n".$arrTrace['0']."\n".print_r($var_name, true));
 
 			// VALX
-			VALX\logger::debug(print_r($var_name, true), 2);
+			\VALX\logger::debug(print_r($var_name, true), 2);
 		}
 		else {
 			// EC-CUBE2.1X
@@ -248,7 +248,7 @@ class SC_Debug {
 //			log_message('debug', "\n".$arrTrace['0']."\n{$var_name}=".print_r($var, true));
 
 			// VALX
-			VALX\logger::debug("{$var_name}=".print_r($var, true), 2);
+			\VALX\logger::debug("{$var_name}=".print_r($var, true), 2);
 		}
 	}
 

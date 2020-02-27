@@ -83,10 +83,12 @@ class ORE_ExecutionTime {
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
 
-		$o = new ORE_ExecutionTimeVolume();
-		$o->name = $name;
-		$o->start = self::_time();
-		self::$_arr[$name] = $o;
+		if (! array_key_exists($name, self::$_arr)) {
+			$o = new ORE_ExecutionTimeVolume();
+			$o->name = $name;
+			$o->start = self::_time();
+			self::$_arr[$name] = $o;
+		}
 	}
 
 	/**
@@ -98,9 +100,11 @@ class ORE_ExecutionTime {
 		if (TRUE !== self::$_ENABLE) return;
 
 		/** @var ORE_ExecutionTimeVolume $o */
-		$o = self::$_arr[$name];
-		$o->end = self::_time();
-		$o->time = $o->end - $o->start;
+		if (array_key_exists($name, self::$_arr)) {
+			$o = self::$_arr[$name];
+			$o->end = self::_time();
+			$o->time = $o->end - $o->start;
+		}
 	}
 
 	/**
@@ -130,6 +134,27 @@ class ORE_ExecutionTime {
 				echo "{$str}<br>";
 			}
 			echo '</div>';
+		}
+	}
+
+	/**
+	 *
+	 * @return void
+	 */
+	public static function LOG() {
+		self::_SET_ENABLE();
+		if (TRUE !== self::$_ENABLE) return;
+
+		if (! empty(self::$_arr)) {
+
+			$arr = [];
+			foreach (self::$_arr as $name => $o) {
+				/** @var ORE_ExecutionTimeVolume $o */
+				$str = "{$name}={$o->time}";
+				if (self::$threshold < $o->time) {}
+				$arr[] = $str;
+			}
+			\VALX\logger::info(implode("\n", $arr));
 		}
 	}
 

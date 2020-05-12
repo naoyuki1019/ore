@@ -21,7 +21,6 @@ class ORE_MemoryUsage {
 
 	private static $_ENABLE = NULL;
 	private static $_INSTANCE = NULL;
-	private static $_DESTRUCT_DUMP = FALSE;
 
 	/**
 	 *
@@ -106,15 +105,6 @@ class ORE_MemoryUsage {
 			}
 			echo implode('<br>', $tmp);
 			echo '</div>';
-		}
-	}
-
-	/**
-	 *
-	 */
-	function __destruct() {
-		if (true === self::$_DESTRUCT_DUMP) {
-			self::sfVardump();
 		}
 	}
 }

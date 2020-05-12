@@ -11,7 +11,6 @@ class SC_Debug {
 	private static $_DUMP = array();
 	private static $_ENABLE = NULL;
 	private static $_INSTANCE = NULL;
-	private static $_DESTRUCT_DUMP = FALSE;
 	private static $_CLEAN_PATH = NULL;
 	private static $_ROOT_PATH = "";
 
@@ -271,15 +270,6 @@ class SC_Debug {
 		}
 
 		return $tmp;
-	}
-
-	/**
-	 *
-	 */
-	function __destruct() {
-		if (true === self::$_DESTRUCT_DUMP) {
-			self::sfVardump();
-		}
 	}
 }
 

@@ -321,7 +321,7 @@ class ORE_Object_validation extends MY_Form_validation {
 	 * @param	field
 	 * @return	bool
 	 */
-	function matches($str, $field)
+	public function matches($str, $field)
 	{
 		if ( ! isset($this->_object->{$field}))
 		{

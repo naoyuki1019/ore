@@ -96,20 +96,35 @@ class ORE_Volume extends ORE_Params {
 	 */
 	public function find_fileds() {
 
-		if (TRUE === is_array($this->find_fileds)) {
-			if (! empty($this->find_fileds)) {
-				return implode(", ", $this->find_fileds);
-			}
-			return "*";
+		$type = gettype($this->find_fileds);
+
+		if ('array' === $type AND 0 === count($this->find_fileds)) {
+			return '*';
+		}
+		
+		if ('string' === $type AND '' === $this->find_fileds) {
+			return '*';
 		}
 
-		if ("" != $this->find_fileds) {
-			return $this->find_fileds;
-		}
-
-		return "*";
+		return $this->find_fileds;
 	}
 
+	/**
+	 * 真のgetter
+	 * @return string
+	 */
+	public function get_find_fileds() {
+		if (is_array($this->find_fileds) AND empty($this->find_fileds)) {
+			return '*';
+		}
+		
+		if ('' === $this->find_fileds) {
+			return '*';
+		}
+		
+		return $this->find_fileds;
+	}
+	
 	/**
 	 *
 	 */
@@ -228,10 +243,15 @@ class ORE_Volume extends ORE_Params {
 
 		if (is_array($this->_sort_key_allows)) {
 			if (array_key_exists($sort_key, $this->_sort_key_allows)) {
-				if (array_key_exists('query', $this->_sort_key_allows[$sort_key])) {
-					$query = $this->_sort_key_allows[$sort_key]['query'];
-					$query = str_replace('{sort_ud}', $sort_ud, $query);
-					return $query;
+				if (is_array($this->_sort_key_allows[$sort_key])) {
+					if (array_key_exists('query', $this->_sort_key_allows[$sort_key])) {
+						$query = $this->_sort_key_allows[$sort_key]['query'];
+						$query = str_replace('{sort_ud}', $sort_ud, $query);
+						return $query;
+					}
+				}
+				else {
+					return $this->_sort_key_allows[$sort_key];
 				}
 			}
 		}

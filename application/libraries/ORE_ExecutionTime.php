@@ -22,7 +22,6 @@ class ORE_ExecutionTime {
 
 	private static $_ENABLE = NULL;
 	private static $_INSTANCE = NULL;
-	private static $_DESTRUCT_DUMP = FALSE;
 
 	/**
 	 *
@@ -155,15 +154,6 @@ class ORE_ExecutionTime {
 				$arr[] = $str;
 			}
 			\VALX\logger::info(implode("\n", $arr));
-		}
-	}
-
-	/**
-	 *
-	 */
-	function __destruct() {
-		if (true === self::$_DESTRUCT_DUMP) {
-			self::sfVardump();
 		}
 	}
 }

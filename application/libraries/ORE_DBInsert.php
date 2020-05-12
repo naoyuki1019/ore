@@ -115,7 +115,7 @@ class ORE_DBInsert {
 			$query = "INSERT INTO {$this->table} (".implode(', ', $this->cols_header).') VALUES ';
 			$query .= implode(', ', $this->values).';';
 			$this->_exec($query);
-			$this->values = array();
+			$this->values = [];
 			$this->values_cnt = 0;
 			$this->echo_flush("処理済み:{$this->insert_cnt}件…<br>");
 		}

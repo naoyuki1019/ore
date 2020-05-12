@@ -729,4 +729,12 @@ class MY_Form_validation extends CI_Form_validation {
 		}
 		return true;
 	}
+
+	/**
+	 * @param $str
+	 * @return bool
+	 */
+	public function is_empty($str) { 
+		return (bool)('' === strval($str));
+	}
 }

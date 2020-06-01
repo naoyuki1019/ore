@@ -112,7 +112,8 @@ class ORE_DBInsert {
 		}
 
 		if (0 < $this->values_cnt) {
-			$query = "INSERT INTO {$this->table} (".implode(', ', $this->cols_header).') VALUES ';
+			$table = query_addslashes($this->table);
+			$query = "INSERT INTO {$table} (".implode(', ', $this->cols_header).') VALUES ';
 			$query .= implode(', ', $this->values).';';
 			$this->_exec($query);
 			$this->values = [];

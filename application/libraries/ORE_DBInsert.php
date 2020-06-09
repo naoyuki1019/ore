@@ -15,8 +15,8 @@ namespace ore;
 class ORE_DBInsert {
 
 	public $table = null;
-	public $cols_header = array();
-	public $values = array();
+	public $cols_header = [];
+	public $values = [];
 	public $values_cnt = 0;
 	public $insert_cnt = 0;
 	public $threshold = 3000;
@@ -26,7 +26,7 @@ class ORE_DBInsert {
 	 * @return array
 	 */
 	public function dataFormat() {
-		$data = array();
+		$data = [];
 		foreach($this->cols_header as $col_nm) {
 			$data[$col_nm] = '';
 		}
@@ -42,7 +42,7 @@ class ORE_DBInsert {
 		}
 		$this->insert_cnt++;
 		$this->values_cnt++;
-		$arr = array();
+		$arr = [];
 		foreach ($this->cols_header as $col_nm) {
 			if (TRUE !== array_key_exists($col_nm, $cols)) {
 				$msg = "Error: col_nm[{$col_nm}]が設定されていない";
@@ -55,8 +55,14 @@ class ORE_DBInsert {
 					$val = str_replace('"', '""', $val);
 				}
 				else {
-					$val = str_replace("'", "''", $val);
-					$val = str_replace("\\", "\\\\", $val);
+					// シングルコーテーションのエスケープ
+					$val = preg_replace('/([^\\\])\'/', '${1}\\\'', $val);
+					$val = preg_replace('/([^\\\])\'/', '${1}\\\'', $val);
+					$val = preg_replace('/^\'/', '\\\'', $val);
+
+					// ↓保留
+					// $val = str_replace("'", "''", $val);
+					// $val = str_replace("\\", "\\\\", $val);
 				}
 			}
 			$arr[] = $val;

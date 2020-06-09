@@ -16,18 +16,18 @@ namespace ore;
 class ORE_ZipBarcode {
 
 	protected $_debug = false;
-	protected $_zip = array();
+	protected $_zip = [];
 	protected $_zip_org = null;
 	protected $_addr = null;
 	protected $_addr_org = null;
-	protected $_addr_arr = array();
+	protected $_addr_arr = [];
 	protected $_digit = null;
 	protected $_digit_sum = null;
-	protected $_code_extracted = array();
-	protected $_code_cc_20 = array();
-	protected $_code_cc_comp = array();
-	protected $_code_font = array();
-	protected $_sum = array();
+	protected $_code_extracted = [];
+	protected $_code_cc_20 = [];
+	protected $_code_cc_comp = [];
+	protected $_code_font = [];
+	protected $_sum = [];
 
 	public function code_extracted() {
 		return $this->_code_extracted;
@@ -224,7 +224,7 @@ class ORE_ZipBarcode {
 		$addr = preg_replace('/\s+/', '', $addr);
 		foreach ($arr_sufix as $sufix) {
 			$pattern = "/({$kansuji})+{$sufix}/";
-			$matches = array();
+			$matches = [];
 			preg_match_all($pattern, $addr, $matches);
 			foreach ($matches as $matche) {
 				foreach ($matche as $search) {
@@ -250,7 +250,7 @@ class ORE_ZipBarcode {
 		}
 
 		$ALFA = static::ALFA();
-		$code_cc_20 = array();
+		$code_cc_20 = [];
 		foreach ($code_extracted as $i => $code) {
 			if (array_key_exists($code, $ALFA)) {
 				$code_cc_20[] = $ALFA[$code]['c'];
@@ -344,7 +344,7 @@ class ORE_ZipBarcode {
 
 		$CC = static::CC();
 		$ALFA = static::ALFA();
-		$digit_arr = array();
+		$digit_arr = [];
 		foreach ($code_cc_20 as $i => $code) {
 			if (preg_match('/^[0-9]$/', $code)) {
 				$digit_arr[] = $code;
@@ -444,7 +444,7 @@ class ORE_ZipBarcode {
 	 */
 	public static function mb_split($str) {
 		$strlen = mb_strlen($str);
-		$arr = array();
+		$arr = [];
 		for ($i = 0; $i < $strlen; $i++) {
 			$arr[] = mb_substr($str, $i, 1);
 		}

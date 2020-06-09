@@ -43,25 +43,25 @@ class ORE_HttpPost {
 	 *
 	 * @var array
 	 */
-	protected $_header_list = array();
+	protected $_header_list = [];
 
 	/**
 	 *
 	 * @var array
 	 */
-	protected $_file_list = array();
+	protected $_file_list = [];
 
 	/**
 	 *
 	 * @var array
 	 */
-	protected $_text_list = array();
+	protected $_text_list = [];
 
 	/**
 	 *
 	 * @var array
 	 */
-	protected $_errors = array();
+	protected $_errors = [];
 
 
 	/**
@@ -80,10 +80,10 @@ class ORE_HttpPost {
 		$this->_boundary = "---------------------" . substr(md5(rand(0, 32000)), 0, 15);
 		$this->_default_socket_timeout = ini_get('default_socket_timeout');
 		$this->_socket_timeout = $this->_default_socket_timeout;
-		$this->_header_list = array();
-		$this->_file_list = array();
-		$this->_text_list = array();
-		$this->_errors = array();
+		$this->_header_list = [];
+		$this->_file_list = [];
+		$this->_text_list = [];
+		$this->_errors = [];
 	}
 
 
@@ -283,7 +283,7 @@ class ORE_HttpPost {
 	 */
 	protected function _make_content() {
 
-		$content = array();
+		$content = [];
 
 		foreach ($this->_text_list as $text_dict) {
 			$this->_make_content_add_text($content, $text_dict);

@@ -15,7 +15,7 @@ namespace ore;
  */
 class ORE_Array {
 
-	protected $_array = array();
+	protected $_array = [];
 
 	/**
 	 * @var bool __setにて存在しないkey値を追加するかどうか

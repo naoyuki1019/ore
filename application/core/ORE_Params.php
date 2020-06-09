@@ -32,7 +32,7 @@ class ORE_Params {
 	 *
 	 * @param array $params
 	 */
-	public function __construct($params = array()) {
+	public function __construct($params = []) {
 
 		$this->set($params);
 	}
@@ -40,7 +40,7 @@ class ORE_Params {
 	/**
 	 * @param array $params
 	 */
-	public function set($params = array()) {
+	public function set($params = []) {
 		$type = gettype($params);
 		if ('array' === $type OR 'object' === $type) {
 			foreach ($params as $key => $val) {
@@ -54,7 +54,7 @@ class ORE_Params {
 	 * @return array
 	 */
 	public function to_array() {
-		$tmp = array();
+		$tmp = [];
         $array = get_object_vars($this);
 		$this->_to_array($tmp, $array);
 		return $tmp;
@@ -64,7 +64,7 @@ class ORE_Params {
 	 * @return array
 	 */
 	public function to_public_array() {
-		$tmp = array();
+		$tmp = [];
 		$array = get_object_public_vars($this);
 		$this->_to_array($tmp, $array);
 		return $tmp;
@@ -82,14 +82,14 @@ class ORE_Params {
 
 				if (is_array($val)) {
 
-					$tmp[$key] = array();
+					$tmp[$key] = [];
 					$this->_to_array($tmp[$key], $val);
 				}
 
 				else if (is_object($val)) {
 
 					$val = get_object_vars($val);
-					$tmp[$key] = array();
+					$tmp[$key] = [];
 					$this->_to_array($tmp[$key], $val);
 				}
 
@@ -105,19 +105,19 @@ class ORE_Params {
 	 * @param array $remove_keys
 	 * @return string
 	 */
-	public function to_uri($remove_keys = array(), $public=false) {
+	public function to_uri($remove_keys = [], $public=false) {
 
 		if (! is_array($remove_keys)) {
 			if ('' === strval($remove_keys)) {
-				$remove_keys = array();
+				$remove_keys = [];
 			}
 			else {
 				$remove_keys = array($remove_keys);
 			}
 		}
 
-		$keys = array();
-		$tmp = array();
+		$keys = [];
+		$tmp = [];
 		if (TRUE === $public) {
 			$array = $this->to_public_array();
 		}
@@ -192,16 +192,14 @@ class ORE_Params {
 	 * @param array $pointing_keys
 	 * @return string
 	 */
-	public function to_pointing_uri($pointing_keys = array()) {
+	public function to_pointing_uri($pointing_keys = []) {
 
 		if (! is_array($pointing_keys)) {
 			$pointing_keys = array($pointing_keys);
 		}
 
-		$array = $this->to_array();
-
-		$keys = array();
-		$tmp = array();
+		$keys = [];
+		$tmp = [];
 		$array = $this->to_array();
 		foreach ($array as $key => $val) {
 			if (! in_array($key, $pointing_keys)) {

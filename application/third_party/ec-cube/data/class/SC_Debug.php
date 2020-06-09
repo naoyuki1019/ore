@@ -8,7 +8,7 @@
  */
 class SC_Debug {
 
-	private static $_DUMP = array();
+	private static $_DUMP = [];
 	private static $_ENABLE = NULL;
 	private static $_INSTANCE = NULL;
 	private static $_CLEAN_PATH = NULL;
@@ -190,7 +190,7 @@ class SC_Debug {
 	 * @return multitype:
 	 */
 	public static function getTraceArray() {
-		$arrTrace = array();
+		$arrTrace = [];
 
 		$debug_backtrace = debug_backtrace();
 

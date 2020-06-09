@@ -17,7 +17,7 @@ class ORE_ExecutionTime {
 	/**
 	 * @var array
 	 */
-	protected static $_arr = array();
+	protected static $_arr = [];
 	public static $threshold = 0.1;
 
 	private static $_ENABLE = NULL;

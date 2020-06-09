@@ -19,7 +19,7 @@ class ORE_Volume extends ORE_Params {
 
 	public $debug = 0;
 	public $find_fileds = '*';
-	public $entries = array();
+	public $entries = [];
 	public $entry = null;
 	public $data = null;
 
@@ -28,33 +28,33 @@ class ORE_Volume extends ORE_Params {
 	protected $_total = 0;
 	protected $_sort_ud = 'asc';
 	protected $_sort_key = 1;
-	protected $_sort_key_allows = array(
-		1 => array(
+	protected $_sort_key_allows = [
+		1 => [
 			'label' => '登録日時',
 			'query' => 'created {sort_ud}',
-		),
-		2 => array(
+		],
+		2 => [
 			'label' => '更新日時',
 			'query' => 'modified {sort_ud}',
-		),
-	);
+		],
+	];
 
-	protected $_errors = array();
-	protected $_messages = array();
+	protected $_errors = [];
+	protected $_messages = [];
 
 	/**
 	 * ORE_Volume constructor.
 	 *
 	 * @param array $params
 	 */
-	public function __construct($params = array()) {
+	public function __construct($params = []) {
 		parent::__construct($params);
 	}
 
 	/**
 	 * @param array $params
 	 */
-	public function set($params = array()) {
+	public function set($params = []) {
 
 		$type = gettype($params);
 		if ('array' === $type OR 'object' === $type) {
@@ -265,7 +265,7 @@ class ORE_Volume extends ORE_Params {
 	 */
 	public function set_sort_key($sort_key, $sort_ud = null) {
 		$bk = $this->_sort_key;
-		$this->_sort_key = array();
+		$this->_sort_key = [];
 		$this->add_sort_key($sort_key, $sort_ud);
 		if ((TRUE !== is_object($this->_sort_key) AND TRUE !== is_array($this->_sort_key) AND '' !== strval($this->_sort_key))
 			OR (TRUE === is_array($this->_sort_key) AND 0 < count($this->_sort_key))) {
@@ -340,7 +340,7 @@ class ORE_Volume extends ORE_Params {
 					$sort_ud = 'asc';
 				}
 				if (! is_array($this->_sort_key)) {
-					$this->_sort_key = array();
+					$this->_sort_key = [];
 				}
 				$this->_sort_key[$sort_key] = $sort_ud;
 			}
@@ -408,7 +408,7 @@ class ORE_Volume extends ORE_Params {
 		else {
 			if (is_array($msg) AND ! empty($msg)) {
 				if (! array_key_exists($key, $this->_errors)) {
-					$this->_errors[$key] = array();
+					$this->_errors[$key] = [];
 				}
 				foreach ($msg as $m) {
 					if (! in_array($m, $this->_errors[$key])) {
@@ -421,7 +421,7 @@ class ORE_Volume extends ORE_Params {
 					$msg = 'error';
 				}
 				if (! array_key_exists($key, $this->_errors)) {
-					$this->_errors[$key] = array();
+					$this->_errors[$key] = [];
 				}
 				if (! in_array($msg, $this->_errors[$key])) {
 					$this->_errors[$key][] = $msg;
@@ -464,7 +464,7 @@ class ORE_Volume extends ORE_Params {
 		else {
 			if (is_array($msg) AND ! empty($msg)) {
 				if (! array_key_exists($key, $this->_messages)) {
-					$this->_messages[$key] = array();
+					$this->_messages[$key] = [];
 				}
 				foreach ($msg as $m) {
 					if (! in_array($m, $this->_messages[$key])) {
@@ -477,7 +477,7 @@ class ORE_Volume extends ORE_Params {
 					$msg = 'message';
 				}
 				if (! array_key_exists($key, $this->_messages)) {
-					$this->_messages[$key] = array();
+					$this->_messages[$key] = [];
 				}
 				if (! in_array($msg, $this->_messages[$key])) {
 					$this->_messages[$key][] = $msg;
@@ -556,7 +556,7 @@ class ORE_Volume extends ORE_Params {
 	 *
 	 * @var array
 	 */
-	public $where_add_raws = array();
+	public $where_add_raws = [];
 	public $arr_key = '';
 	public $arr_label = '';
 	public $arr_label_sufix = '';

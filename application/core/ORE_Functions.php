@@ -94,7 +94,7 @@ if (! function_exists('generateTreeName')) {
 		}
 
 		$min_depth = null;
-		$last = array();
+		$last = [];
 		foreach ($vo->entries as & $r) {
 			if (true === $is_array) {
 				$r = (object)$r;
@@ -116,7 +116,7 @@ if (! function_exists('generateTreeName')) {
 			}
 		}
 
-		$prefix = array();
+		$prefix = [];
 		foreach ($vo->entries as & $r) {
 			if (true === $is_array) {
 				$r = (object)$r;

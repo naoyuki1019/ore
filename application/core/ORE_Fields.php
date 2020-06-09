@@ -18,7 +18,7 @@ class ORE_Fields extends ORE_Params {
 	/**
 	 * @param array $params
 	 */
-	public function set($params = array()) {
+	public function set($params = []) {
 
 		if ('array' === gettype($params)) {
 			if(0 === count($params)) return;
@@ -42,7 +42,7 @@ class ORE_Fields extends ORE_Params {
 	/**
 	 * @var array
 	 */
-	protected $_blank_to_null_fields = array();
+	protected $_blank_to_null_fields = [];
 
 	/**
 	 * @param $filed_nm
@@ -76,7 +76,7 @@ class ORE_Fields extends ORE_Params {
 			$params = (object)$params;
 		}
 
-		$data = array();
+		$data = [];
 		$public_vars = get_class_public_vars(get_class($this));
 		foreach ($public_vars as $key => $default) {
 			$param_key = $param_key_prefix.$key;

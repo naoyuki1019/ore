@@ -27,7 +27,7 @@ class ORE_ImageUtil {
 		$dest = escapeshellarg($dest);
 		$org_path = escapeshellarg($o->org_path);
 		$command = "jpegoptim --strip-all --max={$o->quality_optim} --dest={$dest} -o {$org_path}";
-		$output = array();
+		$output = [];
 		$ret = null;
 		@exec($command, $output, $ret);
 		if ('0' !== strval($ret)) {

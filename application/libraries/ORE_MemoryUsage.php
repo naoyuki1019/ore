@@ -17,7 +17,7 @@ class ORE_MemoryUsage {
 	/**
 	 * @var array
 	 */
-	protected static $_arr = array();
+	protected static $_arr = [];
 
 	private static $_ENABLE = NULL;
 	private static $_INSTANCE = NULL;
@@ -97,7 +97,7 @@ class ORE_MemoryUsage {
 		if (! empty(self::$_arr)) {
 			echo '<div style="background-color:white;margin:20px 0;width:100%;overflow-x:scroll;" class="ore_memoryusage">';
 			echo '<div>メモリー使用量</div>';
-			$tmp = array();
+			$tmp = [];
 			foreach (self::$_arr as $o) {
 				/** @var ORE_MemoryUsageVolume $o */
 				$usage = round($o->usage / pow(1024, 2)).'MB';

@@ -55,7 +55,7 @@ exit 0
 	 *
 	 * @var array
 	 */
-	protected $_files = array();
+	protected $_files = [];
 
 	/**
 	 * @param $local_path
@@ -79,7 +79,7 @@ exit 0
 	 *
 	 * @param $msg
 	 */
-	protected $_messages = array();
+	protected $_messages = [];
 
 	protected function _set_message($msg) {
 		if (TRUE === $this->echo) {
@@ -167,7 +167,7 @@ exit 0
 		$command_log = "/bin/bash {$sh_path} {$host} {$port} #uid# #pass#";
 		$this->_set_message("<div>コマンド実行: {$command_log}</div>");
 
-		$output = array();
+		$output = [];
 		$ret = null;
 		exec($command, $output, $ret);
 		$ret = strval($ret);
@@ -225,12 +225,12 @@ exit 0
 	 * @return string
 	 */
 	protected function _make_ftp_commands($files) {
-		$puts = array();
-        $remote_dirs = array();
+		$puts = [];
+        $remote_dirs = [];
 		foreach($files as $arr) {
 
 			$cnt = mb_substr_count($arr['remote_path'], '/');
-			$dirs = array();
+			$dirs = [];
 			$dir = $arr['remote_path'];
 			for ($i = 1; $i < $cnt; $i++) {
 				$dir = dirname($dir);

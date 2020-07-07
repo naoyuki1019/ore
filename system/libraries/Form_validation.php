@@ -130,7 +130,7 @@ class CI_Form_validation {
 	 */
 	public function __construct($rules = array())
 	{
-//		$this->CI =& get_instance();
+		// $this->CI =& get_instance();
 		$this->CI = new ORE_CI();
 		$this->CI->lang = new CI_Lang();
 
@@ -149,10 +149,10 @@ class CI_Form_validation {
 		// Validation rules can be stored in a config file.
 		$this->_config_rules = $rules;
 
-		// Automatically load the form helper
-//		$this->CI->load->helper('form');
+		// // Automatically load the form helper
+		// $this->CI->load->helper('form');
 
-//		log_message('info', 'Form Validation Class Initialized');
+		// log_message('info', 'Form Validation Class Initialized');
 	}
 
 	// --------------------------------------------------------------------
@@ -170,12 +170,12 @@ class CI_Form_validation {
 	 */
 	public function set_rules($field, $label = '', $rules = '')
 	{
-		// No reason to set rules if we have no POST data
-		// or a validation array has not been specified
-//		if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
-//		{
-//			return $this;
-//		}
+		// // No reason to set rules if we have no POST data
+		// // or a validation array has not been specified
+		// if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
+		// {
+		// 	return $this;
+		// }
 
 		// If an array was passed via the first parameter instead of individual string
 		// values we cycle through it and recursively call this function.
@@ -432,17 +432,17 @@ class CI_Form_validation {
 				return FALSE;
 			}
 
-//			// Is there a validation rule for the particular URI being accessed?
-//			$uri = ($group === '') ? trim($this->CI->uri->ruri_string(), '/') : $group;
-//
-//			if ($uri !== '' && isset($this->_config_rules[$uri]))
-//			{
-//				$this->set_rules($this->_config_rules[$uri]);
-//			}
-//			else
-//			{
+			// // Is there a validation rule for the particular URI being accessed?
+			// $uri = ($group === '') ? trim($this->CI->uri->ruri_string(), '/') : $group;
+			//
+			// if ($uri !== '' && isset($this->_config_rules[$uri]))
+			// {
+			// 	$this->set_rules($this->_config_rules[$uri]);
+			// }
+			// else
+			// {
 				$this->set_rules($this->_config_rules);
-//			}
+			// }
 
 			// Were we able to set the rules correctly?
 			if (count($this->_field_data) === 0)
@@ -599,16 +599,16 @@ class CI_Form_validation {
 			return;
 		}
 		else {
-//			if ( ! in_array('isset', $rules))
-//			{
-//				if (is_null($postdata)) {
-//					return ;
-//				}
-//
-//				if ( ! in_array('required', $rules) AND $postdata == "") {
-//					return ;
-//				}
-//			}
+			// if ( ! in_array('isset', $rules))
+			// {
+			// 	if (is_null($postdata)) {
+			// 		return ;
+			// 	}
+			//
+			// 	if ( ! in_array('required', $rules) AND $postdata == "") {
+			// 		return ;
+			// 	}
+			// }
 		}
 
 		// If the field is blank, but NOT required, no further tests are necessary
@@ -648,7 +648,7 @@ class CI_Form_validation {
 			if ($err_isset OR $err_required) {
 
 				// Set the message type
-//				$type = in_array('required', $rules) ? 'required' : 'isset';
+				// $type = in_array('required', $rules) ? 'required' : 'isset';
 				$type = ($err_isset) ? 'isset' : 'required';
 
 				if (isset($this->_error_messages[$type]))
@@ -783,9 +783,9 @@ class CI_Form_validation {
 						}
 					}
 					else {
-//						log_message('debug', 'Unable to find validation rule: '.$rule);
+						// log_message('debug', 'Unable to find validation rule: '.$rule);
+						// $result = FALSE;
 						throw new \Exception('Unable to find validation rule: '.$rule);
-//						$result = FALSE;
 					}
 				}
 			}
@@ -1204,6 +1204,7 @@ class CI_Form_validation {
 	 */
 	public function valid_url($str)
 	{
+		$matches = [];
 		if (empty($str))
 		{
 			return FALSE;

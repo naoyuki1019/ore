@@ -31,7 +31,7 @@ class ORE_Validation {
 		return (bool) preg_match($regex, $str);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Minimum Length
@@ -56,7 +56,7 @@ class ORE_Validation {
 			: ($val <= strlen($str));
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Max Length
@@ -81,7 +81,7 @@ class ORE_Validation {
 			: ($val >= strlen($str));
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Exact Length
@@ -106,7 +106,7 @@ class ORE_Validation {
 			: (strlen($str) === $val);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Valid URL
@@ -116,7 +116,7 @@ class ORE_Validation {
 	 */
 	public static function valid_url($str)
 	{
-		$matches = array();
+		$matches = [];
 		if (empty($str))
 		{
 			return FALSE;
@@ -137,9 +137,9 @@ class ORE_Validation {
 
 		$str = 'http://'.$str;
 
-// There's a bug affecting PHP 5.2.13, 5.3.2 that considers the
-// underscore to be a valid hostname character instead of a dash.
-// Reference: https://bugs.php.net/bug.php?id=51192
+		// There's a bug affecting PHP 5.2.13, 5.3.2 that considers the
+		// underscore to be a valid hostname character instead of a dash.
+		// Reference: https://bugs.php.net/bug.php?id=51192
 		if (version_compare(PHP_VERSION, '5.2.13', '==') === 0 OR version_compare(PHP_VERSION, '5.3.2', '==') === 0)
 		{
 			sscanf($str, 'http://%[^/]', $host);
@@ -149,7 +149,7 @@ class ORE_Validation {
 		return (filter_var($str, FILTER_VALIDATE_URL) !== FALSE);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Valid Email
@@ -162,7 +162,7 @@ class ORE_Validation {
 		return (bool) filter_var($str, FILTER_VALIDATE_EMAIL);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Valid Emails
@@ -188,7 +188,7 @@ class ORE_Validation {
 		return TRUE;
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Alpha
@@ -201,7 +201,7 @@ class ORE_Validation {
 		return ctype_alpha($str);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Alpha-numeric
@@ -214,7 +214,7 @@ class ORE_Validation {
 		return ctype_alnum((string) $str);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Alpha-numeric w/ spaces
@@ -227,7 +227,7 @@ class ORE_Validation {
 		return (bool) preg_match('/^[A-Z0-9 ]+$/i', $str);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Alpha-numeric with underscores and dashes
@@ -240,7 +240,7 @@ class ORE_Validation {
 		return (bool) preg_match('/^[a-z0-9_-]+$/i', $str);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Numeric
@@ -254,7 +254,7 @@ class ORE_Validation {
 
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Integer
@@ -267,7 +267,7 @@ class ORE_Validation {
 		return (bool) preg_match('/^[\-+]?[0-9]+$/', $str);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Decimal number
@@ -280,7 +280,7 @@ class ORE_Validation {
 		return (bool) preg_match('/^[\-+]?[0-9]+\.[0-9]+$/', $str);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Greater than
@@ -294,7 +294,7 @@ class ORE_Validation {
 		return is_numeric($str) ? ($str > $min) : FALSE;
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Equal to or Greater than
@@ -308,7 +308,7 @@ class ORE_Validation {
 		return is_numeric($str) ? ($str >= $min) : FALSE;
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Less than
@@ -322,7 +322,7 @@ class ORE_Validation {
 		return is_numeric($str) ? ($str < $max) : FALSE;
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Equal to or Less than
@@ -336,7 +336,7 @@ class ORE_Validation {
 		return is_numeric($str) ? ($str <= $max) : FALSE;
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Is a Natural number	(0,1,2,3, etc.)
@@ -349,7 +349,7 @@ class ORE_Validation {
 		return ctype_digit((string) $str);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Is a Natural number, but not a zero	(1,2,3, etc.)
@@ -362,7 +362,7 @@ class ORE_Validation {
 		return ($str != 0 && ctype_digit((string) $str));
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Valid Base64
@@ -378,7 +378,7 @@ class ORE_Validation {
 		return (base64_encode(base64_decode($str)) === $str);
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Prep URL
@@ -401,7 +401,7 @@ class ORE_Validation {
 		return $str;
 	}
 
-// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Convert PHP tags to entities
@@ -424,7 +424,7 @@ class ORE_Validation {
 	public static function required($str) {
 
 		if (is_array($str)) {
-			return ( ! empty($str));
+			return (! empty($str));
 		}
 
 		else {
@@ -483,10 +483,15 @@ class ORE_Validation {
 	 * 日付の妥当性チェック
 	 * @param string $date yyyy/mm/dd
 	 */
-	public static function is_date($date) {
+	public static function is_date($date, $checkdate = 1) {
 		if (preg_match("/^\d{4}\/\d{2}\/\d{2}$/", $date)
 			OR preg_match("/^\d{4}\-\d{2}\-\d{2}$/", $date)) {
-			return checkdate(substr($date ,5 ,2), substr($date ,8 ,2), substr($date ,0 ,4));
+			if (1 == $checkdate) {
+				return checkdate(substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4));
+			}
+			else {
+				return TRUE;
+			}
 		}
 		return FALSE;
 	}
@@ -494,13 +499,18 @@ class ORE_Validation {
 
 	/**
 	 * 日時の妥当性チェック
+	 *
 	 * @param string $date yyyy/mm/dd hh:mm:ss
 	 */
-	public static function is_datetime($datetime) {
-
+	public static function is_datetime($datetime, $checkdate = 1) {
 		if (preg_match("/^\d{4}\/\d{2}\/\d{2}\ ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $datetime)
 			OR preg_match("/^\d{4}\-\d{2}\-\d{2}\ ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $datetime)) {
-			return checkdate(substr($datetime ,5 ,2), substr($datetime ,8 ,2), substr($datetime ,0 ,4));
+			if (1 == $checkdate) {
+				return checkdate(substr($datetime, 5, 2), substr($datetime, 8, 2), substr($datetime, 0, 4));
+			}
+			else {
+				return TRUE;
+			}
 		}
 		return FALSE;
 	}
@@ -577,9 +587,9 @@ class ORE_Validation {
 	public static function valid_phone($str) {
 
 		if ('' == $str) {
-
 			return TRUE;
 		}
+
 		return ( ! preg_match("/^\d{2,5}[-]?\d{1,4}[-]?\d{1,4}$/", $str)) ? FALSE : TRUE;
 		//return ( ! preg_match("/^\d{2,5}\-\d{1,4}\-\d{1,4}$/", $str)) ? FALSE : TRUE;
 	}

@@ -96,35 +96,19 @@ class ORE_Volume extends ORE_Params {
 	 */
 	public function find_fileds() {
 
-		$type = gettype($this->find_fileds);
-
-		if ('array' === $type AND 0 === count($this->find_fileds)) {
-			return '*';
-		}
-		
-		if ('string' === $type AND '' === $this->find_fileds) {
-			return '*';
-		}
-
-		return $this->find_fileds;
-	}
-
-	/**
-	 * 真のgetter
-	 * @return string
-	 */
-	public function get_find_fileds() {
-		if (is_array($this->find_fileds) AND empty($this->find_fileds)) {
-			return '*';
-		}
-		
-		if ('' === $this->find_fileds) {
-			return '*';
-		}
+		// $type = gettype($this->find_fileds);
+		//
+		// if ('array' === $type AND 0 === count($this->find_fileds)) {
+		// 	return '*';
+		// }
+		//
+		// if ('string' === $type AND '' === $this->find_fileds) {
+		// 	return '*';
+		// }
 		
 		return $this->find_fileds;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -556,7 +540,6 @@ class ORE_Volume extends ORE_Params {
 	 *
 	 * @var array
 	 */
-	public $where_add_raws = [];
 	public $arr_key = '';
 	public $arr_label = '';
 	public $arr_label_sufix = '';

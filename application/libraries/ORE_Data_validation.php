@@ -14,7 +14,7 @@ namespace ore;
  */
 class ORE_Data_validation extends MY_Form_validation {
 
-	private $_data_array = array();
+	private $_data_array = [];
 
 	/**
 	 *
@@ -47,12 +47,12 @@ class ORE_Data_validation extends MY_Form_validation {
 	 */
 	public function set_rules($field, $label = '', $rules = '')
 	{
-		// No reason to set rules if we have no POST data
-		// or a validation array has not been specified
-//		if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
-//		{
-//			return $this;
-//		}
+		// // No reason to set rules if we have no POST data
+		// // or a validation array has not been specified
+		// if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
+		// {
+		// 	return $this;
+		// }
 
 		// If an array was passed via the first parameter instead of individual string
 		// values we cycle through it and recursively call this function.
@@ -93,7 +93,7 @@ class ORE_Data_validation extends MY_Form_validation {
 
 		// Is the field name an array? If it is an array, we break it apart
 		// into its components so that we can fetch the corresponding POST data later
-		$indexes = array();
+		$indexes = [];
 		if (preg_match_all('/\[(.*?)\]/', $field, $matches))
 		{
 			sscanf($field, '%[^[][', $indexes[0]);
@@ -156,17 +156,17 @@ class ORE_Data_validation extends MY_Form_validation {
 				return FALSE;
 			}
 
-//			// Is there a validation rule for the particular URI being accessed?
-//			$uri = ($group === '') ? trim($this->CI->uri->ruri_string(), '/') : $group;
-//
-//			if ($uri !== '' && isset($this->_config_rules[$uri]))
-//			{
-//				$this->set_rules($this->_config_rules[$uri]);
-//			}
-//			else
-//			{
+			// // Is there a validation rule for the particular URI being accessed?
+			// $uri = ($group === '') ? trim($this->CI->uri->ruri_string(), '/') : $group;
+			//
+			// if ($uri !== '' && isset($this->_config_rules[$uri]))
+			// {
+			// 	$this->set_rules($this->_config_rules[$uri]);
+			// }
+			// else
+			// {
 				$this->set_rules($this->_config_rules);
-//			}
+			// }
 
 			// Were we able to set the rules correctly?
 			if (count($this->_field_data) === 0)
@@ -262,7 +262,7 @@ class ORE_Data_validation extends MY_Form_validation {
 
 					if (is_array($row['postdata']))
 					{
-						$array = array();
+						$array = [];
 						foreach ($row['postdata'] as $k => $v)
 						{
 							$array[$k] = $v;

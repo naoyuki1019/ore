@@ -82,7 +82,7 @@ exit 0
 	protected $_messages = [];
 
 	protected function _set_message($msg) {
-		if (TRUE === $this->echo) {
+		if ($this->echo) {
 			echo($msg);
 		}
 		if (TRUE === $this->flush) {

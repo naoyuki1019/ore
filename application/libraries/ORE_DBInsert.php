@@ -20,7 +20,38 @@ class ORE_DBInsert {
 	public $values_cnt = 0;
 	public $insert_cnt = 0;
 	public $threshold = 3000;
-	public $echo = false;
+	public $echo = 0;
+
+	protected function _exec($statement) {}
+
+	public function begin($option = null) {}
+
+	public function commit($option = null) {}
+
+	public function rollback($option = null) {}
+
+	/**
+	 * 記号の前にバックスラッシュを付ける
+	 * 
+	 * @param $str
+	 * @param $symbol
+	 * @return string|string[]|null
+	 */
+	protected function _escape_symbol($str, $symbol) {
+		$str = preg_replace('/([^\\\])'.$symbol.'/', '${1}\\'.$symbol, $str);
+		$str = preg_replace('/([^\\\])'.$symbol.'/', '${1}\\'.$symbol, $str);
+		$str = preg_replace('/^'.$symbol.'/', '\\'.$symbol, $str);
+		return $str;
+	}
+
+	/**
+	 * @see https://www.php.net/manual/en/function.mysql-real-escape-string.php
+	 * @param $str
+	 * @return array|string|string[]
+	 */
+	protected function _escape_string($str) {
+		return str_replace(['\\', "\0", "\n", "\r", "'", '"', "\x1a"], ['\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'], $str);
+	}
 
 	/**
 	 * @return array
@@ -52,17 +83,10 @@ class ORE_DBInsert {
 			$val = $cols[$col_nm];
 			if (! is_null($val)) {
 				if (! is_null($this->tsv_option)) {
-					$val = str_replace('"', '""', $val);
+					$val = $this->_escape_symbol($val, '"');
 				}
 				else {
-					// シングルコーテーションのエスケープ
-					$val = preg_replace('/([^\\\])\'/', '${1}\\\'', $val);
-					$val = preg_replace('/([^\\\])\'/', '${1}\\\'', $val);
-					$val = preg_replace('/^\'/', '\\\'', $val);
-
-					// ↓保留
-					// $val = str_replace("'", "''", $val);
-					// $val = str_replace("\\", "\\\\", $val);
+					$val = $this->_escape_string($val);
 				}
 			}
 			$arr[] = $val;
@@ -80,12 +104,12 @@ class ORE_DBInsert {
 			@fputs($this->tsv_option->handle, $row."\n");
 		}
 		else {
-			foreach ($arr as & $val) {
+			foreach ($arr as $i => $val) {
 				if (is_null($val)) {
-					$val = 'NULL';
+					$arr[$i] = 'NULL';
 				}
 				else {
-					$val = "'{$val}'";
+					$arr[$i] = "'".$val."'";
 				}
 			}
 			$str = '('.implode(',', $arr).')';
@@ -118,10 +142,10 @@ class ORE_DBInsert {
 		}
 
 		if (0 < $this->values_cnt) {
-			$table = query_addslashes($this->table);
-			$query = "INSERT INTO {$table} (".implode(', ', $this->cols_header).') VALUES ';
-			$query .= implode(', ', $this->values).';';
-			$this->_exec($query);
+			$table = $this->_escape_string($this->table);
+			$statement = "INSERT INTO {$table} (".implode(', ', $this->cols_header).') VALUES ';
+			$statement .= implode(', ', $this->values).';';
+			$this->_exec($statement);
 			$this->values = [];
 			$this->values_cnt = 0;
 			$this->echo_flush("処理済み:{$this->insert_cnt}件…<br>");
@@ -132,20 +156,12 @@ class ORE_DBInsert {
 	 * @param $str
 	 */
 	protected function echo_flush($str) {
-		if (0 < ob_get_level() AND true === $this->echo) {
+		if (0 < ob_get_level() AND $this->echo) {
 			echo $str;
 			ob_flush();
 			flush();
 		}
 	}
-
-	protected function _exec($query) {}
-
-	public function begin($option = null) {}
-
-	public function commit($option = null) {}
-
-	public function rollback($option = null) {}
 
 	public $tsv_handle = null;
 	public $tsv_option = null;
@@ -167,7 +183,7 @@ class ORE_DBInsert {
 			throw new \Exception($msg);
 		}
 
-		$arr = str_replace('"', '""', $this->cols_header);
+		$arr = $this->_escape_symbol($this->cols_header, '"');
 		$row = '"'.implode('"'."\t".'"', $arr).'"';
 		@fputs($this->tsv_option->handle, $row."\n");
 	}

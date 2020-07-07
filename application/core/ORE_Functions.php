@@ -2,6 +2,8 @@
 
 if (! function_exists('mb_trim')) {
 	/**
+	 * UTF-8の文字列の両端の半角空白、全角空白、タブを削除する
+	 * 
 	 * @param $string
 	 * @return string
 	 */
@@ -51,12 +53,12 @@ if (! function_exists('isNULL')) {
 				return isNULL($val->{$key});
 			}
 			if (method_exists($val, '__get')) {
-//            try {
-				return isNULL($val->{$key});
-//            }
-//            catch (\Exception $e) {
-//                return true;
-//            }
+				// try {
+					return isNULL($val->{$key});
+				// }
+				// catch (\Exception $e) {
+				// 	return true;
+				// }
 			}
 			return true;
 		}
@@ -80,7 +82,7 @@ if (! function_exists('generateTreeName')) {
 
 		if (1 != $vo->tree_name_generate) return;
 
-		if (isNULL($vo, 'tree_key')) $vo->tree_key = 'tree_id';
+		if (isNULL($vo, 'tree_key')) $vo->tree_key = 'id';
 		if (isNULL($vo, 'tree_parent_id')) $vo->tree_parent_id = 'parent_id';
 		if (isNULL($vo, 'tree_label')) $vo->tree_label = 'label';
 		if (isNULL($vo, 'tree_depth')) $vo->tree_depth = 'depth';
@@ -122,7 +124,7 @@ if (! function_exists('generateTreeName')) {
 				$r = (object)$r;
 			}
 			$depth = $r->{$vo->tree_depth};
-			$parent_id = $r->parent_id;
+			$parent_id = $r->{$vo->tree_parent_id};
 
 			// 子供が存在する場合で且つ最小のdepthではない
 			if (isset($last[$parent_id]) AND $min_depth != $depth) {
@@ -155,8 +157,7 @@ if (! function_exists('generateTreeName')) {
 				}
 			}
 
-			$tree_nm = $tree_nm.$r->{$vo->tree_label};
-			$r->tree_nm = $tree_nm;
+			$r->tree_nm = $tree_nm.$r->{$vo->tree_label};
 
 			if (true === $is_array) {
 				$r = (array)$r;

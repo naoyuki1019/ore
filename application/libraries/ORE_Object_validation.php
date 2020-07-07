@@ -20,7 +20,7 @@ class ORE_Object_validation extends MY_Form_validation {
 	 *
 	 * @see CI_Form_validation::set_data()
 	 */
-	public function set_data($data=array()) {
+	public function set_data($data = []) {
 		throw new \Exception('do not use set_data');
 	}
 
@@ -104,7 +104,7 @@ class ORE_Object_validation extends MY_Form_validation {
 
 		// Is the field name an array? If it is an array, we break it apart
 		// into its components so that we can fetch the corresponding POST data later
-		$indexes = array();
+		$indexes = [];
 		if (preg_match_all('/\[(.*?)\]/', $field, $matches))
 		{
 			sscanf($field, '%[^[][', $indexes[0]);
@@ -189,7 +189,7 @@ class ORE_Object_validation extends MY_Form_validation {
 		// Load the language file containing error messages
 		$this->CI->lang->load('validation');
 
-		// Cycle through the rules for each field and match the corresponding $validation_data item  
+		// Cycle through the rules for each field and match the corresponding $validation_data item
 		foreach ($this->_field_data as $field => $row)
 		{
 			// Fetch the data from the validation_data array item and cache it in the _field_data array.
@@ -264,8 +264,8 @@ class ORE_Object_validation extends MY_Form_validation {
 	{
 		foreach ($this->_field_data as $field => $row)
 		{
-			
-			
+
+
 			if ($row['postdata'] !== NULL)
 			{
 				if ($row['is_array'] === FALSE)
@@ -294,7 +294,7 @@ class ORE_Object_validation extends MY_Form_validation {
 
 					if (is_array($row['postdata']))
 					{
-						$array = array();
+						$array = [];
 						foreach ($row['postdata'] as $k => $v)
 						{
 							$array[$k] = $v;

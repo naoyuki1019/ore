@@ -27,9 +27,9 @@ class MY_Form_validation extends CI_Form_validation {
 	/**
 	 *
 	 */
-	public function __construct($rules = array()) {
+	public function __construct($rules = []) {
 		//ここで先読みさせてフォームバリデーションオブジェクトの取得関数を定義
-//		get_instance()->load->helper('my_form');
+		// get_instance()->load->helper('my_form');
 		parent::__construct($rules);
 	}
 
@@ -38,10 +38,10 @@ class MY_Form_validation extends CI_Form_validation {
 	 *
 	 */
 	public function initialize() {
-		$this->_field_data = array();
-		$this->_config_rules = array();
-		$this->_error_array = array();
-		$this->_error_messages = array();
+		$this->_field_data = [];
+		$this->_config_rules = [];
+		$this->_error_array = [];
+		$this->_error_messages = [];
 		$this->error_string = '';
 		$this->_safe_form_data = FALSE;
 		return $this;
@@ -52,7 +52,7 @@ class MY_Form_validation extends CI_Form_validation {
 	 *
 	 * @see CI_Form_validation::set_data()
 	 */
-	public function set_data($data=array()) {
+	public function set_data($data = []) {
 
 		if (is_object($data)) {
 			$vars = get_object_vars($data);
@@ -129,16 +129,16 @@ class MY_Form_validation extends CI_Form_validation {
 			return;
 		}
 		else {
-//			if ( ! in_array('isset', $rules))
-//			{
-//				if (is_null($postdata)) {
-//					return ;
-//				}
-//
-//				if ( ! in_array('required', $rules) AND $postdata == "") {
-//					return ;
-//				}
-//			}
+			// if ( ! in_array('isset', $rules))
+			// {
+			// 	if (is_null($postdata)) {
+			// 		return ;
+			// 	}
+			//
+			// 	if ( ! in_array('required', $rules) AND $postdata == "") {
+			// 		return ;
+			// 	}
+			// }
 		}
 
 		// If the field is blank, but NOT required, no further tests are necessary
@@ -178,7 +178,7 @@ class MY_Form_validation extends CI_Form_validation {
 			if ($err_isset OR $err_required) {
 
 				// Set the message type
-//				$type = in_array('required', $rules) ? 'required' : 'isset';
+				// $type = in_array('required', $rules) ? 'required' : 'isset';
 				$type = ($err_isset) ? 'isset' : 'required';
 
 				if (isset($this->_error_messages[$type]))
@@ -322,9 +322,9 @@ class MY_Form_validation extends CI_Form_validation {
 						}
 					}
 					else {
-//						log_message('debug', 'Unable to find validation rule: '.$rule);
+						// log_message('debug', 'Unable to find validation rule: '.$rule);
+						// $result = FALSE;
 						throw new \Exception('Unable to find validation rule: '.$rule);
-//						$result = FALSE;
 					}
 				}
 			}
@@ -490,13 +490,14 @@ class MY_Form_validation extends CI_Form_validation {
 
 	/**
 	 * 日付の妥当性チェック
+	 *
 	 * @param string $date yyyy/mm/dd
 	 */
-	public function is_date($date, $checkdate=1) {
+	public function is_date($date, $checkdate = 1) {
 		if (preg_match("/^\d{4}\/\d{2}\/\d{2}$/", $date)
-		 OR preg_match("/^\d{4}\-\d{2}\-\d{2}$/", $date)) {
+			OR preg_match("/^\d{4}\-\d{2}\-\d{2}$/", $date)) {
 			if (1 == $checkdate) {
-				return checkdate(substr($date ,5 ,2), substr($date ,8 ,2), substr($date ,0 ,4));
+				return checkdate(substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4));
 			}
 			else {
 				return TRUE;
@@ -508,13 +509,14 @@ class MY_Form_validation extends CI_Form_validation {
 
 	/**
 	 * 日時の妥当性チェック
+	 *
 	 * @param string $date yyyy/mm/dd hh:mm:ss
 	 */
-	public function is_datetime($datetime, $checkdate=1) {
+	public function is_datetime($datetime, $checkdate = 1) {
 		if (preg_match("/^\d{4}\/\d{2}\/\d{2}\ ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $datetime)
-		 OR preg_match("/^\d{4}\-\d{2}\-\d{2}\ ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $datetime)) {
+			OR preg_match("/^\d{4}\-\d{2}\-\d{2}\ ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $datetime)) {
 			if (1 == $checkdate) {
-				return checkdate(substr($datetime ,5 ,2), substr($datetime ,8 ,2), substr($datetime ,0 ,4));
+				return checkdate(substr($datetime, 5, 2), substr($datetime, 8, 2), substr($datetime, 0, 4));
 			}
 			else {
 				return TRUE;
@@ -649,6 +651,7 @@ class MY_Form_validation extends CI_Form_validation {
 
 	/**
 	 * コンマを削除する…だけ
+	 * 
 	 * @param $number
 	 * @return mixed
 	 */
@@ -660,13 +663,13 @@ class MY_Form_validation extends CI_Form_validation {
 
 	/**
 	 * スペースを半角一つにする…だけ
+	 * 
 	 * @param $str
-	 * @return mixed
+	 * @return string|string[]|null
 	 */
 	public function onespace($str) {
-		$str = preg_replace('/\s+/', ' ', preg_replace('/　/', ' ', $str));
+		$str = preg_replace('/[\s\0\x0b\p{Zs}\p{Zl}\p{Zp}]+/u', ' ', $str);
 		return $str;
-
 	}
 
 
@@ -701,7 +704,7 @@ class MY_Form_validation extends CI_Form_validation {
 		return (bool) preg_match('/^[!-~ ]+$/i', $str);
 	}
 
-	
+
 	/**
 	 * @param $str
 	 * @param $field
@@ -711,10 +714,10 @@ class MY_Form_validation extends CI_Form_validation {
 		return (isset($this->_field_data[$field]) && $this->_field_data[$field]['postdata'] < $str);
 	}
 
-	
+
 	/**
 	 * DBの文字コードがutf8mb4でしか対応できない文字をお断りする
-	 * 	  
+	 *
 	 * @param $str
 	 * @return bool
 	 */
@@ -734,7 +737,7 @@ class MY_Form_validation extends CI_Form_validation {
 	 * @param $str
 	 * @return bool
 	 */
-	public function is_empty($str) { 
+	public function is_empty($str) {
 		return (bool)('' === strval($str));
 	}
 }

@@ -21,7 +21,6 @@ require $application_folder.'/core/ORE_Params.php';
 require $application_folder.'/core/ORE_Fields.php';
 require $application_folder.'/core/ORE_Volume.php';
 require $application_folder.'/core/ORE_TreeVolume.php';
-require $application_folder.'/libraries/ORE_Validation.php';
 require $application_folder.'/libraries/MY_Form_validation.php';
 require $application_folder.'/libraries/ORE_Data_validation.php';
 require $application_folder.'/libraries/ORE_Object_validation.php';

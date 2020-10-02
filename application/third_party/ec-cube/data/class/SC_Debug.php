@@ -11,6 +11,7 @@ class SC_Debug {
 	private static $_DUMP = [];
 	private static $_ENABLE = NULL;
 	private static $_INSTANCE = NULL;
+	private static $_DESTRUCT_DUMP = FALSE;
 	private static $_CLEAN_PATH = NULL;
 	private static $_ROOT_PATH = "";
 
@@ -26,6 +27,13 @@ class SC_Debug {
 	 */
 	public static function DISABLE() {
 		self::$_ENABLE = FALSE;
+	}
+
+	/**
+	 * @return null|boolean
+	 */
+	public static function isENABLE() {
+		return self::$_ENABLE;
 	}
 
 	/**
@@ -130,10 +138,10 @@ class SC_Debug {
 	}
 
 	/**
-	 *
-	 * @return void
+	 * @param string $prefix
+	 * @param string $sufix
 	 */
-	public static function sfVarDump($prefix = '<div style="background-color:white;width:100%;overflow-x:auto;">', $sufix = '</div>') {
+	public static function sfVarDump($prefix = '<div style="background-color:white;width:100%;overflow-x:auto;" class="sc_debug">', $sufix = '</div>') {
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
 
@@ -141,10 +149,33 @@ class SC_Debug {
 			echo $prefix;
 			echo '<style>pre{margin:0}</style>';
 			foreach (self::$_DUMP as $varinfo) {
-				self::_sfVardump($varinfo);
+				self::_sfVarDump($varinfo);
 			}
 			echo $sufix;
 		}
+	}
+
+	/**
+	 * @param string $prefix
+	 * @param string $sufix
+	 * @return false|string
+	 */
+	public static function sfGetVarDump($prefix = '<div style="background-color:white;width:100%;overflow-x:auto;" class="sc_debug">', $sufix = '</div>') {
+		if (empty(self::$_DUMP)) {
+			return '';
+		}
+		ob_start();
+		self::sfVarDump($prefix, $sufix);
+		$contents = ob_get_contents();
+		ob_end_clean();
+		return $contents;
+	}
+
+	/**
+	 * @return string|true
+	 */
+	public static function sfGetDump() {
+		return self::$_DUMP;
 	}
 
 	/**
@@ -152,7 +183,7 @@ class SC_Debug {
 	 * @param SC_Debug_VarInfo $varinfo
 	 * @return void
 	 */
-	private static function _sfVardump(SC_Debug_VarInfo $varinfo) {
+	private static function _sfVarDump(SC_Debug_VarInfo $varinfo) {
 		$caller = htmlspecialchars($varinfo->caller, ENT_COMPAT);
 		if ('' !== strval($varinfo->var_name)) {
 			$var_name = htmlspecialchars($varinfo->var_name);
@@ -231,20 +262,20 @@ class SC_Debug {
 
 		if (is_null($var)) {
 			// EC-CUBE2.1X
-//			GC_Utils_Ex::gfPrintLog("\n".$arrTrace['0']."\n".print_r($var_name, true)."\n\n\n");
+			// GC_Utils_Ex::gfPrintLog("\n".$arrTrace[0]."\n".print_r($var_name, true)."\n\n\n");
 
 			// ORE
-//			log_message('debug', "\n".$arrTrace['0']."\n".print_r($var_name, true));
+			// log_message('debug', "\n".$arrTrace[0]."\n".print_r($var_name, true));
 
 			// VALX
 			\VALX\logger::debug(print_r($var_name, true), 2);
 		}
 		else {
 			// EC-CUBE2.1X
-//			GC_Utils_Ex::gfPrintLog("\n".$arrTrace['0']."\n{$var_name}=".print_r($var, true)."\n\n\n");
+			// GC_Utils_Ex::gfPrintLog("\n".$arrTrace[0]."\n{$var_name}=".print_r($var, true)."\n\n\n");
 
 			// ORE
-//			log_message('debug', "\n".$arrTrace['0']."\n{$var_name}=".print_r($var, true));
+			// log_message('debug', "\n".$arrTrace[0]."\n{$var_name}=".print_r($var, true));
 
 			// VALX
 			\VALX\logger::debug("{$var_name}=".print_r($var, true), 2);
@@ -271,6 +302,15 @@ class SC_Debug {
 
 		return $tmp;
 	}
+
+	/**
+	 *
+	 */
+	function __destruct() {
+		if (TRUE === self::$_DESTRUCT_DUMP) {
+			self::sfVardump();
+		}
+	}
 }
 
 /**
@@ -278,6 +318,7 @@ class SC_Debug {
  */
 class SC_Debug_VarInfo {
 	public $is_html = false;
-	public $var_name = "";
-	public $var = "";
+	public $var_name = '';
+	public $var = '';
+	public $caller = '';
 }

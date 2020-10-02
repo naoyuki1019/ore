@@ -18,24 +18,31 @@ class ORE_Fields extends ORE_Params {
 	/**
 	 * @param array $params
 	 */
-	public function set($params = []) {
+	public function set($params = [], $value = null) {
 
 		if ('array' === gettype($params)) {
 			if(0 === count($params)) return;
 			$params = (object)$params;
 		}
 
+		$public_vars = get_class_public_vars(get_class($this));
+
 		if ('object' === gettype($params)) {
-			$public_vars = get_class_public_vars(get_class($this));
 			foreach ($public_vars as $key => $default) {
 				if (TRUE === property_exists($params, $key)) {
 					$val = $params->{$key};
 					if ($this->is_btnf($key) AND '' === strval($val)) {
 						$val = NULL;
 					}
-					$this->$key = $val;
+					$this->{$key} = $val;
 				}
 			}
+		}
+		else {
+			if (TRUE === array_key_exists($params, $public_vars)) {
+				$this->{$params} = $value;
+			}
+			
 		}
 	}
 

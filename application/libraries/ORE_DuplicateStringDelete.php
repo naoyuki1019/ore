@@ -18,19 +18,19 @@ class ORE_DuplicateStringDelete {
 	public static $threshold_same_string = 8;
 
 	/**
+	 * @param string[] $delimiter_arr
 	 * @param $str
 	 * @param $groups
-	 * @param string[] $delimiter_arr
 	 * @return string|string[]|null
 	 */
-	public static function unify_words_same_meaning($str, $groups, $delimiter_arr = [' ']) {
+	public static function unify_words_same_meaning($delimiter_arr, $str, $groups) {
 		$first = 0;
 		$first_dummy_string = '__first_dummy_string__';
 		$pd = '/';
 
 		// $strを区切り文字で分解
 		$arr = [];
-		$arr = self::_explode_array_merge($str, $arr, $delimiter_arr, 0, count($delimiter_arr));
+		$arr = self::_explode_array_merge($delimiter_arr, 0, count($delimiter_arr), $str, $arr);
 
 		// 区切り文字グループの正規表現文字列作成
 		foreach ($delimiter_arr as $i => $delimiter) {
@@ -70,14 +70,14 @@ class ORE_DuplicateStringDelete {
 	 * @param $limit
 	 * @return array
 	 */
-	private static function _explode_array_merge($str, $arr, $delimiter_arr, $i, $limit) {
+	private static function _explode_array_merge($delimiter_arr, $i, $limit, $str, $arr) {
 		$arr = array_unique(array_merge($arr, explode($delimiter_arr[$i], $str)));
 
 		$i++;
 		if ($i < $limit) {
 			$new = [];
 			foreach ($arr as $x => $a) {
-				$new = array_unique(array_merge($new, self::_explode_array_merge($a, $new, $delimiter_arr, $i, $limit)));
+				$new = array_unique(array_merge($new, self::_explode_array_merge($delimiter_arr, $i, $limit, $a, $new)));
 			}
 			$arr = array_unique(array_merge($arr, $new));
 		}
@@ -86,11 +86,11 @@ class ORE_DuplicateStringDelete {
 	}
 
 	/**
-	 * @param $str
 	 * @param string[] $delimiter_arr
+	 * @param $str
 	 * @return string
 	 */
-	public static function match_by_delimiters($str, $delimiter_arr = [' ']) {
+	public static function match_by_delimiters($delimiter_arr, $str) {
 		foreach ($delimiter_arr as $delimiter) {
 			$arr = explode($delimiter, $str);
 			$arr = self::qqqq($arr);
@@ -134,11 +134,11 @@ class ORE_DuplicateStringDelete {
 	}
 
 	/**
-	 * @param $str
 	 * @param string[] $delimiter_arr
+	 * @param $str
 	 * @return string
 	 */
-	public static function perfect_match_by_delimiters($str, $delimiter_arr = [' ']) {
+	public static function perfect_match_by_delimiters($delimiter_arr, $str) {
 
 		// 半角空白一つへ整形
 		$str = str_replace('　', ' ', $str);
@@ -146,7 +146,7 @@ class ORE_DuplicateStringDelete {
 		$str = trim($str);
 
 		// 分解 重複削除
-		$arr = self::ssss($str, $delimiter_arr);
+		$arr = self::ssss($delimiter_arr, $str);
 
 		// 結合
 		$str = self::cccc($arr['delimiter'], $arr['array']);
@@ -174,16 +174,19 @@ class ORE_DuplicateStringDelete {
 	}
 
 	/**
-	 * @param $str
 	 * @param $delimiter_arr
+	 * @param $str
 	 * @return array|mixed
 	 */
-	private static function ssss($str, $delimiter_arr) {
+	private static function ssss($delimiter_arr, $str) {
 		$arr = [];
 		$arr['delimiter'] = array_shift($delimiter_arr);
 		$arr['array'] = explode($arr['delimiter'], $str);
 		$dup = [];
 		foreach ($delimiter_arr as $delimiter) {
+			if ('' === strval($delimiter)) {
+				continue;
+			}
 			$arr = self::_ssss($delimiter, $arr, $dup);
 		}
 		foreach ($arr['array'] as $j => $chk) {

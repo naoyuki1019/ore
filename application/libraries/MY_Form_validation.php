@@ -77,14 +77,6 @@ class MY_Form_validation extends CI_Form_validation {
 	/**
 	 *
 	 */
-	public function error_array() {
-		return $this->_error_array;
-	}
-
-
-	/**
-	 *
-	 */
 	public function error_count() {
 		return count($this->_error_array);
 	}
@@ -118,6 +110,8 @@ class MY_Form_validation extends CI_Form_validation {
 	 */
 	protected function _execute($row, $rules, $postdata = NULL, $cycles = 0)
 	{
+		$idx_mb_trim = array_search('mb_trim', $rules);
+
 		// If the $_POST data is an array we will run a recursive call
 		if (is_array($postdata))
 		{
@@ -143,6 +137,11 @@ class MY_Form_validation extends CI_Form_validation {
 
 		// If the field is blank, but NOT required, no further tests are necessary
 		$callback = FALSE;
+
+		if (isset($postdata) AND FALSE !== $idx_mb_trim) {
+			unset($rules[$idx_mb_trim]);
+			$postdata = $this->mb_trim($postdata);
+		}
 
 		// Isset Test. Typically this rule will only apply to checkboxes.
 		if (($postdata === NULL OR $postdata === '') && $callback === FALSE)
@@ -361,13 +360,31 @@ class MY_Form_validation extends CI_Form_validation {
 
 				// Is the parameter we are inserting into the error message the name
 				// of another field? If so we need to grab its "field label"
-				if (isset($this->_field_data[$param], $this->_field_data[$param]['label']))
-				{
-					$param = $this->_translate_fieldname($this->_field_data[$param]['label']);
-				}
+				$param_multiple_rules = [
+					'required_combi'
+				];
 
-				// Build the error message
-				$message = $this->_build_error_msg($line, $this->_translate_fieldname($row['label']), $param);
+				if (in_array($rule, $param_multiple_rules)) {
+                    $labels = [];
+					foreach (explode(',', $param) as $p) {
+						if (isset($this->_field_data[$p], $this->_field_data[$p]['label']))
+						{
+							$labels[] = $this->_translate_fieldname($this->_field_data[$p]['label']);
+						}
+					}
+
+					// Build the error message
+					$message = $this->_build_error_msg($line, $this->_translate_fieldname($row['label']), $labels);
+				}
+				else {
+					if (isset($this->_field_data[$param], $this->_field_data[$param]['label']))
+					{
+						$param = $this->_translate_fieldname($this->_field_data[$param]['label']);
+					}
+
+					// Build the error message
+					$message = $this->_build_error_msg($line, $this->_translate_fieldname($row['label']), $param);
+				}
 
 				// Save the error message
 				$this->_field_data[$row['field']]['error'] = $message;
@@ -389,6 +406,26 @@ class MY_Form_validation extends CI_Form_validation {
 				return;
 			}
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build an error message using the field and param.
+	 *
+	 * @param	string	The error message line
+	 * @param	string	A field's human name
+	 * @param	mixed	A rule's optional parameter
+	 * @return	string
+	 */
+	protected function _build_error_msg($line, $field = '', $param = '')
+	{
+		// Check for %s in the string for legacy support.
+		if (is_array($param)) {
+			$param = implode('と', $param);
+		}
+
+		return parent::_build_error_msg($line, $field, $param);
 	}
 
 	// --------------------------------------------------------------------
@@ -439,6 +476,39 @@ class MY_Form_validation extends CI_Form_validation {
 		else {
 			return ($this->mb_trim($str) == '') ? FALSE : TRUE;
 		}
+	}
+
+
+	/**
+	 *
+	 */
+	public function required_combi($str, $fields) {
+
+		$fields = $this->mb_trim($fields);
+		if ('' === $fields) {
+			return FALSE;
+		}
+
+		if ('' === $this->mb_trim($str)) {
+			return TRUE;
+		}
+
+		$fields = explode(',', $fields);
+		foreach ($fields as $field) {
+			if (! array_key_exists($field, $this->_field_data)) {
+				return FALSE;
+			}
+
+			if (! array_key_exists('postdata', $this->_field_data[$field])) {
+				return FALSE;
+			}
+
+			if ('' === $this->mb_trim($this->_field_data[$field]['postdata'])) {
+				return FALSE;
+			}
+		}
+
+		return TRUE;
 	}
 
 
@@ -510,7 +580,9 @@ class MY_Form_validation extends CI_Form_validation {
 	/**
 	 * 日時の妥当性チェック
 	 *
-	 * @param string $date yyyy/mm/dd hh:mm:ss
+	 * @param string $datetime yyyy/mm/dd hh:mm:ss
+	 * @param int $checkdate checkdateをする/しない
+	 * @return bool
 	 */
 	public function is_datetime($datetime, $checkdate = 1) {
 		if (preg_match("/^\d{4}\/\d{2}\/\d{2}\ ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $datetime)
@@ -521,6 +593,33 @@ class MY_Form_validation extends CI_Form_validation {
 			else {
 				return TRUE;
 			}
+		}
+		return FALSE;
+	}
+
+
+	/**
+	 * 時:分の妥当性チェック
+	 *
+	 * @param string $hhmm hh:mm
+	 */
+	public function is_hhmm($hhmm) {
+		// 形式を調べます
+		if (preg_match("/^\d{2}:\d{2}$/", $hhmm)) {
+
+			$t = explode(':', $hhmm);
+			$h = $t[0];
+			$m = $t[1];
+
+			if (23 < $h) {
+				return FALSE;
+			}
+
+			if (59 < $m) {
+				return FALSE;
+			}
+
+			return TRUE;
 		}
 		return FALSE;
 	}
@@ -627,6 +726,7 @@ class MY_Form_validation extends CI_Form_validation {
 		}
 	}
 
+
 	/**
 	 * @param string $str
 	 * @return bool
@@ -638,20 +738,21 @@ class MY_Form_validation extends CI_Form_validation {
 		return parent::valid_url($str);
 	}
 
+
 	/**
 	 * @param $string
 	 * @return string
 	 */
-	public function mb_trim ($string) {
+	public function mb_trim($string) {
 		$whitespace = '[\s\0\x0b\p{Zs}\p{Zl}\p{Zp}]';
-		$ret = preg_replace(sprintf('/(^%s+|%s+$)/u', $whitespace, $whitespace),'', $string);
+		$ret = preg_replace(sprintf('/(^%s+|%s+$)/u', $whitespace, $whitespace), '', $string);
 		return $ret;
 	}
 
 
 	/**
 	 * コンマを削除する…だけ
-	 * 
+	 *
 	 * @param $number
 	 * @return mixed
 	 */
@@ -663,7 +764,7 @@ class MY_Form_validation extends CI_Form_validation {
 
 	/**
 	 * スペースを半角一つにする…だけ
-	 * 
+	 *
 	 * @param $str
 	 * @return string|string[]|null
 	 */
@@ -721,7 +822,7 @@ class MY_Form_validation extends CI_Form_validation {
 	 * @param $str
 	 * @return bool
 	 */
-	public function less_than_4byte($str) {
+	public function not_include_utf8mb4($str) {
 		$encoding = 'UTF-8';
 		$cnt = mb_strlen($str, $encoding);
 		for ($i = 0; $i < $cnt; $i++) {
@@ -732,6 +833,33 @@ class MY_Form_validation extends CI_Form_validation {
 		}
 		return true;
 	}
+
+
+	/**
+	 * UTF-8 の4バイト文字を HTML 数値文字参照に変換する
+	 *
+	 * @see https://qiita.com/masakielastic/items/ec483b00ff6337a02878
+	 * @param $str
+	 * @return string|string[]|null
+	 */
+	public function utf8mb4_encode_numericentity($str) {
+
+		if ('string' !== gettype($str) OR '' === $str) {
+			return $str;
+		}
+
+		$re = '/[^\x{0}-\x{FFFF}]/u';
+		return preg_replace_callback($re, function($m) {
+			$char = $m[0];
+			$x = ord($char[0]);
+			$y = ord($char[1]);
+			$z = ord($char[2]);
+			$w = ord($char[3]);
+			$cp = (($x & 0x7) << 18) | (($y & 0x3F) << 12) | (($z & 0x3F) << 6) | ($w & 0x3F);
+			return sprintf("&#x%X;", $cp);
+		}, $str);
+	}
+
 
 	/**
 	 * @param $str

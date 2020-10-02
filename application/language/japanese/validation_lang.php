@@ -34,6 +34,7 @@ $lang['not_empty'] = "%sは必須です。";
 $lang['coordinate'] = "%sには\"緯度,経度\"の形式で正しく入力してください。";
 $lang['is_date'] = "%sには\"yyyy/mm/dd\"の形式で正しい日付を入力してください。";
 $lang['is_datetime'] = "%sには\"yyyy/mm/dd hh:mm:ss\"の形式で正しい日時を入力してください。";
+$lang['is_hhmm'] = "%sには\"hh:mm\"の形式で正しい時間を00:00～23:59の間で入力してください。";
 $lang['single'] = "%sには半角文字以外は入力できません。";
 $lang['katakana'] = "%sには全角カタカナ以外は入力できません。";
 $lang['katakana_blank'] = "%sには全角カタカナと半角空白以外は入力できません。";
@@ -41,8 +42,8 @@ $lang['valid_phone'] = "%sには正しい電話番号を入力してください
 $lang['valid_zip'] = "%sには正しい郵便番号を入力してください。";
 $lang['alpha_numeric_spaces'] = "%sには半角英数字、スペース以外は入力できません。";
 $lang['halfwidth'] = "%sには半角以外は入力できません。";
-$lang['less_than_4byte'] = "%sには入力できない特殊文字が含まれています。";
-
+$lang['not_include_utf8mb4'] = "%sには入力できない特殊文字が含まれています。";
+$lang['required_combi'] = "%sに入力がある時は%sは必須です。";
 
 $lang['set_validation'] = "ルール %s 用のmethodが設定されていません。";
 

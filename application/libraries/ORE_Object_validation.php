@@ -58,12 +58,12 @@ class ORE_Object_validation extends MY_Form_validation {
 	 */
 	public function set_rules($field, $label = '', $rules = '')
 	{
-		// No reason to set rules if we have no POST data
-		// or a validation array has not been specified
-//		if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
-//		{
-//			return $this;
-//		}
+		// // No reason to set rules if we have no POST data
+		// // or a validation array has not been specified
+		// if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
+		// {
+		// 	return $this;
+		// }
 
 		// If an array was passed via the first parameter instead of individual string
 		// values we cycle through it and recursively call this function.

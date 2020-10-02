@@ -14,8 +14,8 @@ namespace ore;
  * @author naoyuki onishi
  */
 class ORE_DBUpdate {
-	public $id_column = null;
 	public $table = null;
+	public $id_column = null;
 	protected $_targets = null;
 	protected $_list = [];
 
@@ -37,7 +37,7 @@ class ORE_DBUpdate {
 	 * @param $str
 	 */
 	protected function echo_flush($str) {
-		if (0 < ob_get_level() AND 1 === $this->echo) {
+		if (0 < ob_get_level() AND $this->echo) {
 			echo $str;
 			ob_flush();
 			flush();
@@ -58,6 +58,15 @@ class ORE_DBUpdate {
 	 * @throws \Exception
 	 */
 	public function set_targets($targets) {
+
+		if ('' === strval($this->id_column)) {
+			throw new \Exception('$this->id_columnがセットされていません');
+		}
+
+		foreach ($targets as $i => $target) {
+			if ($target === $this->id_column)  unset($targets[$i]);
+		}
+
 		if (! is_array($targets) OR empty($targets)) {
 			throw new \Exception('$targetsの値が不正です');
 		}
@@ -82,6 +91,13 @@ class ORE_DBUpdate {
 	 * @throws \Exception
 	 */
 	public function add($id, $keyval) {
+
+		if (array_key_exists($this->id_column, $keyval)) unset($keyval[$this->id_column]);
+
+		if (! isset($id) OR is_null($id) OR '' === strval($id)) {
+			throw new \Exception('$idがセットされていません');
+		}
+
 		if (empty($this->_targets)) {
 			throw new \Exception('$this->_targetsがセットされていません');
 		}

@@ -3,7 +3,7 @@
 if (! function_exists('mb_trim')) {
 	/**
 	 * UTF-8の文字列の両端の半角空白、全角空白、タブを削除する
-	 * 
+	 *
 	 * @param $string
 	 * @return string
 	 */
@@ -53,12 +53,7 @@ if (! function_exists('isNULL')) {
 				return isNULL($val->{$key});
 			}
 			if (method_exists($val, '__get')) {
-				// try {
-					return isNULL($val->{$key});
-				// }
-				// catch (\Exception $e) {
-				// 	return true;
-				// }
+				return isNULL($val->{$key});
 			}
 			return true;
 		}
@@ -98,7 +93,7 @@ if (! function_exists('generateTreeName')) {
 		$min_depth = null;
 		$last = [];
 		foreach ($vo->entries as & $r) {
-			if (true === $is_array) {
+			if (TRUE === $is_array) {
 				$r = (object)$r;
 			}
 			$depth = $r->{$vo->tree_depth};
@@ -113,14 +108,14 @@ if (! function_exists('generateTreeName')) {
 			if ($min_depth > $depth) {
 				$min_depth = $depth;
 			}
-			if (true === $is_array) {
+			if (TRUE === $is_array) {
 				$r = (array)$r;
 			}
 		}
 
 		$prefix = [];
 		foreach ($vo->entries as & $r) {
-			if (true === $is_array) {
+			if (TRUE === $is_array) {
 				$r = (object)$r;
 			}
 			$depth = $r->{$vo->tree_depth};
@@ -159,7 +154,7 @@ if (! function_exists('generateTreeName')) {
 
 			$r->tree_nm = $tree_nm.$r->{$vo->tree_label};
 
-			if (true === $is_array) {
+			if (TRUE === $is_array) {
 				$r = (array)$r;
 			}
 		}

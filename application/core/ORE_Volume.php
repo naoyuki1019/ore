@@ -15,32 +15,95 @@ namespace ore;
  */
 class ORE_Volume extends ORE_Params {
 
-	protected $_result = null;
-
-	public $debug = 0;
+	/**
+	 * @var string 
+	 */
 	public $find_fileds = '*';
-	public $entries = [];
-	public $entry = null;
-	public $data = null;
 
+	/**
+	 * @var string
+	 */
+    public $count_filed = '*';
+
+	/**
+	 * This property is deprecated. Use $rs instead.
+	 *
+	 * @var array
+	 */
+	public $entries = [];
+
+	/**
+	 * This property is deprecated. Use $r instead.
+	 *
+	 * @var null
+	 */
+	public $entry = null;
+
+	/**
+	 * record set
+	 *
+	 * @var array
+	 */
+	public $rs = [];
+
+	/**
+	 * @var null
+	 */
+	public $r = null;
+
+	/**
+	 * @var int 
+	 */
 	protected $_page = 1;
+
+	/**
+	 * @var int 
+	 */
 	protected $_limit = 20;
+
+	/**
+	 * @var int 
+	 */
 	protected $_total = 0;
+
+	/**
+	 * @var string 
+	 */
 	protected $_sort_ud = 'asc';
+
+	/**
+	 * @var int 
+	 */
 	protected $_sort_key = 1;
+
+	/**
+	 * @var \string[][] 
+	 */
 	protected $_sort_key_allows = [
 		1 => [
-			'label' => '登録日時',
+			'label' => 'registration date',
 			'query' => 'created {sort_ud}',
 		],
 		2 => [
-			'label' => '更新日時',
+			'label' => 'update date',
 			'query' => 'modified {sort_ud}',
 		],
 	];
 
-	protected $_errors = [];
+	/**
+	 * @var null
+	 */
+	protected $_result = null;
+
+	/**
+	 * @var array
+	 */
 	protected $_messages = [];
+
+	/**
+	 * @var array 
+	 */
+	protected $_errors = [];
 
 	/**
 	 * ORE_Volume constructor.
@@ -54,7 +117,7 @@ class ORE_Volume extends ORE_Params {
 	/**
 	 * @param array $params
 	 */
-	public function set($params = []) {
+	public function set($params = [], $value=null) {
 
 		$type = gettype($params);
 		if ('array' === $type OR 'object' === $type) {
@@ -87,6 +150,9 @@ class ORE_Volume extends ORE_Params {
 				$this->{$key} = $val;
 			}
 		}
+		else {
+			$this->{$params} = $value;
+		} 
 
 		return $this;
 	}
@@ -107,6 +173,13 @@ class ORE_Volume extends ORE_Params {
 		// }
 		
 		return $this->find_fileds;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function count_filed() {
+		return $this->count_filed;
 	}
 
 	/**

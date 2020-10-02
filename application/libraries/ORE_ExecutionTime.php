@@ -23,6 +23,10 @@ class ORE_ExecutionTime {
 	private static $_ENABLE = NULL;
 	private static $_INSTANCE = NULL;
 
+	public static $DEFAULT_PREFIX = '<div style="background-color:white;margin:20px 0;width:100%;overflow-x:auto;" class="ore_executiontime">';
+	public static $DEFAULT_SUFIX = '</div>';
+	public static $DEFAULT_OUTPUT_FORMAT = TRUE;
+
 	/**
 	 *
 	 */
@@ -113,34 +117,69 @@ class ORE_ExecutionTime {
 		return self::$_arr;
 	}
 
+
 	/**
 	 *
 	 * @return void
 	 */
-	public static function DUMP() {
+	public static function sfDump($is_html = null, $prefix = null, $sufix = null) {
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
 
-		if (! empty(self::$_arr)) {
-			echo '<div style="background-color:white;margin:20px 0;width:100%;overflow-x:scroll;" class="ore_executiontime">';
+		if ($is_html) {
+			if (is_null($prefix)) {
+				$prefix = static::$DEFAULT_PREFIX;
+			}
+			if (is_null($sufix)) {
+				$sufix = static::$DEFAULT_SUFIX;
+			}
+		}
+		else if (is_null($is_html)) {
+			$is_html = static::$DEFAULT_OUTPUT_FORMAT;
+		}
 
+		if (! empty(self::$_arr)) {
+			echo $prefix;
 			foreach (self::$_arr as $name => $o) {
+				if (0 === $o->end) {
+					static::END($name);
+				}
 				/** @var ORE_ExecutionTimeVolume $o */
 				$str = "{$name}={$o->time}";
 				if (self::$threshold < $o->time) {
-					$str = "<span style='color:red;'>{$str}</span>";
+					if ($is_html) {
+						$str = '<span style="color:red;">'.$str.'</span>';
+					}
+					else {
+						$str = $str.' *';
+					}
 				}
-				echo "{$str}<br>";
+				$lf = ($is_html) ? '<br>' : "\n";
+				echo $str.$lf;
 			}
-			echo '</div>';
+			echo $sufix;
 		}
 	}
+
 
 	/**
 	 *
 	 * @return void
 	 */
-	public static function LOG() {
+	public static function sfGetDump($is_html = true, $prefix = null, $sufix = null) {
+		ob_start();
+		self::sfDump($is_html, $prefix, $sufix);
+		$contents = ob_get_contents();
+		ob_end_clean();
+		return $contents;
+	}
+
+
+	/**
+	 *
+	 * @return void
+	 */
+	public static function sfLog() {
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
 
@@ -150,7 +189,9 @@ class ORE_ExecutionTime {
 			foreach (self::$_arr as $name => $o) {
 				/** @var ORE_ExecutionTimeVolume $o */
 				$str = "{$name}={$o->time}";
-				if (self::$threshold < $o->time) {}
+				if (self::$threshold < $o->time) {
+					$str = $str.' *';
+				}
 				$arr[] = $str;
 			}
 			\VALX\logger::info(implode("\n", $arr));

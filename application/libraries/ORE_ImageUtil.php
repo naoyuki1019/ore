@@ -30,19 +30,18 @@ class ORE_ImageUtil {
 		$output = [];
 		$ret = null;
 		@exec($command, $output, $ret);
-		if ('0' !== strval($ret)) {
-			throw new \Exception('jpegoptim処理でエラーが発生しました。');
-		}
-
 		$message = implode("\n", $output);
+		if ('0' !== strval($ret)) {
+			throw new \Exception("error jpegoptim処理でエラーが発生しました。\n{$message}");
+		}
 
 		// 最適化済みのファイルはdestに作成されないため
 		if (! is_readable($o->to_path)) {
-			copy($o->org_path, $o->to_path);
-//			throw new \Exception("jpegoptim処理 作成失敗 {$o->to_path} {$message}");
+			@copy($o->org_path, $o->to_path);
+			// throw new \Exception("jpegoptim処理 作成失敗 {$o->to_path} {$message}");
 		}
 
-		chmod($o->to_path, 0777);
+		@chmod($o->to_path, 0666);
 
 		return true;
 	}
@@ -84,7 +83,7 @@ class ORE_ImageUtil {
 		}
 
 		if ($o->org_height <= $o->to_height AND $o->org_width <= $o->to_width) {
-			copy($o->org_path, $o->to_path);
+			@copy($o->org_path, $o->to_path);
 			return;
 		}
 
@@ -102,7 +101,7 @@ class ORE_ImageUtil {
 			imagegif($canvas, $o->to_path);
 		}
 
-		// chmod($o->to_path, 0777);
+		// @chmod($o->to_path, 0666);
 		// 読み出したファイルは消去
 		imagedestroy($thumbnail_image);
 		imagedestroy($canvas);

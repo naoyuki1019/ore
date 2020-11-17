@@ -23,6 +23,7 @@ class ORE_DBUpdate {
 	public $total_cnt = 0;
 	public $threshold = 1000;
 	public $echo = 0;
+	public $debug = 0;
 
 
 	protected function _exec($statement) {}
@@ -123,7 +124,7 @@ class ORE_DBUpdate {
 	public function update_all() {
 		if (1 > $this->update_cnt) return;
 		$statement = $this->makeStatement();
-		$this->echo_flush('<div>'.nl2br(str_replace(" ", "&nbsp;", htmlspecialchars(print_r($statement, true)))).'</div>');
+		if ($this->debug) $this->echo_flush(\SqlFormatter::format($statement, true));
 		$this->_exec($statement);
 		$this->init_list();
 		$this->update_cnt = 0;

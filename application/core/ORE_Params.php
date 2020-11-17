@@ -27,6 +27,21 @@ if (! function_exists('get_object_public_vars')) {
  */
 class ORE_Params {
 
+
+	// Public変数は定義しない事！
+
+	/**
+	 * @var int
+	 */
+	protected $_delimiter_type = 0; // 1:codeigniter;
+
+	/**
+	 * @param $delimiter_type
+	 */
+	public function set_delimiter_type($delimiter_type) {
+		$this->_delimiter_type = $delimiter_type;
+	}
+
 	/**
 	 * ORE_Params constructor.
 	 *
@@ -49,7 +64,7 @@ class ORE_Params {
 		}
 		else {
 			$this->{$params} = $value;
-		} 
+		}
 		return $this;
 	}
 
@@ -119,6 +134,8 @@ class ORE_Params {
 			}
 		}
 
+		$remove_keys[] = '_delimiter_type';
+
 		$keys = [];
 		$tmp = [];
 		if (TRUE === $public) {
@@ -137,7 +154,12 @@ class ORE_Params {
 		$this->_to_uri($keys, $tmp, $array);
 
 		if (0 < count($tmp)) {
-            return implode('/', $tmp);
+			if (1 == $this->_delimiter_type) {
+				return implode('/', $tmp);
+			}
+			else {
+				return implode('&', $tmp);
+			}
 		}
 		else {
 			return "";
@@ -182,8 +204,14 @@ class ORE_Params {
 						$uri_key .= "[".urlencode($uri_key2)."]";
 					}
 
-                    $tmp[] = $uri_key;
-                    $tmp[] = urlencode($val);
+					if (1 == $this->_delimiter_type) {
+						$tmp[] = $uri_key;
+						$tmp[] = ('' !== strval($val)) ? urlencode($val) : '';
+					}
+					else {
+						$val = ('' !== strval($val)) ? urlencode($val) : '';
+						$tmp[] = $uri_key.'='.$val;
+					}
 				}
 			}
 
@@ -213,7 +241,12 @@ class ORE_Params {
 		$this->_to_uri($keys, $tmp, $array);
 
 		if (0 < count($tmp)) {
-			return implode('/', $tmp);
+			if (1 == $this->_delimiter_type) {
+				return implode('/', $tmp);
+			}
+			else {
+				return implode('&', $tmp);
+			}
 		}
 		else {
 			return "";

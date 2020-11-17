@@ -16,7 +16,7 @@ namespace ore;
 class ORE_Volume extends ORE_Params {
 
 	/**
-	 * @var string 
+	 * @var string
 	 */
 	public $find_fileds = '*';
 
@@ -52,32 +52,32 @@ class ORE_Volume extends ORE_Params {
 	public $r = null;
 
 	/**
-	 * @var int 
+	 * @var int
 	 */
 	protected $_page = 1;
 
 	/**
-	 * @var int 
+	 * @var int
 	 */
 	protected $_limit = 20;
 
 	/**
-	 * @var int 
+	 * @var int
 	 */
 	protected $_total = 0;
 
 	/**
-	 * @var string 
+	 * @var string
 	 */
 	protected $_sort_ud = 'asc';
 
 	/**
-	 * @var int 
+	 * @var int
 	 */
 	protected $_sort_key = 1;
 
 	/**
-	 * @var \string[][] 
+	 * @var \string[][]
 	 */
 	protected $_sort_key_allows = [
 		1 => [
@@ -101,7 +101,7 @@ class ORE_Volume extends ORE_Params {
 	protected $_messages = [];
 
 	/**
-	 * @var array 
+	 * @var array
 	 */
 	protected $_errors = [];
 
@@ -152,7 +152,7 @@ class ORE_Volume extends ORE_Params {
 		}
 		else {
 			$this->{$params} = $value;
-		} 
+		}
 
 		return $this;
 	}
@@ -171,7 +171,7 @@ class ORE_Volume extends ORE_Params {
 		// if ('string' === $type AND '' === $this->find_fileds) {
 		// 	return '*';
 		// }
-		
+
 		return $this->find_fileds;
 	}
 
@@ -615,5 +615,5 @@ class ORE_Volume extends ORE_Params {
 	 */
 	public $arr_key = '';
 	public $arr_label = '';
-	public $arr_label_sufix = '';
+	public $arr_label_suffix = '';
 }

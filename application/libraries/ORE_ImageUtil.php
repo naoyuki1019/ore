@@ -1,7 +1,6 @@
 <?php
 
 /**
- *
  * @package Ore
  * @author naoyuki onishi
  */
@@ -61,13 +60,13 @@ class ORE_ImageUtil {
 		}
 
 		if (IMAGETYPE_JPEG != $o->mime_type OR IMAGETYPE_PNG != $o->mime_type OR IMAGETYPE_GIF != $o->mime_type) {
-			list($o->org_width, $o->org_height, $o->mime_type) = getimagesize($o->org_path);
+			[$o->org_width, $o->org_height, $o->mime_type] = getimagesize($o->org_path);
 		}
 		if (0 == $o->to_width OR 0 == $o->to_height) {
 			throw new \Exception('ターゲットサイズの設定をしてください。');
 		}
 
-		list($o->to_width, $o->to_height) = self::calc_image_size($o->org_path, $o->to_width, $o->to_height);
+		[$new_width, $new_height] = self::calc_image_size($o->org_path, $o->to_width, $o->to_height);
 
 		if (IMAGETYPE_JPEG == $o->mime_type) {
 			$thumbnail_image = \imagecreatefromjpeg($o->org_path);
@@ -82,14 +81,14 @@ class ORE_ImageUtil {
 			throw new \Exception('対応していないファイル形式です。: '.$o->mime_type);
 		}
 
-		if ($o->org_height <= $o->to_height AND $o->org_width <= $o->to_width) {
+		if ($o->org_height <= $new_height AND $o->org_width <= $new_width) {
 			@copy($o->org_path, $o->to_path);
 			return;
 		}
 
 		// 新しく描画するキャンバスを作成
-		$canvas = imagecreatetruecolor($o->to_width, $o->to_height);
-		imagecopyresampled($canvas, $thumbnail_image, 0,0,0,0, $o->to_width, $o->to_height, $o->org_width, $o->org_height);
+		$canvas = imagecreatetruecolor($new_width, $new_height);
+		imagecopyresampled($canvas, $thumbnail_image, 0, 0, 0, 0, $new_width, $new_height, $o->org_width, $o->org_height);
 
 		if (IMAGETYPE_JPEG == $o->mime_type) {
 			imagejpeg($canvas, $o->to_path, $o->quality_thumb);
@@ -113,16 +112,16 @@ class ORE_ImageUtil {
 	 * @param $max_height
 	 * @return array
 	 */
-	public static function calc_image_size ($image_path, $max_width, $max_height) {
+	public static function calc_image_size($image_path, $max_width, $max_height) {
 
-		if ( ! file_exists($image_path)) {
-			return array(0, 0);
+		if (! file_exists($image_path)) {
+			return [0, 0];
 		}
 
-		list($width, $height, $type, $attr) = getimagesize($image_path);
+		[$width, $height, $type, $attr] = getimagesize($image_path);
 
 		if ($width == 0 OR $height == 0) {
-			return array(0, 0);
+			return [0, 0];
 		}
 
 		$rw = $max_width / $width;
@@ -138,12 +137,13 @@ class ORE_ImageUtil {
 		$new_width = $width * $ratio;
 		$new_height = $height * $ratio;
 
-		return array($new_width, $new_height);
+		return [$new_width, $new_height];
 	}
 }
 
 /**
  * Class resize_volume
+ *
  * @package ore
  */
 class resize_volume {
@@ -151,6 +151,7 @@ class resize_volume {
 	public $mime_type = '';
 	public $quality_thumb = '94';
 	public $quality_optim = '84';
+	public $org_name = '';
 	public $org_path = '';
 	public $org_height = '';
 	public $org_width = '';
@@ -183,8 +184,8 @@ class resize_volume {
 	 * @return bool
 	 */
 	private function _is_int($str) {
-		return (bool) (preg_match('/^[1-9]\d*$/', $str));
-//		return (bool) (preg_match('/^[\-+]?[0-9]*\.?[0-9]+$/', $str));
+		return (bool)(preg_match('/^[1-9]\d*$/', $str));
+		// return (bool)(preg_match('/^[\-+]?[0-9]*\.?[0-9]+$/', $str));
 	}
 
 	/**
@@ -193,8 +194,8 @@ class resize_volume {
 	 * @param int $high
 	 * @return bool
 	 */
-	private function _between($str, $low=0, $high=100) {
-		return (bool) ($low <= $str AND $str <= $high);
+	private function _between($str, $low = 0, $high = 100) {
+		return (bool)($low <= $str AND $str <= $high);
 	}
 }
 

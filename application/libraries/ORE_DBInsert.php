@@ -21,6 +21,7 @@ class ORE_DBInsert {
 	public $insert_cnt = 0;
 	public $threshold = 3000;
 	public $echo = 0;
+	public $debug = 0;
 
 	protected function _exec($statement) {}
 
@@ -32,7 +33,7 @@ class ORE_DBInsert {
 
 	/**
 	 * 記号の前にバックスラッシュを付ける
-	 * 
+	 *
 	 * @param $str
 	 * @param $symbol
 	 * @return string|string[]|null
@@ -145,6 +146,7 @@ class ORE_DBInsert {
 			$table = $this->_escape_string($this->table);
 			$statement = "INSERT INTO {$table} (".implode(', ', $this->cols_header).') VALUES ';
 			$statement .= implode(', ', $this->values).';';
+			if ($this->debug) $this->echo_flush(\SqlFormatter::format($statement, true));
 			$this->_exec($statement);
 			$this->values = [];
 			$this->values_cnt = 0;

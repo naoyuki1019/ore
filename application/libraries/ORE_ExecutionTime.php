@@ -24,7 +24,7 @@ class ORE_ExecutionTime {
 	private static $_INSTANCE = NULL;
 
 	public static $DEFAULT_PREFIX = '<div style="background-color:white;margin:20px 0;width:100%;overflow-x:auto;" class="ore_executiontime">';
-	public static $DEFAULT_SUFIX = '</div>';
+	public static $DEFAULT_SUFFIX = '</div>';
 	public static $DEFAULT_OUTPUT_FORMAT = TRUE;
 
 	/**
@@ -122,7 +122,7 @@ class ORE_ExecutionTime {
 	 *
 	 * @return void
 	 */
-	public static function sfDump($is_html = null, $prefix = null, $sufix = null) {
+	public static function sfDump($is_html = null, $prefix = null, $suffix = null) {
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
 
@@ -130,8 +130,8 @@ class ORE_ExecutionTime {
 			if (is_null($prefix)) {
 				$prefix = static::$DEFAULT_PREFIX;
 			}
-			if (is_null($sufix)) {
-				$sufix = static::$DEFAULT_SUFIX;
+			if (is_null($suffix)) {
+				$suffix = static::$DEFAULT_SUFFIX;
 			}
 		}
 		else if (is_null($is_html)) {
@@ -157,7 +157,7 @@ class ORE_ExecutionTime {
 				$lf = ($is_html) ? '<br>' : "\n";
 				echo $str.$lf;
 			}
-			echo $sufix;
+			echo $suffix;
 		}
 	}
 
@@ -166,9 +166,9 @@ class ORE_ExecutionTime {
 	 *
 	 * @return void
 	 */
-	public static function sfGetDump($is_html = true, $prefix = null, $sufix = null) {
+	public static function sfGetDump($is_html = true, $prefix = null, $suffix = null) {
 		ob_start();
-		self::sfDump($is_html, $prefix, $sufix);
+		self::sfDump($is_html, $prefix, $suffix);
 		$contents = ob_get_contents();
 		ob_end_clean();
 		return $contents;

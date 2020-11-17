@@ -207,7 +207,7 @@ class ORE_ZipBarcode {
 
 		$kansuji = implode('|', $arr_kansuji);
 
-		$arr_sufix = array(
+		$arr_suffix = array(
 			'番地',
 			'番',
 			'丁目',
@@ -222,13 +222,13 @@ class ORE_ZipBarcode {
 		$addr = str_replace('◯', '0', $addr); // <- preg_matchでおかしくなるため
 		$addr = str_replace('　', '', $addr);
 		$addr = preg_replace('/\s+/', '', $addr);
-		foreach ($arr_sufix as $sufix) {
-			$pattern = "/({$kansuji})+{$sufix}/";
+		foreach ($arr_suffix as $suffix) {
+			$pattern = "/({$kansuji})+{$suffix}/";
 			$matches = [];
 			preg_match_all($pattern, $addr, $matches);
 			foreach ($matches as $matche) {
 				foreach ($matche as $search) {
-					$replace = static::jnum2num($search).$sufix;
+					$replace = static::jnum2num($search).$suffix;
 					$addr = str_replace($search, $replace, $addr);
 				}
 				break;

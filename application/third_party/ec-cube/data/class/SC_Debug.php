@@ -1,10 +1,8 @@
 <?php
 
 /**
- *
  * @author onishi naoyuki
  * @since 2008
- *
  */
 class SC_Debug {
 
@@ -14,6 +12,21 @@ class SC_Debug {
 	private static $_DESTRUCT_DUMP = FALSE;
 	private static $_CLEAN_PATH = NULL;
 	private static $_ROOT_PATH = "";
+	private static $_IS_CLI = FALSE;
+
+	/**
+	 *
+	 */
+	public static function CLI() {
+		self::$_IS_CLI = TRUE;
+	}
+
+	/**
+	 *
+	 */
+	public static function NOT_CLI() {
+		self::$_IS_CLI = FALSE;
+	}
 
 	/**
 	 *
@@ -86,13 +99,28 @@ class SC_Debug {
 	}
 
 	/**
+	 * @param bool $is_html
+	 * @return bool
+	 */
+	protected static function _get_is_html($is_html) {
+		// if (TRUE === self::$_IS_CLI) {
+		// 	return false;
+		// }
+		if (! is_null($is_html)) {
+			return $is_html;
+		}
+		return false;
+	}
+
+	/**
 	 * @param string $var_name
 	 * @param object $var
 	 * @param bool $is_html
 	 * @param integer $tracenumber
 	 * @return void
 	 */
-	public static function sfAddVar($var_name, $var = ':undefined:', $is_html = FALSE, $tracenumber = 0) {
+	public static function sfAddVar($var_name, $var = ':undefined:', $is_html = null, $tracenumber = 0) {
+		$is_html = static::_get_is_html($is_html);
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
 		self::$_DUMP[] = self::_make_varinfo($var_name, $var, $is_html, $tracenumber);
@@ -103,7 +131,8 @@ class SC_Debug {
 	 * @param mixed $var
 	 * @return void
 	 */
-	public static function sfAddVarTop($var_name, $var = ':undefined:', $is_html = FALSE, $tracenumber = 0) {
+	public static function sfAddVarTop($var_name, $var = ':undefined:', $is_html = null, $tracenumber = 0) {
+		$is_html = static::_get_is_html($is_html);
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
 		array_unshift(self::$_DUMP, self::_make_varinfo($var_name, $var, $is_html, $tracenumber));
@@ -114,7 +143,6 @@ class SC_Debug {
 	 * @param $var
 	 * @param $is_html
 	 * @param $tracenumber
-	 *
 	 * @return SC_Debug_VarInfo
 	 */
 	protected static function _make_varinfo($var_name, $var, $is_html, $tracenumber) {
@@ -139,36 +167,48 @@ class SC_Debug {
 
 	/**
 	 * @param string $prefix
-	 * @param string $sufix
+	 * @param string $suffix
 	 */
-	public static function sfVarDump($prefix = '<div style="background-color:white;width:100%;overflow-x:auto;" class="sc_debug">', $sufix = '</div>') {
+	public static function sfVarDump($prefix = '<div style="background-color:white;width:100%;overflow-x:auto;" class="sc_debug">', $suffix = '</div>') {
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
 
 		if (! empty(self::$_DUMP)) {
-			echo $prefix;
-			echo '<style>pre{margin:0}</style>';
+
+			if (TRUE !== self::$_IS_CLI) {
+				echo $prefix;
+				echo '<style>pre{margin:0}</style>';
+			}
+
 			foreach (self::$_DUMP as $varinfo) {
 				self::_sfVarDump($varinfo);
 			}
-			echo $sufix;
+
+			if (TRUE !== self::$_IS_CLI) {
+				echo $suffix;
+			}
 		}
 	}
 
 	/**
 	 * @param string $prefix
-	 * @param string $sufix
+	 * @param string $suffix
 	 * @return false|string
 	 */
-	public static function sfGetVarDump($prefix = '<div style="background-color:white;width:100%;overflow-x:auto;" class="sc_debug">', $sufix = '</div>') {
+	public static function sfGetVarDump($prefix = '<div style="background-color:white;width:100%;overflow-x:auto;" class="sc_debug">', $suffix = '</div>') {
 		if (empty(self::$_DUMP)) {
 			return '';
 		}
 		ob_start();
-		self::sfVarDump($prefix, $sufix);
+		self::sfVarDump($prefix, $suffix);
 		$contents = ob_get_contents();
 		ob_end_clean();
 		return $contents;
+	}
+
+
+	public static function sfReset() {
+		self::$_DUMP = [];
 	}
 
 	/**
@@ -179,7 +219,6 @@ class SC_Debug {
 	}
 
 	/**
-	 *
 	 * @param SC_Debug_VarInfo $varinfo
 	 * @return void
 	 */
@@ -206,7 +245,6 @@ class SC_Debug {
 	}
 
 	/**
-	 *
 	 * @param string $name
 	 */
 	public static function sfAddVarTrace($name = "backtrace") {
@@ -217,7 +255,6 @@ class SC_Debug {
 	}
 
 	/**
-	 *
 	 * @return multitype:
 	 */
 	public static function getTraceArray() {
@@ -254,7 +291,7 @@ class SC_Debug {
 	 * @param mixed $var
 	 * @return void
 	 */
-	public static function sfLog($var_name, & $var = null) {
+	public static function sfLog($var_name, &$var = null) {
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
 
@@ -283,7 +320,6 @@ class SC_Debug {
 	}
 
 	/**
-	 *
 	 * @param string $path
 	 * @return string
 	 */

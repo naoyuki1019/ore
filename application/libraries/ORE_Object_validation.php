@@ -29,10 +29,12 @@ class ORE_Object_validation extends MY_Form_validation {
 	 *
 	 */
 	public function set_object(& $object) {
-		if (! isset($object) OR ! is_object($object)) {
-			throw new \Exception('$object is not object');
+		if (isset($object) AND is_object($object)) {
+			$this->_object = $object;
 		}
-		$this->_object = $object;
+		else {
+			$this->add_error_message('error', 'No object set in $this->_object in set_object');
+		}
 		return $this;
 	}
 
@@ -153,6 +155,7 @@ class ORE_Object_validation extends MY_Form_validation {
 	{
 		// Do we even have any data to process?  Mm?
 		if (! is_object($this->_object)) {
+			$this->add_error_message('error', 'No object set in $this->_object in run');
 			return FALSE;
 		}
 

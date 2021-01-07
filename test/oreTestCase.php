@@ -1,6 +1,6 @@
 <?php
 
-namespace ore;
+namespace ore\test;
 
 use PHPUnit\Framework\TestCase;
 
@@ -20,25 +20,22 @@ class oreTestCase extends TestCase {
 	/**
 	 * 一番最初のテストメソッド実行前に呼ばれる
 	 */
-	public static function setUpBeforeClass() {
+	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
-		// echo __METHOD__."\n";
 	}
 
 	/**
 	 * 一番最後のテストメソッド実行後に呼ばれる
 	 */
-	public static function tearDownAfterClass() {
+	public static function tearDownAfterClass(): void {
 		parent::tearDownAfterClass();
-		// echo __METHOD__."\n";
 	}
 
 	/**
 	 * 各テストメソッドの実行前に呼ばれる
 	 */
-	protected function setUp() {
+	protected function setUp(): void {
 		parent::setUp();
-		// echo __METHOD__."\n";
 
 		\SC_Debug::ENABLE();
 		\SC_Debug::sfReset();
@@ -47,9 +44,8 @@ class oreTestCase extends TestCase {
 	/**
 	 * 各テストメソッドの実行後に呼ばれる
 	 */
-	protected function tearDown() {
+	protected function tearDown(): void {
 		parent::tearDown();
-		// echo __METHOD__."\n";
 
 		\SC_Debug::sfVarDump();
 	}

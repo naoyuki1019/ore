@@ -56,7 +56,7 @@ class ORE_Params {
 	 * @param array $params
 	 */
 	public function set($params = [], $value = null) {
-		$type = gettype($params);
+		$type = strtolower(gettype($params));
 		if ('array' === $type OR 'object' === $type) {
 			foreach ($params as $key => $val) {
 				$this->{$key} = $val;

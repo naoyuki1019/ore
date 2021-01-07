@@ -1,6 +1,8 @@
 <?php
 
-namespace ore;
+namespace ore\test;
+
+use ore\MY_Form_validation;
 
 require_once dirname(__FILE__).'/oreTestCase.php';
 
@@ -9,24 +11,13 @@ require_once dirname(__FILE__).'/oreTestCase.php';
  *
  * @package ore
  */
-class myFormValidationTest extends oreTestCase {
-
-	/**
-	 *
-	 */
-	public function testIsNatural() {
-		$v = new ORE_Object_validation();
-		$this->assertTrue($v->is_natural(0));
-		$this->assertTrue($v->is_natural(1));
-		$this->assertFalse($v->is_natural(-1));
-		$this->assertFalse($v->is_natural(1.1));
-	}
+class My_Form_Validation_Test extends oreTestCase {
 
 	/**
 	 *
 	 */
 	public function testIsDateTime() {
-		$v = new ORE_Object_validation();
+		$v = new MY_Form_validation();
 		$this->assertTrue($v->is_datetime('2020/11/12 00:00:00', 1));
 		$this->assertTrue($v->is_datetime('2020/11/32 00:00:00', 0));
 		$this->assertFalse($v->is_datetime('2020/11/32 00:00:00', 1));

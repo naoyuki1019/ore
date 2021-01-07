@@ -20,16 +20,58 @@ class ORE_DBInsert {
 	public $values_cnt = 0;
 	public $insert_cnt = 0;
 	public $threshold = 3000;
+	public $dry_run = 0;
 	public $echo = 0;
 	public $debug = 0;
 
-	protected function _exec($statement) {}
+	/**
+	 * @param $statement
+	 */
+	protected function _exec($statement) {
+		if ($this->debug) {
+			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
+			$this->echo_flush(\SqlFormatter::format($statement, true));
+		}
+		if (0 !== $this->dry_run) {
+			return;
+		}
+	}
 
-	public function begin($option = null) {}
+	/**
+	 * @param null $option
+	 */
+	public function begin($option = null) {
+		if ($this->debug) {
+			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
+		}
+		if (0 !== $this->dry_run) {
+			return;
+		}
+	}
 
-	public function commit($option = null) {}
+	/**
+	 * @param null $option
+	 */
+	public function commit($option = null) {
+		if ($this->debug) {
+			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
+		}
+		if (0 !== $this->dry_run) {
+			return;
+		}
+	}
 
-	public function rollback($option = null) {}
+	/**
+	 * @param null $option
+	 */
+	public function rollback($option = null) {
+		if ($this->debug) {
+			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
+		}
+		if (0 !== $this->dry_run) {
+			return;
+		}
+	}
 
 	/**
 	 * 記号の前にバックスラッシュを付ける
@@ -146,7 +188,6 @@ class ORE_DBInsert {
 			$table = $this->_escape_string($this->table);
 			$statement = "INSERT INTO {$table} (".implode(', ', $this->cols_header).') VALUES ';
 			$statement .= implode(', ', $this->values).';';
-			if ($this->debug) $this->echo_flush(\SqlFormatter::format($statement, true));
 			$this->_exec($statement);
 			$this->values = [];
 			$this->values_cnt = 0;

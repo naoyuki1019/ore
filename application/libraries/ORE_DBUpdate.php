@@ -22,17 +22,58 @@ class ORE_DBUpdate {
 	public $update_cnt = 0;
 	public $total_cnt = 0;
 	public $threshold = 1000;
+	public $dry_run = 0;
 	public $echo = 0;
 	public $debug = 0;
 
+	/**
+	 * @param $statement
+	 */
+	protected function _exec($statement) {
+		if ($this->debug) {
+			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
+			$this->echo_flush(\SqlFormatter::format($statement, true));
+		}
+		if (0 !== $this->dry_run) {
+			return;
+		}
+	}
 
-	protected function _exec($statement) {}
+	/**
+	 * @param null $option
+	 */
+	public function begin($option = null) {
+		if ($this->debug) {
+			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
+		}
+		if (0 !== $this->dry_run) {
+			return;
+		}
+	}
 
-	public function begin($option = null) {}
+	/**
+	 * @param null $option
+	 */
+	public function commit($option = null) {
+		if ($this->debug) {
+			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
+		}
+		if (0 !== $this->dry_run) {
+			return;
+		}
+	}
 
-	public function commit($option = null) {}
-
-	public function rollback($option = null) {}
+	/**
+	 * @param null $option
+	 */
+	public function rollback($option = null) {
+		if ($this->debug) {
+			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
+		}
+		if (0 !== $this->dry_run) {
+			return;
+		}
+	}
 
 	/**
 	 * @param $str
@@ -124,7 +165,6 @@ class ORE_DBUpdate {
 	public function update_all() {
 		if (1 > $this->update_cnt) return;
 		$statement = $this->makeStatement();
-		if ($this->debug) $this->echo_flush(\SqlFormatter::format($statement, true));
 		$this->_exec($statement);
 		$this->init_list();
 		$this->update_cnt = 0;

@@ -75,6 +75,47 @@ class MY_Form_validation extends CI_Form_validation {
 
 
 	/**
+	 * Error String
+	 *
+	 * Returns the error messages as a string, wrapped in the error delimiters
+	 *
+	 * @param	string
+	 * @param	string
+	 * @return	string
+	 */
+	public function error_string($prefix = null, $suffix = null)
+	{
+		// No errors, validation passes!
+		if (count($this->_error_array) === 0)
+		{
+			return '';
+		}
+
+		if (is_null($prefix))
+		{
+			$prefix = $this->_error_prefix;
+		}
+
+		if (is_null($suffix))
+		{
+			$suffix = $this->_error_suffix;
+		}
+
+		// Generate the error string
+		$arr = [];
+		foreach ($this->_error_array as $val)
+		{
+			if ($val !== '')
+			{
+				$arr[] = $prefix.$val.$suffix;
+			}
+		}
+
+		return implode("\n", $arr);
+	}
+
+
+	/**
 	 *
 	 */
 	public function error_count() {
@@ -159,6 +200,7 @@ class MY_Form_validation extends CI_Form_validation {
 					$err_required = true;
 				}
 
+				// エラーが発生していない時
 				if (! $err_isset AND ! $err_required) {
 					return;
 				}

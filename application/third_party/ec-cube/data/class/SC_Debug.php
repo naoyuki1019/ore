@@ -6,6 +6,8 @@
  */
 class SC_Debug {
 
+	const undefined = ':undefined:';
+
 	private static $_DUMP = [];
 	private static $_ENABLE = NULL;
 	private static $_INSTANCE = NULL;
@@ -113,13 +115,29 @@ class SC_Debug {
 	}
 
 	/**
+	 * @param string $strings
+	 * @param bool $is_html
+	 * @return void
+	 */
+	public static function sfAddStr($strings, $is_html = null) {
+		$is_html = static::_get_is_html($is_html);
+		self::_SET_ENABLE();
+		if (TRUE !== self::$_ENABLE) return;
+		$varinfo = new SC_Debug_VarInfo();
+		$varinfo->is_html = $is_html;
+		$varinfo->var_name = '';
+		$varinfo->var = $strings;
+		self::$_DUMP[] = $varinfo;
+	}
+
+	/**
 	 * @param string $var_name
 	 * @param object $var
 	 * @param bool $is_html
 	 * @param integer $tracenumber
 	 * @return void
 	 */
-	public static function sfAddVar($var_name, $var = ':undefined:', $is_html = null, $tracenumber = 0) {
+	public static function sfAddVar($var_name, $var = SC_Debug::undefined, $is_html = null, $tracenumber = 0) {
 		$is_html = static::_get_is_html($is_html);
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
@@ -131,7 +149,7 @@ class SC_Debug {
 	 * @param mixed $var
 	 * @return void
 	 */
-	public static function sfAddVarTop($var_name, $var = ':undefined:', $is_html = null, $tracenumber = 0) {
+	public static function sfAddVarTop($var_name, $var = SC_Debug::undefined, $is_html = null, $tracenumber = 0) {
 		$is_html = static::_get_is_html($is_html);
 		self::_SET_ENABLE();
 		if (TRUE !== self::$_ENABLE) return;
@@ -148,7 +166,7 @@ class SC_Debug {
 	protected static function _make_varinfo($var_name, $var, $is_html, $tracenumber) {
 		$varinfo = new SC_Debug_VarInfo();
 		$varinfo->is_html = $is_html;
-		if (':undefined:' === $var
+		if (SC_Debug::undefined === $var
 			OR (('array' === gettype($var_name) OR 'object' === gettype($var_name))
 				AND ('array' !== gettype($var) AND 'object' !== gettype($var) AND '' === strval($var))
 			)
@@ -223,7 +241,14 @@ class SC_Debug {
 	 * @return void
 	 */
 	private static function _sfVarDump(SC_Debug_VarInfo $varinfo) {
-		$caller = htmlspecialchars($varinfo->caller, ENT_COMPAT);
+
+		if (! is_null($varinfo->caller)) {
+			$caller = htmlspecialchars($varinfo->caller, ENT_COMPAT).'<br>';
+		}
+		else {
+			$caller = '';
+		}
+
 		if ('' !== strval($varinfo->var_name)) {
 			$var_name = htmlspecialchars($varinfo->var_name);
 			$var_title = "{$var_name}=>";
@@ -237,10 +262,10 @@ class SC_Debug {
 		}
 
 		if ($varinfo->is_html) {
-			echo("<div>{$caller}<br>{$var_title}{$varinfo->var}</div>");
+			echo("<div>{$caller}{$var_title}".print_r($varinfo->var, true)."</div>");
 		}
 		else {
-			echo("<div>{$caller}<br>{$var_title}".nl2br(str_replace(" ", "&nbsp;", htmlspecialchars(print_r($varinfo->var, true))).'</div>'));
+			echo("<div>{$caller}{$var_title}".nl2br(str_replace(" ", "&nbsp;", htmlspecialchars(print_r($varinfo->var, true)))).'</div>');
 		}
 	}
 
@@ -354,7 +379,7 @@ class SC_Debug {
  */
 class SC_Debug_VarInfo {
 	public $is_html = false;
-	public $var_name = '';
-	public $var = '';
-	public $caller = '';
+	public $var_name = null;
+	public $var = null;
+	public $caller = null;
 }

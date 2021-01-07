@@ -119,7 +119,7 @@ class ORE_Volume extends ORE_Params {
 	 */
 	public function set($params = [], $value=null) {
 
-		$type = gettype($params);
+		$type = strtolower(gettype($params));
 		if ('array' === $type OR 'object' === $type) {
 			foreach ($params as $key => $val) {
 
@@ -504,8 +504,28 @@ class ORE_Volume extends ORE_Params {
 	/**
 	 * @return array
 	 */
-	public function errors() {
-		return $this->_errors;
+	public function errors($keys=null) {
+		if (is_null($keys)) {
+			return $this->_errors;
+		}
+
+		$errors = [];
+
+		$type = strtolower(gettype($keys));
+		if ('array' === $type OR 'object' === $type) {
+			foreach ($keys as $key) {
+				if (array_key_exists($key, $this->_errors)) {
+					$errors[$key] = $this->_errors[$key];
+				}
+			}
+		}
+		else {
+			if (array_key_exists($keys, $this->_errors)) {
+				$errors = $this->_errors[$keys];
+			}
+		}
+
+		return $errors;
 	}
 
 	/**
@@ -563,6 +583,17 @@ class ORE_Volume extends ORE_Params {
 	 */
 	public function messages() {
 		return $this->_messages;
+	}
+
+	/**
+	 * @param $from
+	 * @param $to
+	 */
+	public function error_copy($from, $to) {
+		$errors = $this->errors();
+		if (array_key_exists($from, $errors) AND ! array_key_exists($to, $errors)) {
+			$this->add_error($to, $errors[$from]);
+		}
 	}
 
 	/**

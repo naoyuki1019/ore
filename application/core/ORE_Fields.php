@@ -42,7 +42,7 @@ class ORE_Fields extends ORE_Params {
 			if (TRUE === array_key_exists($params, $public_vars)) {
 				$this->{$params} = $value;
 			}
-			
+
 		}
 	}
 

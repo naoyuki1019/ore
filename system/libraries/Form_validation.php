@@ -372,7 +372,7 @@ class CI_Form_validation {
 	 * @param	string
 	 * @return	string
 	 */
-	public function error_string($prefix = '', $suffix = '')
+	public function error_string($prefix = null, $suffix = null)
 	{
 		// No errors, validation passes!
 		if (count($this->_error_array) === 0)
@@ -380,12 +380,12 @@ class CI_Form_validation {
 			return '';
 		}
 
-		if ($prefix === '')
+		if (is_null($prefix))
 		{
 			$prefix = $this->_error_prefix;
 		}
 
-		if ($suffix === '')
+		if (is_null($suffix))
 		{
 			$suffix = $this->_error_suffix;
 		}
@@ -1353,7 +1353,6 @@ class CI_Form_validation {
 	public function numeric($str)
 	{
 		return (bool) preg_match('/^[\-+]?[0-9]*\.?[0-9]+$/', $str);
-
 	}
 
 	// --------------------------------------------------------------------

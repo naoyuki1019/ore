@@ -134,6 +134,7 @@ class ORE_Object_validation extends MY_Form_validation {
 			'is_array'	=> $is_array,
 			'keys'		=> $indexes,
 			'postdata'	=> NULL,
+			'key_exists' => NULL,
 			'error'		=> ''
 		);
 
@@ -200,10 +201,26 @@ class ORE_Object_validation extends MY_Form_validation {
 			if ($row['is_array'] === TRUE)
 			{
 				$this->_field_data[$field]['postdata'] = $this->_reduce_array($this->_object, $row['keys']);
+
+				if (array_key_exists(0, $row['keys']))
+				{
+					$this->_field_data[$field]['key_exists'] = (property_exists($this->_object, $row['keys'][0])) ? 1 : 0;
+				}
+				else
+				{
+					$this->_field_data[$field]['key_exists'] = 0;
+				}
 			}
-			elseif (property_exists($this->_object, $field))
-			{
-				$this->_field_data[$field]['postdata'] = $this->_object->{$field};
+			else {
+				if (property_exists($this->_object, $field))
+				{
+					$this->_field_data[$field]['postdata'] = $this->_object->{$field};
+					$this->_field_data[$field]['key_exists'] = 1;
+				}
+				else {
+					$this->_field_data[$field]['postdata'] = NULL;
+					$this->_field_data[$field]['key_exists'] = 0;
+				}
 			}
 		}
 

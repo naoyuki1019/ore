@@ -244,6 +244,7 @@ class CI_Form_validation {
 			'is_array'	=> $is_array,
 			'keys'		=> $indexes,
 			'postdata'	=> NULL,
+			'key_exists' => NULL,
 			'error'		=> ''
 		);
 
@@ -463,10 +464,18 @@ class CI_Form_validation {
 			if ($row['is_array'] === TRUE)
 			{
 				$this->_field_data[$field]['postdata'] = $this->_reduce_array($validation_array, $row['keys']);
+				$this->_field_data[$field]['key_exists'] = 1;
 			}
-			elseif (isset($validation_array[$field]))
-			{
-				$this->_field_data[$field]['postdata'] = $validation_array[$field];
+			else {
+				if (array_key_exists($field, $validation_array))
+				{
+					$this->_field_data[$field]['postdata'] = $validation_array[$field];
+					$this->_field_data[$field]['key_exists'] = 1;
+				}
+				else {
+					$this->_field_data[$field]['postdata'] = NULL;
+					$this->_field_data[$field]['key_exists'] = 0;
+				}
 			}
 		}
 
@@ -622,25 +631,30 @@ class CI_Form_validation {
 
 			if (in_array('isset', $rules, TRUE))
 			{
-				if (! isset($postdata)) {
+				if (! isset($postdata))
+				{
 					$err_isset = true;
 				}
 
-				if (in_array('required', $rules) AND '' === $postdata) {
+				if (in_array('required', $rules) AND '' === $postdata)
+				{
 					$err_required = true;
 				}
 
-				if (! $err_isset AND ! $err_required) {
+				// エラーが発生していない時
+				if (! $err_isset AND ! $err_required)
+				{
 					return;
 				}
 
 			}
 			else {
-				if (in_array('required', $rules) AND '' === $postdata)
+				if (in_array('required', $rules) AND '' === $postdata AND 1 === $row['key_exists'])
 				{
 					$err_required = true;
 				}
-				else {
+				else
+				{
 					return;
 				}
 			}
@@ -1458,7 +1472,7 @@ class CI_Form_validation {
 	 * @param	string
 	 * @return	bool
 	 */
-	public function is_natural_no_zero($str)
+	public function is_natural_greater_than_zero($str)
 	{
 		return ($str != 0 && ctype_digit((string) $str));
 	}

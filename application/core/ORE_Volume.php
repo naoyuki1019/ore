@@ -15,6 +15,8 @@ namespace ore;
  */
 class ORE_Volume extends ORE_Params {
 
+	const msg_default_value = '---___----';
+
 	/**
 	 * @var string
 	 */
@@ -65,6 +67,13 @@ class ORE_Volume extends ORE_Params {
 	 * @var int
 	 */
 	protected $_total = 0;
+
+	/**
+	 * 総件数不要フラグ
+	 *
+	 * @var int
+	 */
+	public $flg_no_total = 0;
 
 	/**
 	 * @var string
@@ -155,6 +164,13 @@ class ORE_Volume extends ORE_Params {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * @param $find_fileds
+	 */
+	public function set_find_fileds($find_fileds) {
+		$this->find_fileds = $find_fileds;
 	}
 
 	/**
@@ -456,26 +472,29 @@ class ORE_Volume extends ORE_Params {
 	 * @param $key
 	 * @param $msg
 	 */
-	public function add_error($key, $msg = '') {
+	public function add_error($key, $msg = self::msg_default_value) {
 		if (is_array($key)) {
 			foreach ($key as $key2 => $msg2) {
 				$this->add_error($key2, $msg2);
 			}
 		}
 		else {
-			if (is_array($msg) AND ! empty($msg)) {
-				if (! array_key_exists($key, $this->_errors)) {
-					$this->_errors[$key] = [];
-				}
-				foreach ($msg as $m) {
-					if (! in_array($m, $this->_errors[$key])) {
-						$this->_errors[$key][] = $m;
+			if (is_array($msg)) {
+				if (! empty($msg)) {
+					if (! array_key_exists($key, $this->_errors)) {
+						$this->_errors[$key] = [];
+					}
+					foreach ($msg as $m) {
+						if (! in_array($m, $this->_errors[$key])) {
+							$this->_errors[$key][] = $m;
+						}
 					}
 				}
 			}
 			else {
-				if ('' === $msg) {
-					$msg = 'error';
+				if (self::msg_default_value === $msg) {
+					$msg = $key;
+					$key = 'error';
 				}
 				if (! array_key_exists($key, $this->_errors)) {
 					$this->_errors[$key] = [];
@@ -532,26 +551,29 @@ class ORE_Volume extends ORE_Params {
 	 * @param $key
 	 * @param $msg
 	 */
-	public function add_message($key, $msg = '') {
+	public function add_message($key, $msg = self::msg_default_value) {
 		if (is_array($key)) {
 			foreach ($key as $key2 => $msg2) {
 				$this->add_message($key2, $msg2);
 			}
 		}
 		else {
-			if (is_array($msg) AND ! empty($msg)) {
-				if (! array_key_exists($key, $this->_messages)) {
-					$this->_messages[$key] = [];
-				}
-				foreach ($msg as $m) {
-					if (! in_array($m, $this->_messages[$key])) {
-						$this->_messages[$key][] = $m;
+			if (is_array($msg)) {
+				if (! empty($msg)) {
+					if (! array_key_exists($key, $this->_messages)) {
+						$this->_messages[$key] = [];
+					}
+					foreach ($msg as $m) {
+						if (! in_array($m, $this->_messages[$key])) {
+							$this->_messages[$key][] = $m;
+						}
 					}
 				}
 			}
 			else {
-				if ('' === $msg) {
-					$msg = 'message';
+				if (self::msg_default_value === $msg) {
+					$msg = $key;
+					$key = 'message';
 				}
 				if (! array_key_exists($key, $this->_messages)) {
 					$this->_messages[$key] = [];
@@ -560,7 +582,6 @@ class ORE_Volume extends ORE_Params {
 					$this->_messages[$key][] = $msg;
 				}
 			}
-
 		}
 	}
 
@@ -607,8 +628,8 @@ class ORE_Volume extends ORE_Params {
 	 * @param string $glue
 	 * @return mixed
 	 */
-	public function error_string($glue = "\n") {
-		return $this->__string('errors', $glue);
+	public function error_string($glue = "\n", $open='', $close='') {
+		return $open.$this->__string('errors', $glue).$close;
 	}
 
 	/**

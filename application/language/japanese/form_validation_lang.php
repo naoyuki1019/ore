@@ -1,6 +1,7 @@
 <?php
 
 $lang['required'] = "%sは必須です。";
+$lang['equal'] = "%sは%sでなければなりません。";
 $lang['is_unique'] = "%sの値は%sに既に登録があります。";
 $lang['isset'] = "%sがセットされていません。";
 $lang['is_empty'] = "%sは空でなければなりません。";
@@ -19,8 +20,9 @@ $lang['is_numeric'] = "%sには数値以外は入力できません。";
 $lang['integer'] = "%sには整数を入力してください。";
 $lang['regex_match'] = "%sは正しい形式ではありません。";
 $lang['matches'] = "%sが%sと一致しません。";
+$lang['is_int'] = "%sには整数を入力してください。";
 $lang['is_natural'] = "%sには0以上の整数を入力してください。";
-$lang['is_natural_no_zero'] = "%sには0より大きい整数を入力してください。";
+$lang['is_natural_greater_than_zero'] = "%sには0より大きい整数を入力してください。";
 $lang['decimal'] = "%sは10進数を入力してください。";
 $lang['less_than'] = "%sは%sより小さい数を入力してください。";
 $lang['less_than_equal_to'] = "%sは%s以下の数を入力してください。";

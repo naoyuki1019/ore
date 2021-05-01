@@ -73,7 +73,7 @@ class ORE_DuplicateStringDelete {
 	private static function _explode_array_merge($delimiter_arr, $i, $limit, $str, $arr) {
 		$arr = array_unique(array_merge($arr, explode($delimiter_arr[$i], $str)));
 
-		$i++;
+		++$i;
 		if ($i < $limit) {
 			$new = [];
 			foreach ($arr as $x => $a) {

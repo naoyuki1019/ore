@@ -15,6 +15,7 @@ $application_folder = realpath(dirname(__FILE__) . '/application');
 require $system_path.'/core/Lang.php';
 require $system_path.'/libraries/Form_validation.php';
 require $application_folder.'/third_party/ec-cube/data/class/SC_Debug.php';
+require $application_folder.'/core/ORE_Const.php';
 require $application_folder.'/core/ORE_Array.php';
 require $application_folder.'/core/ORE_Functions.php';
 require $application_folder.'/core/ORE_Params.php';

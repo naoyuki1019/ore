@@ -32,7 +32,7 @@ class ORE_DBInsert {
 			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
 			$this->echo_flush(\SqlFormatter::format($statement, true));
 		}
-		if (0 !== $this->dry_run) {
+		if ($this->dry_run) {
 			return;
 		}
 	}
@@ -44,7 +44,7 @@ class ORE_DBInsert {
 		if ($this->debug) {
 			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
 		}
-		if (0 !== $this->dry_run) {
+		if ($this->dry_run) {
 			return;
 		}
 	}
@@ -56,7 +56,7 @@ class ORE_DBInsert {
 		if ($this->debug) {
 			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
 		}
-		if (0 !== $this->dry_run) {
+		if ($this->dry_run) {
 			return;
 		}
 	}
@@ -68,7 +68,7 @@ class ORE_DBInsert {
 		if ($this->debug) {
 			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
 		}
-		if (0 !== $this->dry_run) {
+		if ($this->dry_run) {
 			return;
 		}
 	}
@@ -240,7 +240,7 @@ class ORE_DBInsert {
 			@fclose($this->tsv_option->handle);
 			$this->echo_flush("出力件数:{$this->insert_cnt}件<br>");
 			if (0 < $this->insert_cnt) {
-				$this->echo_flush("<a class='download' href='{$uri}' download='{$this->tsv_option->file_nm}'>TSVリンク</a><br>");
+				$this->echo_flush("<a class='download' href='{$uri}' download='{$this->tsv_option->file_nm}'>TSVファイルダウンロードリンク</a><br>");
 			}
 		}
 	}

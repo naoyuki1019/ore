@@ -192,26 +192,30 @@ class MY_Form_validation extends CI_Form_validation {
 
 			if (in_array('isset', $rules, TRUE))
 			{
-				if (! isset($postdata)) {
+				if (! isset($postdata))
+				{
 					$err_isset = true;
 				}
 
-				if (in_array('required', $rules) AND '' === $postdata) {
+				if (in_array('required', $rules) AND '' === $postdata)
+				{
 					$err_required = true;
 				}
 
 				// エラーが発生していない時
-				if (! $err_isset AND ! $err_required) {
+				if (! $err_isset AND ! $err_required)
+				{
 					return;
 				}
 
 			}
 			else {
-				if (in_array('required', $rules) AND '' === $postdata)
+				if (in_array('required', $rules) AND 1 === $row['key_exists'] AND '' === strval($postdata))
 				{
 					$err_required = true;
 				}
-				else {
+				else
+				{
 					return;
 				}
 			}
@@ -909,5 +913,25 @@ class MY_Form_validation extends CI_Form_validation {
 	 */
 	public function is_empty($str) {
 		return (bool)('' === strval($str));
+	}
+
+
+	/**
+	 * @param $str
+	 * @param $expect
+	 * @return bool
+	 */
+	public function equal($str, $expect) {
+		return (bool)(strval($str) === strval($expect));
+	}
+
+
+	/**
+	 * @param $str
+	 *
+	 * @return bool
+	 */
+	public function is_int($str) {
+		return (bool)(preg_match('/^\-?[0-9]+$/', $str));
 	}
 }

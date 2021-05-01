@@ -32,9 +32,9 @@ class ORE_DBUpdate {
 	protected function _exec($statement) {
 		if ($this->debug) {
 			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
-			$this->echo_flush(\SqlFormatter::format($statement, true));
+			$this->echo_flush(\SqlFormatter::format($statement, false));
 		}
-		if (0 !== $this->dry_run) {
+		if ($this->dry_run) {
 			return;
 		}
 	}
@@ -46,7 +46,7 @@ class ORE_DBUpdate {
 		if ($this->debug) {
 			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
 		}
-		if (0 !== $this->dry_run) {
+		if ($this->dry_run) {
 			return;
 		}
 	}
@@ -58,7 +58,7 @@ class ORE_DBUpdate {
 		if ($this->debug) {
 			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
 		}
-		if (0 !== $this->dry_run) {
+		if ($this->dry_run) {
 			return;
 		}
 	}
@@ -70,7 +70,7 @@ class ORE_DBUpdate {
 		if ($this->debug) {
 			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
 		}
-		if (0 !== $this->dry_run) {
+		if ($this->dry_run) {
 			return;
 		}
 	}
@@ -80,9 +80,15 @@ class ORE_DBUpdate {
 	 */
 	protected function echo_flush($str) {
 		if (0 < ob_get_level() AND $this->echo) {
-			echo $str;
-			ob_flush();
-			flush();
+			// PHPUnit
+			if (isset($_SERVER) AND array_key_exists('argv', $_SERVER) AND 0 < count($_SERVER['argv']) AND 'phpunit' === substr($_SERVER['argv'][0], -7)) {
+				\SC_Debug::sfAddVar('$str', $str);
+			}
+			else {
+				echo $str;
+				ob_flush();
+				flush();
+			}
 		}
 	}
 
@@ -118,6 +124,14 @@ class ORE_DBUpdate {
 	}
 
 	/**
+	 * @param $target
+	 * @return bool
+	 */
+	public function has_target($target) {
+		return (boolean)(in_array($target, $this->_targets));
+	}
+
+	/**
 	 *
 	 */
 	protected function init_list() {
@@ -129,12 +143,12 @@ class ORE_DBUpdate {
 
 	/**
 	 * @param $id
-	 * @param $keyval
+	 * @param $cols
 	 * @throws \Exception
 	 */
-	public function add($id, $keyval) {
+	public function add($id, $cols) {
 
-		if (array_key_exists($this->id_column, $keyval)) unset($keyval[$this->id_column]);
+		if (array_key_exists($this->id_column, $cols)) unset($cols[$this->id_column]);
 
 		if (! isset($id) OR is_null($id) OR '' === strval($id)) {
 			throw new \Exception('$idがセットされていません');
@@ -148,10 +162,17 @@ class ORE_DBUpdate {
 		$this->total_cnt++;
 
 		foreach ($this->_targets as $target) {
-			if (! array_key_exists($target, $keyval)) {
+			if (! array_key_exists($target, $cols)) {
 				throw new \Exception("{$target}がセットされていません");
 			}
-			$this->_list[$target][$id] = $keyval[$target];
+			$this->_list[$target][$id] = $cols[$target];
+			unset($cols[$target]);
+		}
+
+		if (0 < count($cols)) {
+			$msg = 'Error: 余った -> '.implode(', ', array_keys($cols));
+			$this->echo_flush($msg.'<br>');
+			throw new \Exception($msg);
 		}
 
 		if ($this->update_cnt >= $this->threshold) {
@@ -198,14 +219,14 @@ class ORE_DBUpdate {
 				throw new \Exception("\$this->_list[{$target}]がセットされていません");
 			}
 
-			foreach ($this->_list[$target] as $keyval => $val) {
+			foreach ($this->_list[$target] as $key => $val) {
 				if (is_null($val)) {
 					$valstr = 'NULL';
 				}
 				else {
 					$valstr = "'".$this->_escape_string($val)."'";
 				}
-				$t2[] = "    WHEN '{$keyval}' THEN {$valstr}";
+				$t2[] = "    WHEN '{$key}' THEN {$valstr}";
 			}
 			$t2[] = "  END";
 			$t3[] = implode("\n", $t2);

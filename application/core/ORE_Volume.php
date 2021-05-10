@@ -521,6 +521,13 @@ class ORE_Volume extends ORE_Params {
 	}
 
 	/**
+	 * @params array $errors
+	 */
+	public function set_errors($errors) {
+		$this->_errors = $errors;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function errors($keys=null) {
@@ -597,6 +604,13 @@ class ORE_Volume extends ORE_Params {
 	 */
 	public function has_message() {
 		return (bool)(0 < $this->message_count());
+	}
+
+	/**
+	 * @params array $messages
+	 */
+	public function set_messages($messages) {
+		$this->_messages = $messages;
 	}
 
 	/**

@@ -15,7 +15,7 @@ namespace ore;
  */
 class ORE_Volume extends ORE_Params {
 
-	const msg_default_value = '---___----';
+	const msg_default_value = '----___----';
 
 	/**
 	 * @var string

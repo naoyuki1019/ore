@@ -1,7 +1,6 @@
 <?php
 
 /**
- *
  * @package Ore
  * @author naoyuki onishi
  */
@@ -15,8 +14,7 @@ namespace ore;
  */
 class ORE_ZipBarcode {
 
-	protected $_debug = false;
-	protected $_zip = [];
+	protected $_debug = 0;
 	protected $_zip_org = null;
 	protected $_addr = null;
 	protected $_addr_org = null;
@@ -27,20 +25,31 @@ class ORE_ZipBarcode {
 	protected $_code_cc_20 = [];
 	protected $_code_cc_comp = [];
 	protected $_code_font = [];
-	protected $_sum = [];
 
+	/**
+	 * @return array
+	 */
 	public function code_extracted() {
 		return $this->_code_extracted;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function code_cc_comp() {
 		return $this->_code_cc_comp;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function code_font() {
 		return $this->_code_font;
 	}
 
+	/**
+	 * @param int $b
+	 */
 	public function set_debug($b) {
 		$this->_debug = $b;
 	}
@@ -525,7 +534,6 @@ class ORE_ZipBarcode {
 				continue;
 			}
 			break;
-
 		}
 		return bcadd($mem_a, bcadd($mem_b, $mem_c));
 	}

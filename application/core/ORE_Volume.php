@@ -432,29 +432,6 @@ class ORE_Volume extends ORE_Params {
 	}
 
 	/**
-	 * @param int|null $no
-	 * @return array|string|string[]
-	 */
-	public function sort_key_query($no = null) {
-		if (is_null($no)) {
-			$no = $this->sort_key();
-		}
-		$sort_key_allows = $this->sort_key_allows();
-		if (! is_array($sort_key_allows)) {
-			return '';
-		}
-		if (! array_key_exists($no, $sort_key_allows)) {
-			return '';
-		}
-		if (! array_key_exists('query', $sort_key_allows[$no])) {
-			return '';
-		}
-		$query = $sort_key_allows[$no]['query'];
-		$query = str_replace('{sort_ud}', $this->sort_ud(), $query);
-		return $query;
-	}
-
-	/**
 	 * @return int
 	 */
 	public function offset() {

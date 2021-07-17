@@ -1,6 +1,6 @@
 <?php
 
-namespace ore\test;
+namespace ore\tests;
 
 use PHPUnit\Framework\TestCase;
 

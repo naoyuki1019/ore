@@ -28,7 +28,8 @@ require $application_folder.'/libraries/ORE_Data_validation.php';
 require $application_folder.'/libraries/ORE_Object_validation.php';
 require $application_folder.'/libraries/ORE_ExecutionTime.php';
 require $application_folder.'/libraries/ORE_DuplicateStringDelete.php';
-//require $application_folder.'/libraries/ORE_FTPUpload.php';
-//require $application_folder.'/libraries/ORE_HttpPost.php';
-//require $application_folder.'/libraries/ORE_ImageUtil.php';
+require $application_folder.'/libraries/ORE_ZipBarcode.php';
+require $application_folder.'/libraries/ORE_FTPUpload.php';
+require $application_folder.'/libraries/ORE_HttpPost.php';
+require $application_folder.'/libraries/ORE_ImageUtil.php';
 

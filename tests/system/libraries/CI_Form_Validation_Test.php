@@ -1,13 +1,14 @@
 <?php
 
-namespace ore\test;
+namespace ore\tests\system\libraries;
 
 use ore\CI_Form_validation;
+use ore\tests\oreTestCase;
 
-require_once dirname(__FILE__).'/oreTestCase.php';
+require_once dirname(dirname(dirname(__FILE__))).'/oreTestCase.php';
 
 /**
- * Class myFormValidationTest
+ * Class CI_Form_Validation_Test
  *
  * @package ore
  */

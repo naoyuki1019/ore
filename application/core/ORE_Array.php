@@ -132,13 +132,21 @@ class ORE_Array {
 	}
 
 	/**
+	 * @return $this
+	 */
+	public function array_flip() {
+		$this->_array = array_flip($this->_array);
+		return $this;
+	}
+
+	/**
 	 * @param string $function 'mb_convert_kana', 'strtolower', 'strtoupper'
 	 * @param bool $recursive
 	 * @param string $option1
 	 * @param string $option2
 	 * @return $this
 	 */
-	public function doFunc($function, $recursive = true, $option1 = null, $option2 = null) {
+	public function func($function, $recursive = true, $option1 = null, $option2 = null) {
 		$this->__function = $function;
 		$this->__option1 = $option1;
 		$this->__option2 = $option2;
@@ -154,7 +162,7 @@ class ORE_Array {
 	protected function _recursive_function(&$val) {
 		$type = gettype($val);
 		if ('array' === $type || 'object' === $type) {
-			if (TRUE !== $this->__recursive) {
+			if (! $this->__recursive) {
 				return;
 			}
 			foreach ($val as & $v) {
@@ -163,25 +171,19 @@ class ORE_Array {
 			return;
 		}
 
+		$function = $this->__function;
+
 		if (! is_null($this->__option2)) {
-			$val = $this->__function($val, $this->__option1, $this->__option2);
+			$val = $function($val, $this->__option1, $this->__option2);
 			return;
 		}
 
 		if (! is_null($this->__option1)) {
-			$val = $this->__function($val, $this->__option1);
+			$val = $function($val, $this->__option1);
 			return;
 		}
 
-		$val = $this->__function($val);
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function array_flip() {
-		$this->_array = array_flip($this->_array);
-		return $this;
+		$val = $function($val);
 	}
 
 	/**
@@ -195,8 +197,8 @@ class ORE_Array {
 	}
 
 	/**
-	 * @param string $search
-	 * @param $replace
+	 * @param string|array $search
+	 * @param string|array $replace
 	 * @param bool $recursive
 	 * @return $this
 	 */

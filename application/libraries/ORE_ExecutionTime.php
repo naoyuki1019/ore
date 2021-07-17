@@ -5,6 +5,7 @@
  * @package Ore
  * @author naoyuki onishi
  */
+
 namespace ore;
 
 /**
@@ -63,7 +64,7 @@ class ORE_ExecutionTime {
 			return;
 		}
 
-		if (defined('DEBUG_MODE') AND TRUE === DEBUG_MODE) {
+		if (defined('DEBUG_MODE') && TRUE === DEBUG_MODE) {
 			self::$_ENABLE = TRUE;
 		}
 		else {
@@ -117,7 +118,6 @@ class ORE_ExecutionTime {
 		return self::$_arr;
 	}
 
-
 	/**
 	 *
 	 * @return void
@@ -161,7 +161,6 @@ class ORE_ExecutionTime {
 		}
 	}
 
-
 	/**
 	 *
 	 * @return void
@@ -173,7 +172,6 @@ class ORE_ExecutionTime {
 		ob_end_clean();
 		return $contents;
 	}
-
 
 	/**
 	 *
@@ -194,7 +192,7 @@ class ORE_ExecutionTime {
 				}
 				$arr[] = $str;
 			}
-			\VALX\logger::info(implode("\n", $arr));
+			\VALX\libs\logger::info(implode("\n", $arr));
 		}
 	}
 }

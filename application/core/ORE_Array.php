@@ -1,7 +1,6 @@
 <?php
 
 /**
- *
  * @package Ore
  * @author naoyuki onishi
  */
@@ -15,20 +14,65 @@ namespace ore;
  */
 class ORE_Array {
 
+	/**
+	 * @var array
+	 */
 	protected $_array = [];
 
 	/**
-	 * @var bool __setにて存在しないkey値を追加するかどうか
+	 * @var string
+	 */
+	protected $__option1 = null;
+
+	/**
+	 * @var string
+	 */
+	protected $__option2 = null;
+
+	/**
+	 * @var bool
+	 */
+	protected $__recursive = false;
+
+	/**
+	 * @var mixed
+	 */
+	protected $__function = null;
+
+	/**
+	 * @var string
+	 */
+	protected $__search = '';
+
+	/**
+	 * @var string
+	 */
+	protected $__replace = '';
+
+	/**
+	 * __setにて存在しないkey値を追加する、しない
+	 *
+	 * @var bool
 	 */
 	protected $_add = true;
+
+	/**
+	 * @param bool $add
+	 */
 	public function set_add($add) {
 		$this->_add = $add;
 	}
 
 	/**
-	 * @var bool __getにて存在しないkey値呼び出し時などにどうするか
+	 * __getにて存在しないkey値の呼び出し時に例外とする、しない
+	 *
+	 * @var bool
 	 */
 	protected $_strict = false;
+
+	/**
+	 * @param bool $strict
+	 */
 	public function set_strict($strict) {
 		$this->_strict = $strict;
 	}
@@ -36,7 +80,7 @@ class ORE_Array {
 	/**
 	 * Ore_Array constructor.
 	 *
-	 * @param $array
+	 * @param mixed $array
 	 */
 	public function __construct($array) {
 		$type = gettype($array);
@@ -49,14 +93,14 @@ class ORE_Array {
 	}
 
 	/**
-	 *
+	 * @return array
 	 */
 	public function get_array() {
 		return $this->_array;
 	}
 
 	/**
-	 * @param $key
+	 * @param string $key
 	 * @return mixed|null
 	 * @throws \Exception
 	 */
@@ -65,15 +109,14 @@ class ORE_Array {
 			return $this->_array[$key];
 		}
 		if (TRUE == $this->_strict) {
-			// trigger_error ( "key[{$key}] was not found");
 			throw new \Exception("key[{$key}] was not found");
 		}
 		return null;
 	}
 
 	/**
-	 * @param $key
-	 * @param $val
+	 * @param string $key
+	 * @param mixed $val
 	 * @return $this
 	 */
 	public function __set($key, $val) {
@@ -89,27 +132,18 @@ class ORE_Array {
 	}
 
 	/**
-	 * @param $to_enc
-	 * @param $from_enc
-	 * @return $this
-	 */
-	public function mb_convert_variables($to_enc, $from_enc) {
-		$this->_array = mb_convert_variables($to_enc, $from_enc, $this->_array);
-		return $this;
-	}
-
-	protected $__option = '';
-	protected $__recursive = false;
-
-	/**
-	 * @param $option
+	 * @param string $function 'mb_convert_kana', 'strtolower', 'strtoupper'
 	 * @param bool $recursive
+	 * @param string $option1
+	 * @param string $option2
 	 * @return $this
 	 */
-	public function mb_convert_kana($option, $recursive = true) {
-		$this->__option = $option;
+	public function doFunc($function, $recursive = true, $option1 = null, $option2 = null) {
+		$this->__function = $function;
+		$this->__option1 = $option1;
+		$this->__option2 = $option2;
 		$this->__recursive = $recursive;
-		$this->_array = array_map(array($this, '_mb_convert_kana'), $this->_array);
+		$this->_recursive_function($this->_array);
 		return $this;
 	}
 
@@ -117,63 +151,29 @@ class ORE_Array {
 	 * @param $val
 	 * @return array|string
 	 */
-	protected function _mb_convert_kana(& $val) {
+	protected function _recursive_function(&$val) {
 		$type = gettype($val);
-		if ('object' !== $type) {
-			if ('array' === $type) {
-				if (TRUE == $this->__recursive) {
-					$val = array_map(array($this, '_mb_convert_kana'), $val);
-				}
+		if ('array' === $type || 'object' === $type) {
+			if (TRUE !== $this->__recursive) {
+				return;
 			}
-			else {
-				$val = mb_convert_kana($val, $this->__option);
+			foreach ($val as & $v) {
+				$this->_recursive_function($v);
 			}
-		}
-		return $val;
-	}
-
-	/**
-	 * @param bool $recursive
-	 * @return $this
-	 */
-	public function strtolower($recursive = true) {
-
-		if (TRUE === $recursive) {
-			array_walk_recursive($this->_array, function(&$val, $key) {
-				$val = strtolower($val);
-			});
-		}
-		else {
-			foreach ($this->_array as & $val) {
-				if ('string' == gettype($val)) {
-					$val = strtolower($val);
-				}
-			}
+			return;
 		}
 
-		return $this;
-	}
-
-	/**
-	 * @param bool $recursive
-	 * @return $this
-	 */
-	public function strtoupper($recursive = true) {
-
-		if (TRUE === $recursive) {
-			array_walk_recursive($this->_array, function(&$val, $key) {
-				$val = strtoupper($val);
-			});
-		}
-		else {
-			foreach ($this->_array as & $val) {
-				if ('string' == gettype($val)) {
-					$val = strtoupper($val);
-				}
-			}
+		if (! is_null($this->__option2)) {
+			$val = $this->__function($val, $this->__option1, $this->__option2);
+			return;
 		}
 
-		return $this;
+		if (! is_null($this->__option1)) {
+			$val = $this->__function($val, $this->__option1);
+			return;
+		}
+
+		$val = $this->__function($val);
 	}
 
 	/**
@@ -184,11 +184,18 @@ class ORE_Array {
 		return $this;
 	}
 
-	protected $__search = '';
-	protected $__replace = '';
+	/**
+	 * @param string $to_enc
+	 * @param string $from_enc
+	 * @return $this
+	 */
+	public function mb_convert_variables($to_enc, $from_enc) {
+		$this->_array = mb_convert_variables($to_enc, $from_enc, $this->_array);
+		return $this;
+	}
 
 	/**
-	 * @param $search Array|String|Number
+	 * @param string $search
 	 * @param $replace
 	 * @param bool $recursive
 	 * @return $this
@@ -205,26 +212,5 @@ class ORE_Array {
 			$this->_array = str_replace($this->__search, $this->__replace, $this->_array);
 		}
 		return $this;
-	}
-
-	/**
-	 * @param $callback
-	 * @return $this
-	 */
-	public function array_map($callback) {
-		//$this->_array = array_map($callback, $this->_array);
-		$this->_recursive($this->_array, $callback);
-		return $this;
-	}
-	protected function _recursive(& $array, $callback) {
-		foreach ($array as & $val) {
-			$type = gettype($val);
-			if ('array' === $type OR 'object' === $type) {
-				$this->_recursive($val, $callback);
-			}
-			else {
-				$val = $callback($val);
-			}
-		}
 	}
 }

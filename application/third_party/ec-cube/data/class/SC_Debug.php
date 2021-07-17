@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author onishi naoyuki
+ * @author naoyuki onishi
  * @since 2008
  */
 class SC_Debug {
@@ -72,10 +72,10 @@ class SC_Debug {
 			return;
 		}
 
-		if (defined('DEBUG_MODE') AND TRUE === DEBUG_MODE) {
+		if (defined('DEBUG_MODE') && TRUE === DEBUG_MODE) {
 			self::$_ENABLE = TRUE;
 		}
-		else if (defined('SC_Debug') AND ('1' == SC_Debug OR 'true' === strtolower(SC_Debug))) {
+		else if (defined('SC_Debug') && ('1' == SC_Debug || 'true' === strtolower(SC_Debug))) {
 			self::$_ENABLE = TRUE;
 		}
 		else {
@@ -167,8 +167,8 @@ class SC_Debug {
 		$varinfo = new SC_Debug_VarInfo();
 		$varinfo->is_html = $is_html;
 		if (SC_Debug::undefined === $var
-			OR (('array' === gettype($var_name) OR 'object' === gettype($var_name))
-				AND ('array' !== gettype($var) AND 'object' !== gettype($var) AND '' === strval($var))
+			OR (('array' === gettype($var_name) || 'object' === gettype($var_name))
+				AND ('array' !== gettype($var) && 'object' !== gettype($var) && '' === strval($var))
 			)
 		) {
 			$varinfo->var_name = '';
@@ -223,7 +223,6 @@ class SC_Debug {
 		ob_end_clean();
 		return $contents;
 	}
-
 
 	public static function sfReset() {
 		self::$_DUMP = [];
@@ -330,7 +329,7 @@ class SC_Debug {
 			// log_message('debug', "\n".$arrTrace[0]."\n".print_r($var_name, true));
 
 			// VALX
-			\VALX\logger::debug(print_r($var_name, true), 2);
+			\VALX\libs\logger::debug(print_r($var_name, true), 2);
 		}
 		else {
 			// EC-CUBE2.1X
@@ -340,7 +339,7 @@ class SC_Debug {
 			// log_message('debug', "\n".$arrTrace[0]."\n{$var_name}=".print_r($var, true));
 
 			// VALX
-			\VALX\logger::debug("{$var_name}=".print_r($var, true), 2);
+			\VALX\libs\logger::debug("{$var_name}=".print_r($var, true), 2);
 		}
 	}
 

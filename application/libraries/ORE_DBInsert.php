@@ -5,6 +5,7 @@
  * @package Ore
  * @author naoyuki onishi
  */
+
 namespace ore;
 
 /**
@@ -23,6 +24,7 @@ class ORE_DBInsert {
 	public $dry_run = 0;
 	public $echo = 0;
 	public $debug = 0;
+	public $sc_debug = 0;
 
 	/**
 	 * @param $statement
@@ -30,8 +32,14 @@ class ORE_DBInsert {
 	protected function _exec($statement) {
 		if ($this->debug) {
 			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
-			$this->echo_flush(\SqlFormatter::format($statement, true));
+			// $this->echo_flush(\SqlFormatter::format($statement, false));
+			$this->echo_flush('<div>'.$statement.'</div>');
 		}
+
+		if($this->sc_debug) {
+			\SC_Debug::sfAddVar($statement);
+		}
+
 		if ($this->dry_run) {
 			return;
 		}
@@ -101,19 +109,30 @@ class ORE_DBInsert {
 	 */
 	public function dataFormat() {
 		$data = [];
-		foreach($this->cols_header as $col_nm) {
+		foreach ($this->cols_header as $col_nm) {
 			$data[$col_nm] = '';
 		}
 		return $data;
 	}
 
 	/**
-	 * @param $cols
+	 * @param $arg_cols
+	 * @throws \Exception
 	 */
-	public function insertAdd($cols) {
-		if (is_object($cols)) {
-			$cols = get_object_vars($cols);
+	public function add($arg_cols) {
+
+		$type = strtolower(gettype($arg_cols));
+		if ('array' !== $type && 'object' !== $type) {
+			throw new \Exception('$arg_colsが配列でもオブジェクトでもありません。');
 		}
+
+		if ('object' === $type) {
+			$cols = get_object_vars($arg_cols);
+		}
+		else {
+			$cols = $arg_cols;
+		}
+
 		$this->insert_cnt++;
 		$this->values_cnt++;
 		$arr = [];
@@ -158,7 +177,7 @@ class ORE_DBInsert {
 			$str = '('.implode(',', $arr).')';
 			$this->values[] = $str;
 			if ($this->threshold <= $this->values_cnt) {
-				$this->insertAll();
+				$this->insert_all();
 			}
 		}
 	}
@@ -166,7 +185,7 @@ class ORE_DBInsert {
 	/**
 	 *
 	 */
-	public function insertAll() {
+	public function insert_all() {
 
 		if (! is_null($this->tsv_option)) {
 			return;
@@ -178,7 +197,7 @@ class ORE_DBInsert {
 			throw new \Exception($msg);
 		}
 
-		if (! is_array($this->cols_header) OR 0 === count($this->cols_header)) {
+		if (! is_array($this->cols_header) || 0 === count($this->cols_header)) {
 			$msg = 'Error: cols_headerが入ってない';
 			$this->echo_flush($msg.'<br>');
 			throw new \Exception($msg);
@@ -199,7 +218,7 @@ class ORE_DBInsert {
 	 * @param $str
 	 */
 	protected function echo_flush($str) {
-		if (0 < ob_get_level() AND $this->echo) {
+		if (0 < ob_get_level() && $this->echo) {
 			echo $str;
 			ob_flush();
 			flush();
@@ -220,7 +239,7 @@ class ORE_DBInsert {
 			throw new \Exception('open file handle error');
 		}
 
-		if (! is_array($this->cols_header) OR 0 === count($this->cols_header)) {
+		if (! is_array($this->cols_header) || 0 === count($this->cols_header)) {
 			$msg = 'Error: cols_headerが入ってない';
 			$this->echo_flush($msg.'<br>');
 			throw new \Exception($msg);
@@ -250,7 +269,7 @@ class ORE_DBInsert {
 			$this->tsvOutput();
 		}
 		else {
-			$this->insertAll();
+			$this->insert_all();
 		}
 	}
 }
@@ -258,6 +277,6 @@ class ORE_DBInsert {
 class ORE_DBInsert_TSV_Option {
 	public $handle = null;
 	public $file_nm = 'db_insert_tsv.tsv';
-	public $dir_uri = "/files/users/214/tmp/";
+	public $dir_uri = "/admin/files/users/290/tmp/";
 	public $base_dir = 'WEB_DIR';
 }

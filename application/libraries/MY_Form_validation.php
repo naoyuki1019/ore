@@ -163,64 +163,39 @@ class MY_Form_validation extends CI_Form_validation {
 
 			return;
 		}
-		else {
-			// if ( ! in_array('isset', $rules))
-			// {
-			// 	if (is_null($postdata)) {
-			// 		return ;
-			// 	}
-			//
-			// 	if ( ! in_array('required', $rules) AND $postdata == "") {
-			// 		return ;
-			// 	}
-			// }
-		}
 
 		// If the field is blank, but NOT required, no further tests are necessary
 		$callback = FALSE;
 
-		if (isset($postdata) AND FALSE !== $idx_mb_trim) {
+		if (isset($postdata) && FALSE  !== $idx_mb_trim) {
 			unset($rules[$idx_mb_trim]);
-			$postdata = $this->mb_trim($postdata);
+			$postdata = mb_trim($postdata);
 		}
 
 		// Isset Test. Typically this rule will only apply to checkboxes.
-		if (($postdata === NULL OR $postdata === '') && $callback === FALSE)
+		if ((is_null($postdata) || $postdata === '') && $callback === FALSE)
 		{
 			$err_isset = false;
 			$err_required = false;
 
-			if (in_array('isset', $rules, TRUE))
+			if (1 === $row['key_exists'])
 			{
-				if (! isset($postdata))
+				if (in_array('required', $rules))
+				{
+					if('' === strval($postdata))
+					{
+						$err_required = true;
+					}
+				}
+			}
+			else {
+				if (in_array('isset', $rules, TRUE))
 				{
 					$err_isset = true;
 				}
-
-				if (in_array('required', $rules) AND '' === $postdata)
-				{
-					$err_required = true;
-				}
-
-				// エラーが発生していない時
-				if (! $err_isset AND ! $err_required)
-				{
-					return;
-				}
-
-			}
-			else {
-				if (in_array('required', $rules) AND 1 === $row['key_exists'] AND '' === strval($postdata))
-				{
-					$err_required = true;
-				}
-				else
-				{
-					return;
-				}
 			}
 
-			if ($err_isset OR $err_required) {
+			if ($err_isset || $err_required) {
 
 				// Set the message type
 				// $type = in_array('required', $rules) ? 'required' : 'isset';
@@ -230,7 +205,7 @@ class MY_Form_validation extends CI_Form_validation {
 				{
 					$line = $this->_error_messages[$type];
 				}
-				elseif (FALSE === ($line = $this->CI->lang->line('form_validation_'.$type))
+				elseif (FALSE === ($line = $this->CI->lang->line('validation_'.$type))
 					// DEPRECATED support for non-prefixed keys
 					&& FALSE === ($line = $this->CI->lang->line($type, FALSE)))
 				{
@@ -392,7 +367,7 @@ class MY_Form_validation extends CI_Form_validation {
 			{
 				if ( ! isset($this->_error_messages[$rule]))
 				{
-					if (FALSE === ($line = $this->CI->lang->line('form_validation_'.$rule))
+					if (FALSE === ($line = $this->CI->lang->line('validation_'.$rule))
 						// DEPRECATED support for non-prefixed keys
 						&& FALSE === ($line = $this->CI->lang->line($rule, FALSE)))
 					{
@@ -492,6 +467,9 @@ class MY_Form_validation extends CI_Form_validation {
 	 * ひらがな -> HVc
 	 */
 	public function mb_convert_kana($str, $val) {
+		if ('string' !== gettype($str)) {
+			return $str;
+		}
 		return mb_convert_kana($str, $val, $this->_encoding);
 	}
 
@@ -520,7 +498,7 @@ class MY_Form_validation extends CI_Form_validation {
 		}
 
 		else {
-			return ($this->mb_trim($str) == '') ? FALSE : TRUE;
+			return (mb_trim($str) == '') ? FALSE : TRUE;
 		}
 	}
 
@@ -530,12 +508,12 @@ class MY_Form_validation extends CI_Form_validation {
 	 */
 	public function required_combi($str, $fields) {
 
-		$fields = $this->mb_trim($fields);
+		$fields = mb_trim($fields);
 		if ('' === $fields) {
 			return FALSE;
 		}
 
-		if ('' === $this->mb_trim($str)) {
+		if ('' === mb_trim($str)) {
 			return TRUE;
 		}
 
@@ -549,7 +527,7 @@ class MY_Form_validation extends CI_Form_validation {
 				return FALSE;
 			}
 
-			if ('' === $this->mb_trim($this->_field_data[$field]['postdata'])) {
+			if ('' === mb_trim($this->_field_data[$field]['postdata'])) {
 				return FALSE;
 			}
 		}
@@ -786,17 +764,6 @@ class MY_Form_validation extends CI_Form_validation {
 
 
 	/**
-	 * @param $string
-	 * @return string
-	 */
-	public function mb_trim($string) {
-		$whitespace = '[\s\0\x0b\p{Zs}\p{Zl}\p{Zp}]';
-		$ret = preg_replace(sprintf('/(^%s+|%s+$)/u', $whitespace, $whitespace), '', $string);
-		return $ret;
-	}
-
-
-	/**
 	 * コンマを削除する…だけ
 	 *
 	 * @param $number
@@ -890,7 +857,7 @@ class MY_Form_validation extends CI_Form_validation {
 	 */
 	public function utf8mb4_encode_numericentity($str) {
 
-		if ('string' !== gettype($str) OR '' === $str) {
+		if ('string' !== gettype($str) || '' === $str) {
 			return $str;
 		}
 

@@ -27,7 +27,6 @@ if (! function_exists('get_object_public_vars')) {
  */
 class ORE_Params {
 
-
 	// Public変数は定義しない事！
 
 	/**
@@ -36,7 +35,7 @@ class ORE_Params {
 	protected $_delimiter_type = 0; // 1:codeigniter;
 
 	/**
-	 * @param $delimiter_type
+	 * @param int $delimiter_type
 	 */
 	public function set_delimiter_type($delimiter_type) {
 		$this->_delimiter_type = $delimiter_type;
@@ -53,11 +52,13 @@ class ORE_Params {
 	}
 
 	/**
-	 * @param array $params
+	 * @param mixed $params
+	 * @param mixed $value
+	 * @return $this
 	 */
 	public function set($params = [], $value = null) {
 		$type = strtolower(gettype($params));
-		if ('array' === $type OR 'object' === $type) {
+		if ('array' === $type || 'object' === $type) {
 			foreach ($params as $key => $val) {
 				$this->{$key} = $val;
 			}
@@ -73,7 +74,7 @@ class ORE_Params {
 	 */
 	public function to_array() {
 		$tmp = [];
-        $array = get_object_vars($this);
+		$array = get_object_vars($this);
 		$this->_to_array($tmp, $array);
 		return $tmp;
 	}
@@ -89,12 +90,12 @@ class ORE_Params {
 	}
 
 	/**
-	 * @param $tmp
-	 * @param $array
+	 * @param array $tmp
+	 * @param mixed $array
 	 */
-	private function _to_array(& $tmp, & $array) {
+	private function _to_array(&$tmp, &$array) {
 
-		if (is_array($array) OR is_object($array)) {
+		if (is_array($array) || is_object($array)) {
 
 			foreach ($array as $key => $val) {
 
@@ -120,17 +121,18 @@ class ORE_Params {
 	}
 
 	/**
-	 * @param array $remove_keys
+	 * @param mixed $remove_keys
+	 * @param bool $public
 	 * @return string
 	 */
-	public function to_uri($remove_keys = [], $public=false) {
+	public function to_uri($remove_keys = [], $public = false) {
 
 		if (! is_array($remove_keys)) {
 			if ('' === strval($remove_keys)) {
 				$remove_keys = [];
 			}
 			else {
-				$remove_keys = array($remove_keys);
+				$remove_keys = [$remove_keys];
 			}
 		}
 
@@ -167,11 +169,11 @@ class ORE_Params {
 	}
 
 	/**
-	 * @param $keys
-	 * @param $tmp
-	 * @param $array
+	 * @param array $keys
+	 * @param array $tmp
+	 * @param array $array
 	 */
-	private function _to_uri(& $keys, & $tmp, & $array) {
+	private function _to_uri(&$keys, &$tmp, &$array) {
 
 		foreach ($array as $key => $val) {
 
@@ -194,7 +196,7 @@ class ORE_Params {
 			}
 
 			else {
-				if ("" != $val OR 0 === $val) {
+				if ("" != $val || 0 === $val) {
 
 					$uri_keys = $keys;
 
@@ -220,13 +222,13 @@ class ORE_Params {
 	}
 
 	/**
-	 * @param array $pointing_keys
+	 * @param mixed $pointing_keys
 	 * @return string
 	 */
 	public function to_pointing_uri($pointing_keys = []) {
 
 		if (! is_array($pointing_keys)) {
-			$pointing_keys = array($pointing_keys);
+			$pointing_keys = [$pointing_keys];
 		}
 
 		$keys = [];

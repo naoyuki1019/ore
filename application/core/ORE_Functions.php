@@ -46,17 +46,17 @@ if (! function_exists('isNULL')) {
 	 */
 	function isNULL($val, $key = null) {
 
-		if (! isset($val) OR is_null($val)) {
+		if (! isset($val) || is_null($val)) {
 			return true;
 		}
 
 		$type = gettype($val);
 
 		if (is_null($key)) {
-			if ('array' === $type AND 0 === count($val)) {
+			if ('array' === $type && 0 === count($val)) {
 				return true;
 			}
-			if ('string' === $type AND '' === $val) {
+			if ('string' === $type && '' === $val) {
 				return true;
 			}
 			return false;
@@ -111,7 +111,7 @@ if (! function_exists('generateTreeName')) {
 				$r = (object)$r;
 			}
 
-			if (! isNULL($r, $vo->tree_depth) AND ! isNULL($r, $vo->tree_parent_id)) {
+			if (! isNULL($r, $vo->tree_depth) && ! isNULL($r, $vo->tree_parent_id)) {
 				$depth = $r->{$vo->tree_depth};
 				$parent_id = $r->{$vo->tree_parent_id};
 
@@ -137,12 +137,12 @@ if (! function_exists('generateTreeName')) {
 				$r = (object)$r;
 			}
 
-			if (! isNULL($r, $vo->tree_depth) AND ! isNULL($r, $vo->tree_parent_id)) {
+			if (! isNULL($r, $vo->tree_depth) && ! isNULL($r, $vo->tree_parent_id)) {
 				$depth = $r->{$vo->tree_depth};
 				$parent_id = $r->{$vo->tree_parent_id};
 
 				// 子供が存在する場合で且つ最小のdepthではない
-				if (isset($last[$parent_id]) AND $min_depth != $depth) {
+				if (isset($last[$parent_id]) && $min_depth != $depth) {
 					// 最後の場合
 					if ($last[$parent_id] === $r->{$vo->tree_key}) {
 						$prefix[$depth] = '└─';

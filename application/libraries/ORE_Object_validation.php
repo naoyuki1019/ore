@@ -28,8 +28,8 @@ class ORE_Object_validation extends MY_Form_validation {
 	/**
 	 *
 	 */
-	public function set_object(& $object) {
-		if (isset($object) AND is_object($object)) {
+	public function set_object($object) {
+		if (isset($object) && is_object($object)) {
 			$this->_object = $object;
 		}
 		else {
@@ -41,7 +41,7 @@ class ORE_Object_validation extends MY_Form_validation {
 	/**
 	 *
 	 */
-	public function object(& $object) {
+	public function object($object) {
 		return $this->_object;
 	}
 
@@ -96,7 +96,7 @@ class ORE_Object_validation extends MY_Form_validation {
 		}
 
 		// No fields? Nothing to do...
-		if ( ! is_string($field) OR ! is_string($rules) OR $field === '')
+		if ( ! is_string($field) || ! is_string($rules) || $field === '')
 		{
 			return $this;
 		}
@@ -191,7 +191,7 @@ class ORE_Object_validation extends MY_Form_validation {
 		}
 
 		// Load the language file containing error messages
-		$this->CI->lang->load('validation');
+		$this->CI->lang->load('validation', $this->setted_lang);
 
 		// Cycle through the rules for each field and match the corresponding $validation_data item
 		foreach ($this->_field_data as $field => $row)

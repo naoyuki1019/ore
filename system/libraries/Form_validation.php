@@ -51,6 +51,7 @@ class ORE_CI {
  * @link		http://codeigniter.com/user_guide/libraries/form_validation.html
  */
 class CI_Form_validation {
+	public $setted_lang = 'ja';
 
 	/**
 	 * Reference to the CodeIgniter instance
@@ -155,6 +156,13 @@ class CI_Form_validation {
 		// log_message('info', 'Form Validation Class Initialized');
 	}
 
+	/**
+	 * @param $lang
+	 */
+	public function set_lang($lang) {
+		$this->setted_lang = $lang;
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -206,7 +214,7 @@ class CI_Form_validation {
 		}
 
 		// No fields? Nothing to do...
-		if ( ! is_string($field) OR ! is_string($rules) OR $field === '')
+		if ( ! is_string($field) || ! is_string($rules) || $field === '')
 		{
 			return $this;
 		}
@@ -454,7 +462,7 @@ class CI_Form_validation {
 		}
 
 		// Load the language file containing error messages
-		$this->CI->lang->load('form_validation');
+		$this->CI->lang->load('validation', $this->setted_lang);
 
 		// Cycle through the rules for each field and match the corresponding $validation_data item
 		foreach ($this->_field_data as $field => $row)
@@ -614,7 +622,7 @@ class CI_Form_validation {
 			// 		return ;
 			// 	}
 			//
-			// 	if ( ! in_array('required', $rules) AND $postdata == "") {
+			// 	if ( ! in_array('required', $rules) && $postdata == "") {
 			// 		return ;
 			// 	}
 			// }
@@ -624,7 +632,7 @@ class CI_Form_validation {
 		$callback = FALSE;
 
 		// Isset Test. Typically this rule will only apply to checkboxes.
-		if (($postdata === NULL OR $postdata === '') && $callback === FALSE)
+		if (($postdata === NULL || $postdata === '') && $callback === FALSE)
 		{
 			$err_isset = false;
 			$err_required = false;
@@ -636,20 +644,20 @@ class CI_Form_validation {
 					$err_isset = true;
 				}
 
-				if (in_array('required', $rules) AND '' === $postdata)
+				if (in_array('required', $rules) && '' === $postdata)
 				{
 					$err_required = true;
 				}
 
 				// エラーが発生していない時
-				if (! $err_isset AND ! $err_required)
+				if (! $err_isset && ! $err_required)
 				{
 					return;
 				}
 
 			}
 			else {
-				if (in_array('required', $rules) AND '' === $postdata AND 1 === $row['key_exists'])
+				if (in_array('required', $rules) && '' === $postdata && 1 === $row['key_exists'])
 				{
 					$err_required = true;
 				}
@@ -659,7 +667,7 @@ class CI_Form_validation {
 				}
 			}
 
-			if ($err_isset OR $err_required) {
+			if ($err_isset || $err_required) {
 
 				// Set the message type
 				// $type = in_array('required', $rules) ? 'required' : 'isset';
@@ -669,7 +677,7 @@ class CI_Form_validation {
 				{
 					$line = $this->_error_messages[$type];
 				}
-				elseif (FALSE === ($line = $this->CI->lang->line('form_validation_'.$type))
+				elseif (FALSE === ($line = $this->CI->lang->line('validation_'.$type))
 					// DEPRECATED support for non-prefixed keys
 					&& FALSE === ($line = $this->CI->lang->line($type, FALSE)))
 				{
@@ -822,7 +830,7 @@ class CI_Form_validation {
 			{
 				if ( ! isset($this->_error_messages[$rule]))
 				{
-					if (FALSE === ($line = $this->CI->lang->line('form_validation_'.$rule))
+					if (FALSE === ($line = $this->CI->lang->line('validation_'.$rule))
 						// DEPRECATED support for non-prefixed keys
 						&& FALSE === ($line = $this->CI->lang->line($rule, FALSE)))
 					{
@@ -872,7 +880,7 @@ class CI_Form_validation {
 		if (sscanf($fieldname, 'lang:%s', $line) === 1)
 		{
 			// Were we able to translate the field name?  If not we use $line
-			if (FALSE === ($fieldname = $this->CI->lang->line('form_validation_'.$line))
+			if (FALSE === ($fieldname = $this->CI->lang->line('validation_'.$line))
 				// DEPRECATED support for non-prefixed keys
 				&& FALSE === ($fieldname = $this->CI->lang->line($line, FALSE)))
 			{
@@ -983,7 +991,7 @@ class CI_Form_validation {
 
 			return '';
 		}
-		elseif (($field === '' OR $value === '') OR ($field !== $value))
+		elseif (($field === '' || $value === '') OR ($field !== $value))
 		{
 			return '';
 		}
@@ -1026,7 +1034,7 @@ class CI_Form_validation {
 
 			return '';
 		}
-		elseif (($field === '' OR $value === '') OR ($field !== $value))
+		elseif (($field === '' || $value === '') OR ($field !== $value))
 		{
 			return '';
 		}
@@ -1299,22 +1307,18 @@ class CI_Form_validation {
 	 * @param	string	'ipv4' or 'ipv6' to validate a specific IP format
 	 * @return	bool
 	 */
-	public function valid_ip($ip, $which = '')
+	public function valid_ip($ip, $options = null)
 	{
-		switch (strtolower($which))
-		{
-			case 'ipv4':
-				$which = 1048576;
-				break;
-			case 'ipv6':
-				$which = 2097152;
-				break;
-			default:
-				$which = NULL;
-				break;
+		if (! is_null($options)) {
+			$which = strtolower($options);
+			if ('ipv4' === $which) {
+				$options = 1048576;
+			}
+			else if ('ipv6' === $which) {
+				$options = 2097152;
+			}
 		}
-
-		return (bool) filter_var($ip, 275, $which);
+		return (bool)filter_var($ip, 275, $options);
 	}
 
 	// --------------------------------------------------------------------
@@ -1467,19 +1471,6 @@ class CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Is a Natural number, but not a zero	(1,2,3, etc.)
-	 *
-	 * @param	string
-	 * @return	bool
-	 */
-	public function is_natural_greater_than_zero($str)
-	{
-		return ($str != 0 && ctype_digit((string) $str));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Valid Base64
 	 *
 	 * Tests a string for characters outside of the Base64 alphabet
@@ -1506,7 +1497,7 @@ class CI_Form_validation {
 	 */
 	public function prep_for_form($data = '')
 	{
-		if ($this->_safe_form_data === FALSE OR empty($data))
+		if ($this->_safe_form_data === FALSE || empty($data))
 		{
 			return $data;
 		}
@@ -1534,7 +1525,7 @@ class CI_Form_validation {
 	 */
 	public function prep_url($str = '')
 	{
-		if ($str === 'http://' OR $str === '')
+		if ($str === 'http://' || $str === '')
 		{
 			return '';
 		}

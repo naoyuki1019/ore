@@ -4,6 +4,7 @@
  * @package Ore
  * @author naoyuki onishi
  */
+
 namespace ore;
 
 /**
@@ -25,16 +26,17 @@ class ORE_ImageUtil {
 		$dest = dirname($o->to_path);
 		$dest = escapeshellarg($dest);
 		$org_path = escapeshellarg($o->org_path);
-		$command = "jpegoptim --strip-all --max={$o->quality_optim} --dest={$dest} -o {$org_path}";
-		$output = [];
-		$ret = null;
-		@exec($command, $output, $ret);
-		$message = implode("\n", $output);
-		if ('0' !== strval($ret)) {
-			throw new \Exception("error jpegoptim処理でエラーが発生しました。\n{$message}");
+		$o->executed_command = "jpegoptim --strip-all --max={$o->quality_optim} --dest={$dest} -o {$org_path}";
+		$o->executed_output = [];
+		$o->executed_ret = null;
+		exec($o->executed_command, $o->executed_output, $o->executed_ret);
+
+		// Xampp上で判定できないので
+		if ('0' !== strval($o->executed_ret) && DIRECTORY_SEPARATOR !== '\\') {
+			throw new \Exception("error jpegoptim処理でエラーが発生しました。");
 		}
 
-		// 最適化済みのファイルはdestに作成されないため
+		// 既に最適化済みの画像ファイルはdestに作成されないため
 		if (! is_readable($o->to_path)) {
 			@copy($o->org_path, $o->to_path);
 			// throw new \Exception("jpegoptim処理 作成失敗 {$o->to_path} {$message}");
@@ -59,10 +61,10 @@ class ORE_ImageUtil {
 			throw new \Exception("ファイル[{$o->org_path}]が読み込めません。");
 		}
 
-		if (IMAGETYPE_JPEG != $o->mime_type OR IMAGETYPE_PNG != $o->mime_type OR IMAGETYPE_GIF != $o->mime_type) {
+		if (IMAGETYPE_JPEG != $o->mime_type || IMAGETYPE_PNG != $o->mime_type || IMAGETYPE_GIF != $o->mime_type) {
 			[$o->org_width, $o->org_height, $o->mime_type] = getimagesize($o->org_path);
 		}
-		if (0 == $o->to_width OR 0 == $o->to_height) {
+		if (0 == $o->to_width || 0 == $o->to_height) {
 			throw new \Exception('ターゲットサイズの設定をしてください。');
 		}
 
@@ -81,7 +83,7 @@ class ORE_ImageUtil {
 			throw new \Exception('対応していないファイル形式です。: '.$o->mime_type);
 		}
 
-		if ($o->org_height <= $new_height AND $o->org_width <= $new_width) {
+		if ($o->org_height <= $new_height && $o->org_width <= $new_width) {
 			@copy($o->org_path, $o->to_path);
 			return;
 		}
@@ -120,7 +122,7 @@ class ORE_ImageUtil {
 
 		[$width, $height, $type, $attr] = getimagesize($image_path);
 
-		if ($width == 0 OR $height == 0) {
+		if ($width == 0 || $height == 0) {
 			return [0, 0];
 		}
 
@@ -158,6 +160,9 @@ class resize_volume {
 	public $to_path = '';
 	public $to_height = 0;
 	public $to_width = 0;
+	public $executed_command = '';
+    public $executed_output = [];
+    public $executed_ret = null;
 
 	/**
 	 * @param $quality
@@ -195,7 +200,7 @@ class resize_volume {
 	 * @return bool
 	 */
 	private function _between($str, $low = 0, $high = 100) {
-		return (bool)($low <= $str AND $str <= $high);
+		return (bool)($low <= $str && $str <= $high);
 	}
 }
 

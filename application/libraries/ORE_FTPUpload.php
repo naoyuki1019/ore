@@ -62,10 +62,10 @@ exit 0
 	 * @param $remote_path
 	 */
 	public function add_file($local_path, $remote_path) {
-		$this->_files[] = array(
+		$this->_files[] = [
 			'local_path' => $local_path,
 			'remote_path' => $remote_path,
-		);
+		];
 	}
 
 	/**
@@ -157,7 +157,7 @@ exit 0
 		}
 
 		$sh_path = $this->_sh_dir.$this->sh_file_nm;
-        $this->_make_script($sh_path, $this->_script, $this->_files);
+		$this->_make_script($sh_path, $this->_script, $this->_files);
 		$sh_path = escapeshellarg($sh_path);
 		$host = escapeshellarg($this->host);
 		$port = (ctype_digit((string)$this->port)) ? $this->port : 21;
@@ -195,7 +195,7 @@ exit 0
 			}
 		}
 
-		if (0 === $cnt226msg OR $cnt226msg !== count($this->_files)) {
+		if (0 === $cnt226msg || $cnt226msg !== count($this->_files)) {
 			$this->_set_message("<div>Error: ファイル転送失敗</div>");
 			return false;
 		}
@@ -226,8 +226,8 @@ exit 0
 	 */
 	protected function _make_ftp_commands($files) {
 		$puts = [];
-        $remote_dirs = [];
-		foreach($files as $arr) {
+		$remote_dirs = [];
+		foreach ($files as $arr) {
 
 			$cnt = mb_substr_count($arr['remote_path'], '/');
 			$dirs = [];
@@ -244,7 +244,7 @@ exit 0
 		}
 		ksort($remote_dirs);
 		$keys = array_keys($remote_dirs);
-        $ftp_commands = "mkdir " . implode("\nmkdir ", $keys)."\n". implode("\n", $puts);
+		$ftp_commands = "mkdir ".implode("\nmkdir ", $keys)."\n".implode("\n", $puts);
 		return $ftp_commands;
 	}
 

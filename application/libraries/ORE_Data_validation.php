@@ -31,6 +31,24 @@ class ORE_Data_validation extends MY_Form_validation {
 		return $this->_data_array;
 	}
 
+	/**
+	 * @param $key
+	 * @return mixed|null
+	 */
+	public function get($key) {
+		if ($this->array_key_exists($key)) {
+			return $this->_data_array[$key];
+		}
+		return null;
+	}
+
+	/**
+	 * @param $key
+	 * @return bool
+	 */
+	public function array_key_exists($key) {
+		return array_key_exists($key, $this->_data_array);
+	}
 
 	// --------------------------------------------------------------------
 
@@ -83,7 +101,7 @@ class ORE_Data_validation extends MY_Form_validation {
 		}
 
 		// No fields? Nothing to do...
-		if ( ! is_string($field) OR ! is_string($rules) OR $field === '')
+		if ( ! is_string($field) || ! is_string($rules) || $field === '')
 		{
 			return $this;
 		}
@@ -178,7 +196,7 @@ class ORE_Data_validation extends MY_Form_validation {
 		}
 
 		// Load the language file containing error messages
-		$this->CI->lang->load('form_validation');
+		$this->CI->lang->load('validation', $this->setted_lang);
 
 		// Cycle through the rules for each field and match the corresponding $validation_data item
 		foreach ($this->_field_data as $field => $row)

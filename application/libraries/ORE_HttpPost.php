@@ -5,6 +5,7 @@
  * @package Ore
  * @author naoyuki onishi
  */
+
 namespace ore;
 
 /**
@@ -13,7 +14,6 @@ namespace ore;
  * @author naoyuki onishi
  */
 class ORE_HttpPost {
-
 
 	/**
 	 *
@@ -63,7 +63,6 @@ class ORE_HttpPost {
 	 */
 	protected $_errors = [];
 
-
 	/**
 	 *
 	 */
@@ -71,13 +70,12 @@ class ORE_HttpPost {
 		$this->initialize();
 	}
 
-
 	/**
 	 */
 	public function initialize() {
 
 		$this->_url = "";
-		$this->_boundary = "---------------------" . substr(md5(rand(0, 32000)), 0, 15);
+		$this->_boundary = "---------------------".substr(md5(rand(0, 32000)), 0, 15);
 		$this->_default_socket_timeout = ini_get('default_socket_timeout');
 		$this->_socket_timeout = $this->_default_socket_timeout;
 		$this->_header_list = [];
@@ -86,7 +84,6 @@ class ORE_HttpPost {
 		$this->_errors = [];
 	}
 
-
 	/**
 	 * @param string $url
 	 */
@@ -94,7 +91,6 @@ class ORE_HttpPost {
 		//TODO validation
 		$this->_url = $url;
 	}
-
 
 	/**
 	 *
@@ -105,7 +101,6 @@ class ORE_HttpPost {
 		$this->_boundary = $boundary;
 	}
 
-
 	/**
 	 *
 	 * @param string $socket_timeout
@@ -115,7 +110,6 @@ class ORE_HttpPost {
 		$this->_socket_timeout = $socket_timeout;
 	}
 
-
 	/**
 	 *
 	 * @param string $header
@@ -124,7 +118,6 @@ class ORE_HttpPost {
 
 		$this->_header_list[] = $header;
 	}
-
 
 	/**
 	 *
@@ -141,7 +134,6 @@ class ORE_HttpPost {
 		$this->_text_list[] = $text_dict;
 	}
 
-
 	/**
 	 *
 	 * @param string $form_name
@@ -153,7 +145,6 @@ class ORE_HttpPost {
 			$this->add_text("{$form_name}[{$key}]", $text);
 		}
 	}
-
 
 	/**
 	 *
@@ -199,7 +190,6 @@ class ORE_HttpPost {
 	 */
 	public function submit() {
 
-
 		$content = $this->_make_content();
 		if (! empty($this->_errors)) {
 			return FALSE;
@@ -210,41 +200,56 @@ class ORE_HttpPost {
 		//
 		$header = $this->_header_list;
 		$header[] = "Content-Type: multipart/form-data; boundary={$this->_boundary}";
-		$header[] = "Content-Length: " . strlen($content);
+		$header[] = "Content-Length: ".strlen($content);
+		$header[] = "Cache-Control: no-cache";
 
-		$stream_context_options = array(
-			"http" => array(
+		// TODO ここから下のオプションをプロパティ化する
+		// TODO エラーが分かりやすい処理に書き換える
+
+		$stream_context_options = [
+			"http" => [
 				"method" => "POST",
+				"timeout" => 10,
 				"header" => implode("\r\n", $header),
 				"content" => $content,
-			)
-		);
+				"ignore_errors" => true,
+			],
+			"ssl" => [
+				"verify_peer" => false,
+				"verify_peer_name" => false,
+			],
+		];
 
 		$this->_ini_set($stream_context_options);
 
-		$stream_context = stream_context_create($stream_context_options);
-
 		$response = FALSE;
 
-		$fp = @fopen($this->_url, "rb", false, $stream_context);
-		if ($fp) {
-			$response = @stream_get_contents($fp);
+		$stream_context = stream_context_create($stream_context_options);
+		if ($stream_context) {
+			$fp = fopen($this->_url, "rb", false, $stream_context);
+			if ($fp) {
+				$response = stream_get_contents($fp);
+				if (FALSE === $response) {
+					$this->_errors[] = "Error: stream_get_contents";
+				}
+			}
+			else {
+				$this->_errors[] = "Error: fopen";
+			}
 		}
-
-		if (FALSE === $response) {
-			$this->_errors[] = "Problem : {$php_errormsg}";
+		else {
+			$this->_errors[] = "Error: stream_context_create";
 		}
 
 		$this->_default_ini_set();
 		return $response;
 	}
 
-
 	/**
 	 *
 	 * @param array $stream_context_options
 	 */
-	protected function _ini_set(& $stream_context_options) {
+	protected function _ini_set(&$stream_context_options) {
 
 		// socket_timeout
 		if (version_compare(phpversion(), "5.2.1", "<")) {
@@ -260,7 +265,6 @@ class ORE_HttpPost {
 
 	}
 
-
 	/**
 	 *
 	 */
@@ -275,7 +279,6 @@ class ORE_HttpPost {
 		ini_set('track_errors', $this->_trac_errors);
 
 	}
-
 
 	/**
 	 *
@@ -300,38 +303,35 @@ class ORE_HttpPost {
 		return $content;
 	}
 
-
 	/**
 	 *
 	 * @param array $content
 	 * @param HttpFormPostTextDictionary $text_dict
 	 */
-	protected function _make_content_add_text(& $content, HttpFormPostTextDictionary $text_dict) {
+	protected function _make_content_add_text(&$content, HttpFormPostTextDictionary $text_dict) {
 
 		$content[] = "--{$this->_boundary}\r\n";
 		$content[] = "Content-Disposition: form-data; name=\"{$text_dict->form_name}\"\r\n\r\n{$text_dict->text}\r\n";
 	}
-
 
 	/**
 	 *
 	 * @param array $content
 	 * @param HttpFormPostFileDictionary $file_dict
 	 */
-	protected function _make_content_add_file(& $content, HttpFormPostFileDictionary $file_dict) {
+	protected function _make_content_add_file(&$content, HttpFormPostFileDictionary $file_dict) {
 
 		if (! is_file($file_dict->file_path)) {
 			$this->_errors[] = "Attachment not found: [{$file_dict->file_path}]";
-			return ;
+			return;
 		}
 
 		$content[] = "--{$this->_boundary}\r\n";
 		$content[] = "Content-Disposition: form-data; name=\"{$file_dict->form_name}\"; filename=\"{$file_dict->file_name}\"\r\n";
 		$content[] = "Content-Type: {$file_dict->file_type}\r\n";
 		$content[] = "Content-Transfer-Encoding: binary\r\n\r\n";
-		$content[] = file_get_contents($file_dict->file_path) . "\r\n";
+		$content[] = file_get_contents($file_dict->file_path)."\r\n";
 	}
-
 
 	/**
 	 * @return array

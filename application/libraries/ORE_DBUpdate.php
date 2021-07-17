@@ -25,6 +25,7 @@ class ORE_DBUpdate {
 	public $dry_run = 0;
 	public $echo = 0;
 	public $debug = 0;
+	public $sc_debug = 0;
 
 	/**
 	 * @param $statement
@@ -32,8 +33,26 @@ class ORE_DBUpdate {
 	protected function _exec($statement) {
 		if ($this->debug) {
 			$this->echo_flush('<h3>'.__FILE__.'('.__LINE__.')'.' '.__METHOD__.'</h3>');
-			$this->echo_flush(\SqlFormatter::format($statement, false));
+
+			// PHPUnit
+			if (isset($_SERVER) && array_key_exists('argv', $_SERVER) && 0 < count($_SERVER['argv']) && 'phpunit' === substr($_SERVER['argv'][0], -7)) {
+				$this->echo_flush(\SqlFormatter::format($statement, false));
+			}
+			else {
+				$this->echo_flush(\SqlFormatter::format($statement, true));
+			}
 		}
+
+		if ($this->sc_debug) {
+			// PHPUnit
+			if (isset($_SERVER) && array_key_exists('argv', $_SERVER) && 0 < count($_SERVER['argv']) && 'phpunit' === substr($_SERVER['argv'][0], -7)) {
+				\SC_Debug::sfAddVar(\SqlFormatter::format($statement, false));
+			}
+			else {
+				\SC_Debug::sfAddVar(\SqlFormatter::format($statement, false));
+			}
+		}
+
 		if ($this->dry_run) {
 			return;
 		}
@@ -79,9 +98,9 @@ class ORE_DBUpdate {
 	 * @param $str
 	 */
 	protected function echo_flush($str) {
-		if (0 < ob_get_level() AND $this->echo) {
+		if (0 < ob_get_level() && $this->echo) {
 			// PHPUnit
-			if (isset($_SERVER) AND array_key_exists('argv', $_SERVER) AND 0 < count($_SERVER['argv']) AND 'phpunit' === substr($_SERVER['argv'][0], -7)) {
+			if (isset($_SERVER) && array_key_exists('argv', $_SERVER) && 0 < count($_SERVER['argv']) && 'phpunit' === substr($_SERVER['argv'][0], -7)) {
 				\SC_Debug::sfAddVar('$str', $str);
 			}
 			else {
@@ -108,14 +127,14 @@ class ORE_DBUpdate {
 	public function set_targets($targets) {
 
 		if ('' === strval($this->id_column)) {
-			throw new \Exception('$this->id_columnがセットされていません');
+			throw new \Exception('$this->id_columnがセットされていません。');
 		}
 
 		foreach ($targets as $i => $target) {
-			if ($target === $this->id_column)  unset($targets[$i]);
+			if ($target === $this->id_column) unset($targets[$i]);
 		}
 
-		if (! is_array($targets) OR empty($targets)) {
+		if (! is_array($targets) || empty($targets)) {
 			throw new \Exception('$targetsの値が不正です');
 		}
 
@@ -143,19 +162,31 @@ class ORE_DBUpdate {
 
 	/**
 	 * @param $id
-	 * @param $cols
+	 * @param $arg_cols
 	 * @throws \Exception
 	 */
-	public function add($id, $cols) {
+	public function add($id, $arg_cols) {
+
+		$type = strtolower(gettype($arg_cols));
+		if ('array' !== $type && 'object' !== $type) {
+			throw new \Exception('$arg_colsが配列でもオブジェクトでもありません。');
+		}
+
+		if ('object' === $type) {
+			$cols = get_object_vars($arg_cols);
+		}
+		else {
+			$cols = $arg_cols;
+		}
 
 		if (array_key_exists($this->id_column, $cols)) unset($cols[$this->id_column]);
 
-		if (! isset($id) OR is_null($id) OR '' === strval($id)) {
-			throw new \Exception('$idがセットされていません');
+		if (! isset($id) || is_null($id) || '' === strval($id)) {
+			throw new \Exception('$idがセットされていません。');
 		}
 
 		if (empty($this->_targets)) {
-			throw new \Exception('$this->_targetsがセットされていません');
+			throw new \Exception('$this->_targetsがセットされていません。');
 		}
 
 		$this->update_cnt++;
@@ -163,7 +194,7 @@ class ORE_DBUpdate {
 
 		foreach ($this->_targets as $target) {
 			if (! array_key_exists($target, $cols)) {
-				throw new \Exception("{$target}がセットされていません");
+				throw new \Exception("{$target}がセットされていません。");
 			}
 			$this->_list[$target][$id] = $cols[$target];
 			unset($cols[$target]);
@@ -198,15 +229,15 @@ class ORE_DBUpdate {
 	public function makeStatement() {
 
 		if ('' === strval($this->table)) {
-			throw new \Exception('$this->tableがセットされていません');
+			throw new \Exception('$this->tableがセットされていません。');
 		}
 
 		if ('' === strval($this->id_column)) {
-			throw new \Exception('$this->id_columnがセットされていません');
+			throw new \Exception('$this->id_columnがセットされていません。');
 		}
 
 		if (empty($this->_targets)) {
-			throw new \Exception('$this->_targetsがセットされていません');
+			throw new \Exception('$this->_targetsがセットされていません。');
 		}
 
 		$t1[] = "UPDATE {$this->table} SET";
@@ -215,8 +246,8 @@ class ORE_DBUpdate {
 			$t2 = [];
 			$t2[] = "  {$target} = CASE {$this->id_column}";
 
-			if (! is_array($this->_list[$target]) OR empty($this->_list[$target])) {
-				throw new \Exception("\$this->_list[{$target}]がセットされていません");
+			if (! is_array($this->_list[$target]) || empty($this->_list[$target])) {
+				throw new \Exception("\$this->_list[{$target}]がセットされていません。");
 			}
 
 			foreach ($this->_list[$target] as $key => $val) {
@@ -237,7 +268,7 @@ class ORE_DBUpdate {
 		$where = '';
 		foreach ($this->_targets as $target) {
 			$ids = array_keys($this->_list[$target]);
-			$where = "'".implode("'={$this->id_column} OR '", $ids)."'={$this->id_column}";
+			$where = "'".implode("'={$this->id_column} || '", $ids)."'={$this->id_column}";
 			break;
 		}
 

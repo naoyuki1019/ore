@@ -21,6 +21,10 @@ class ORE_Const {
 	 * @var bool __getにて存在しないkey値呼び出し時などにどうするか
 	 */
 	protected $_strict = false;
+
+	/**
+	 * @param $strict
+	 */
 	public function set_strict($strict) {
 		$this->_strict = $strict;
 	}
@@ -30,7 +34,7 @@ class ORE_Const {
 	 *
 	 * @param $array
 	 */
-	public function __construct($array=null) {
+	public function __construct($array = null) {
 		$type = gettype($array);
 		if ('array' === $type) {
 			$this->_array = $array;

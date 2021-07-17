@@ -5,6 +5,7 @@
  * @package Ore
  * @author naoyuki onishi
  */
+
 namespace ore;
 
 /**
@@ -58,7 +59,7 @@ class ORE_MemoryUsage {
 			return;
 		}
 
-		if (defined('DEBUG_MODE') AND TRUE === DEBUG_MODE) {
+		if (defined('DEBUG_MODE') && TRUE === DEBUG_MODE) {
 			self::$_ENABLE = TRUE;
 		}
 		else {

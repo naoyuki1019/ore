@@ -1,7 +1,6 @@
 <?php
 
 /**
- *
  * @package Ore
  * @author naoyuki onishi
  */
@@ -16,12 +15,13 @@ namespace ore;
 class ORE_Fields extends ORE_Params {
 
 	/**
-	 * @param array $params
+	 * @param mixed $params
+	 * @param mixed $value
 	 */
 	public function set($params = [], $value = null) {
 
 		if ('array' === gettype($params)) {
-			if(0 === count($params)) return;
+			if (0 === count($params)) return;
 			$params = (object)$params;
 		}
 
@@ -31,7 +31,7 @@ class ORE_Fields extends ORE_Params {
 			foreach ($public_vars as $key => $default) {
 				if (TRUE === property_exists($params, $key)) {
 					$val = $params->{$key};
-					if ($this->is_btnf($key) AND '' === strval($val)) {
+					if ($this->is_btnf($key) && '' === strval($val)) {
 						$val = NULL;
 					}
 					$this->{$key} = $val;
@@ -42,7 +42,6 @@ class ORE_Fields extends ORE_Params {
 			if (TRUE === array_key_exists($params, $public_vars)) {
 				$this->{$params} = $value;
 			}
-
 		}
 	}
 
@@ -52,7 +51,7 @@ class ORE_Fields extends ORE_Params {
 	protected $_blank_to_null_fields = [];
 
 	/**
-	 * @param $filed_nm
+	 * @param string $filed_nm
 	 * @return bool
 	 */
 	public function is_btnf($filed_nm) {
@@ -60,18 +59,18 @@ class ORE_Fields extends ORE_Params {
 	}
 
 	/**
-	 * @param $obj
+	 * @param mixed $obj
 	 */
-	public function blank_to_null(& $obj) {
+	public function blank_to_null(&$obj) {
 		foreach ($obj as $filed_nm => & $d) {
-			if ($this->is_btnf($filed_nm) AND '' === strval($d)) {
+			if ($this->is_btnf($filed_nm) && '' === strval($d)) {
 				$d = NULL;
 			}
 		}
 	}
 
 	/**
-	 * @param $params
+	 * @param mixed $params
 	 * @param string $type
 	 * @param string $key_prefix
 	 * @return array|object|void
@@ -79,7 +78,7 @@ class ORE_Fields extends ORE_Params {
 	public function filter($params, $type = 'object', $param_key_prefix = '') {
 
 		if ('array' === gettype($params)) {
-			if(0 === count($params)) return;
+			if (0 === count($params)) return;
 			$params = (object)$params;
 		}
 

@@ -5,12 +5,13 @@
  * @package Ore
  * @author naoyuki onishi
  */
+
 namespace ore;
 
 define('BASEPATH', '');
 define('MB_ENABLED', true);
-$system_path = realpath(dirname(__FILE__)  . '/system');
-$application_folder = realpath(dirname(__FILE__) . '/application');
+$system_path = realpath(dirname(__FILE__).'/system');
+$application_folder = realpath(dirname(__FILE__).'/application');
 
 require $system_path.'/core/Lang.php';
 require $system_path.'/libraries/Form_validation.php';

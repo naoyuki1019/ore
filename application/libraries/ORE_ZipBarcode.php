@@ -49,7 +49,7 @@ class ORE_ZipBarcode {
 	 * @return array
 	 */
 	public static function CC() {
-		return array(
+		return [
 			'-' => 10,
 			'CC1' => 11,
 			'CC2' => 12,
@@ -59,41 +59,41 @@ class ORE_ZipBarcode {
 			'CC6' => 16,
 			'CC7' => 17,
 			'CC8' => 18,
-		);
+		];
 	}
 
 	/**
 	 * @return array
 	 */
 	public static function ALFA() {
-		return array(
-			'A' => array('c' => 'CC1', 'n' => 0),
-			'B' => array('c' => 'CC1', 'n' => 1),
-			'C' => array('c' => 'CC1', 'n' => 2),
-			'D' => array('c' => 'CC1', 'n' => 3),
-			'E' => array('c' => 'CC1', 'n' => 4),
-			'F' => array('c' => 'CC1', 'n' => 5),
-			'G' => array('c' => 'CC1', 'n' => 6),
-			'H' => array('c' => 'CC1', 'n' => 7),
-			'I' => array('c' => 'CC1', 'n' => 8),
-			'J' => array('c' => 'CC1', 'n' => 9),
-			'K' => array('c' => 'CC2', 'n' => 0),
-			'L' => array('c' => 'CC2', 'n' => 1),
-			'M' => array('c' => 'CC2', 'n' => 2),
-			'N' => array('c' => 'CC2', 'n' => 3),
-			'O' => array('c' => 'CC2', 'n' => 4),
-			'P' => array('c' => 'CC2', 'n' => 5),
-			'Q' => array('c' => 'CC2', 'n' => 6),
-			'R' => array('c' => 'CC2', 'n' => 7),
-			'S' => array('c' => 'CC2', 'n' => 8),
-			'T' => array('c' => 'CC2', 'n' => 9),
-			'U' => array('c' => 'CC3', 'n' => 0),
-			'V' => array('c' => 'CC3', 'n' => 1),
-			'W' => array('c' => 'CC3', 'n' => 2),
-			'X' => array('c' => 'CC3', 'n' => 3),
-			'Y' => array('c' => 'CC3', 'n' => 4),
-			'Z' => array('c' => 'CC3', 'n' => 5),
-		);
+		return [
+			'A' => ['c' => 'CC1', 'n' => 0],
+			'B' => ['c' => 'CC1', 'n' => 1],
+			'C' => ['c' => 'CC1', 'n' => 2],
+			'D' => ['c' => 'CC1', 'n' => 3],
+			'E' => ['c' => 'CC1', 'n' => 4],
+			'F' => ['c' => 'CC1', 'n' => 5],
+			'G' => ['c' => 'CC1', 'n' => 6],
+			'H' => ['c' => 'CC1', 'n' => 7],
+			'I' => ['c' => 'CC1', 'n' => 8],
+			'J' => ['c' => 'CC1', 'n' => 9],
+			'K' => ['c' => 'CC2', 'n' => 0],
+			'L' => ['c' => 'CC2', 'n' => 1],
+			'M' => ['c' => 'CC2', 'n' => 2],
+			'N' => ['c' => 'CC2', 'n' => 3],
+			'O' => ['c' => 'CC2', 'n' => 4],
+			'P' => ['c' => 'CC2', 'n' => 5],
+			'Q' => ['c' => 'CC2', 'n' => 6],
+			'R' => ['c' => 'CC2', 'n' => 7],
+			'S' => ['c' => 'CC2', 'n' => 8],
+			'T' => ['c' => 'CC2', 'n' => 9],
+			'U' => ['c' => 'CC3', 'n' => 0],
+			'V' => ['c' => 'CC3', 'n' => 1],
+			'W' => ['c' => 'CC3', 'n' => 2],
+			'X' => ['c' => 'CC3', 'n' => 3],
+			'Y' => ['c' => 'CC3', 'n' => 4],
+			'Z' => ['c' => 'CC3', 'n' => 5],
+		];
 	}
 
 	/**
@@ -144,7 +144,7 @@ class ORE_ZipBarcode {
 			return false;
 		}
 
-		$addr = str_replace(array('&', '＆', '/', '／', '・', '.', '．'), '', $addr);
+		$addr = str_replace(['&', '＆', '/', '／', '・', '.', '．'], '', $addr);
 		$addr = mb_convert_kana($addr, 'a');
 		$addr = static::convert_kanji($addr);
 		$addr = preg_replace('/[a-zA-Z]{2,}/', '', $addr);
@@ -177,7 +177,7 @@ class ORE_ZipBarcode {
 	 * @return mixed|string|string[]|null
 	 */
 	public static function convert_kanji($addr) {
-		$arr_kansuji = array(
+		$arr_kansuji = [
 			'0', '０', '〇', '零',
 			'1', '１', '一', '壱',
 			'2', '２', '二', '弐',
@@ -203,11 +203,11 @@ class ORE_ZipBarcode {
 			'正',
 			'載',
 			'極',
-		);
+		];
 
 		$kansuji = implode('|', $arr_kansuji);
 
-		$arr_suffix = array(
+		$arr_suffix = [
 			'番地',
 			'番',
 			'丁目',
@@ -217,7 +217,7 @@ class ORE_ZipBarcode {
 			'線',
 			'の',
 			'ノ',
-		);
+		];
 
 		$addr = str_replace('◯', '0', $addr); // <- preg_matchでおかしくなるため
 		$addr = str_replace('　', '', $addr);
@@ -403,7 +403,7 @@ class ORE_ZipBarcode {
 			echo implode(' ', $code_cc_comp)."<br>";
 		}
 
-		$font_arr = array(
+		$font_arr = [
 			'-' => '-',
 			'CC1' => 'a',
 			'CC2' => 'b',
@@ -415,7 +415,7 @@ class ORE_ZipBarcode {
 			'CC8' => 'h',
 			'STC' => '(',
 			'SPC' => ')',
-		);
+		];
 
 		foreach ($code_cc_comp as $i => $code) {
 
@@ -458,7 +458,7 @@ class ORE_ZipBarcode {
 	 */
 	public static function jnum2num($str) {
 
-		$numberlist = array(
+		$numberlist = [
 			'〇' => '0', '零' => '0',
 			'一' => '1', '壱' => '1',
 			'二' => '2', '弐' => '2',
@@ -469,13 +469,13 @@ class ORE_ZipBarcode {
 			'七' => '7', '漆' => '7',
 			'八' => '8', '捌' => '8',
 			'九' => '9', '玖' => '9',
-		);
-		$prefix_a = array(
+		];
+		$prefix_a = [
 			'十' => '1', '拾' => '1',
 			'百' => '2', '陌' => '2', '佰' => '2',
 			'千' => '3', '阡' => '3', '仟' => '3',
-		);
-		$prefix_b = array(
+		];
+		$prefix_b = [
 			'万' => '4', '萬' => '4',
 			'億' => '8',
 			'兆' => '12',
@@ -488,10 +488,10 @@ class ORE_ZipBarcode {
 			'正' => '40',
 			'載' => '44',
 			'極' => '48',
-		);
+		];
 
 		$str = mb_convert_kana($str, 'KVa');
-		$str = str_replace(array(',', '、', ' '), '', $str);
+		$str = str_replace([',', '、', ' '], '', $str);
 		$numstr = preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
 
 		$mem_a = '0';

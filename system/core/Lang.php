@@ -45,6 +45,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class CI_Lang {
 
+	public $default_lang = 'ja';
+
 	/**
 	 * List of translations
 	 *
@@ -93,11 +95,11 @@ class CI_Lang {
 
 		$langfile .= '.php';
 
-		if (empty($idiom) OR ! ctype_alpha($idiom))
+		if (empty($idiom) || ! ctype_alpha($idiom))
 		{
 //			$config =& get_config();
 //			$idiom = empty($config['language']) ? 'english' : $config['language'];
-			$idiom = 'japanese';
+			$idiom = $this->default_lang;
 		}
 
 		if ($return === FALSE && isset($this->is_loaded[$langfile]) && $this->is_loaded[$langfile] === $idiom)
@@ -138,14 +140,28 @@ class CI_Lang {
 					break;
 				}
 			}
+
+			if ($found !== TRUE && $idiom != $this->default_lang) {
+				foreach ($package_paths as $package_path)
+				{
+					$package_path .= 'language/'.$this->default_lang.'/'.$langfile;
+					if ($basepath !== $package_path && file_exists($package_path))
+					{
+						include($package_path);
+						$found = TRUE;
+						break;
+					}
+				}
+			}
 		}
 
 		if ($found !== TRUE)
 		{
-			show_error('Unable to load the requested language file: language/'.$idiom.'/'.$langfile);
+			throw new \Exception('Unable to load the requested language file: language/'.$idiom.'/'.$langfile);
+			// show_error('Unable to load the requested language file: language/'.$idiom.'/'.$langfile);
 		}
 
-		if ( ! isset($lang) OR ! is_array($lang))
+		if ( ! isset($lang) || ! is_array($lang))
 		{
 			log_message('error', 'Language file contains no data: language/'.$idiom.'/'.$langfile);
 
@@ -181,7 +197,7 @@ class CI_Lang {
 	 */
 	public function line($line = '', $log_errors = TRUE)
 	{
-		$value = ($line === '' OR ! isset($this->language[$line])) ? FALSE : $this->language[$line];
+		$value = ($line === '' || ! isset($this->language[$line])) ? FALSE : $this->language[$line];
 
 		// Because killer robots like unicorns!
 		if ($value === FALSE && $log_errors === TRUE)

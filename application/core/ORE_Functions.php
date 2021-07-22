@@ -10,7 +10,7 @@ if (! function_exists('mb_trim')) {
 	function mb_trim($string) {
 
 		if (is_null($string)) {
-			return '';
+			return null;
 		}
 
 		if (in_array(gettype($string), ['integer', 'double', 'float'])) {

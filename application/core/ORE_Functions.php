@@ -40,13 +40,13 @@ if (! function_exists('get_class_public_vars')) {
 
 if (! function_exists('isNULL')) {
 	/**
-	 * @param $val
-	 * @param null $key
+	 * @param mixed $val
+	 * @param string $key
 	 * @return bool
 	 */
 	function isNULL($val, $key = null) {
 
-		if (! isset($val) || is_null($val)) {
+		if (! isset($val)) {
 			return true;
 		}
 

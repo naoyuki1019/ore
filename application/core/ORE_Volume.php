@@ -70,6 +70,11 @@ class ORE_Volume extends ORE_Params {
 	/**
 	 * @var int
 	 */
+	protected $_max_limit = 10000;
+
+	/**
+	 * @var int
+	 */
 	protected $_total = 0;
 
 	/**
@@ -212,7 +217,7 @@ class ORE_Volume extends ORE_Params {
 	public function set_page($page) {
 		$page = mb_convert_kana(mb_trim((string)$page), 'as');
 		if (preg_match('/^[1-9]\d*$/', $page)) {
-			$this->_page = intval($page);
+			$this->_page = (int)$page;
 		}
 		else if (0 > $page) {
 			$this->_page = 1;
@@ -232,10 +237,7 @@ class ORE_Volume extends ORE_Params {
 	public function set_limit($limit) {
 		$limit = mb_convert_kana(mb_trim((string)$limit), 'as');
 		if (preg_match('/^[1-9]\d*$/', $limit)) {
-			$this->_limit = intval($limit);
-		}
-		else {
-			// $this->_limit = $this->_default_limit;
+			$this->_limit = min([(int)$limit, $this->_max_limit]);
 		}
 	}
 
@@ -247,12 +249,23 @@ class ORE_Volume extends ORE_Params {
 	}
 
 	/**
+	 * @param int $limit 明細ページング処理の明細数
+	 */
+	public function set_max_limit($max_limit) {
+		$max_limit = mb_convert_kana(mb_trim((string)$max_limit), 'as');
+		if (preg_match('/^[1-9]\d*$/', $max_limit)) {
+			$this->_max_limit = (int)$max_limit;
+			$this->_limit = min([(int)$this->_limit, $this->_max_limit]);
+		}
+	}
+
+	/**
 	 * @param int $total 総件数
 	 */
 	public function set_total($total) {
 		$total = mb_convert_kana(mb_trim((string)$total), 'as');
 		if (preg_match('/^[1-9]\d*$/', $total)) {
-			$this->_total = intval($total);
+			$this->_total = (int)$total;
 		}
 		else {
 			$this->_total = 0;
@@ -343,8 +356,8 @@ class ORE_Volume extends ORE_Params {
 		$bk = $this->_sort_key;
 		$this->_sort_key = [];
 		$this->add_sort_key($sort_key, $sort_ud);
-		if ((TRUE !== is_object($this->_sort_key) && TRUE !== is_array($this->_sort_key) && '' !== strval($this->_sort_key))
-			OR (TRUE === is_array($this->_sort_key) && 0 < count($this->_sort_key))) {
+		if ((true !== is_object($this->_sort_key) && true !== is_array($this->_sort_key) && '' !== strval($this->_sort_key))
+			OR (true === is_array($this->_sort_key) && 0 < count($this->_sort_key))) {
 			return;
 		}
 		$this->_sort_key = $bk;
@@ -389,10 +402,10 @@ class ORE_Volume extends ORE_Params {
 		}
 		else {
 			if (is_array($this->_sort_key_allows)) {
-				if (TRUE === array_key_exists($sort_key, $this->_sort_key_allows)) {
+				if (true === array_key_exists($sort_key, $this->_sort_key_allows)) {
 					return true;
 				}
-				else if (TRUE === in_array($sort_key, $this->_sort_key_allows, true)) {
+				else if (true === in_array($sort_key, $this->_sort_key_allows, true)) {
 					return true;
 				}
 			}

@@ -11,37 +11,37 @@ class SC_Debug {
 	private static $_DUMP = [];
 	private static $_ENABLE = NULL;
 	private static $_INSTANCE = NULL;
-	private static $_DESTRUCT_DUMP = FALSE;
+	private static $_DESTRUCT_DUMP = false;
 	private static $_CLEAN_PATH = NULL;
 	private static $_ROOT_PATH = "";
-	private static $_IS_CLI = FALSE;
+	private static $_IS_CLI = false;
 
 	/**
 	 *
 	 */
 	public static function CLI() {
-		self::$_IS_CLI = TRUE;
+		self::$_IS_CLI = true;
 	}
 
 	/**
 	 *
 	 */
 	public static function NOT_CLI() {
-		self::$_IS_CLI = FALSE;
+		self::$_IS_CLI = false;
 	}
 
 	/**
 	 *
 	 */
 	public static function ENABLE() {
-		self::$_ENABLE = TRUE;
+		self::$_ENABLE = true;
 	}
 
 	/**
 	 *
 	 */
 	public static function DISABLE() {
-		self::$_ENABLE = FALSE;
+		self::$_ENABLE = false;
 	}
 
 	/**
@@ -72,14 +72,14 @@ class SC_Debug {
 			return;
 		}
 
-		if (defined('DEBUG_MODE') && TRUE === DEBUG_MODE) {
-			self::$_ENABLE = TRUE;
+		if (defined('DEBUG_MODE') && true === DEBUG_MODE) {
+			self::$_ENABLE = true;
 		}
 		else if (defined('SC_Debug') && ('1' == SC_Debug || 'true' === strtolower(SC_Debug))) {
-			self::$_ENABLE = TRUE;
+			self::$_ENABLE = true;
 		}
 		else {
-			self::$_ENABLE = FALSE;
+			self::$_ENABLE = false;
 		}
 	}
 
@@ -105,7 +105,7 @@ class SC_Debug {
 	 * @return bool
 	 */
 	protected static function _get_is_html($is_html) {
-		// if (TRUE === self::$_IS_CLI) {
+		// if (true === self::$_IS_CLI) {
 		// 	return false;
 		// }
 		if (! is_null($is_html)) {
@@ -122,7 +122,7 @@ class SC_Debug {
 	public static function sfAddStr($strings, $is_html = null) {
 		$is_html = static::_get_is_html($is_html);
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 		$varinfo = new SC_Debug_VarInfo();
 		$varinfo->is_html = $is_html;
 		$varinfo->var_name = '';
@@ -140,7 +140,7 @@ class SC_Debug {
 	public static function sfAddVar($var_name, $var = SC_Debug::undefined, $is_html = null, $tracenumber = 0) {
 		$is_html = static::_get_is_html($is_html);
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 		self::$_DUMP[] = self::_make_varinfo($var_name, $var, $is_html, $tracenumber);
 	}
 
@@ -152,7 +152,7 @@ class SC_Debug {
 	public static function sfAddVarTop($var_name, $var = SC_Debug::undefined, $is_html = null, $tracenumber = 0) {
 		$is_html = static::_get_is_html($is_html);
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 		array_unshift(self::$_DUMP, self::_make_varinfo($var_name, $var, $is_html, $tracenumber));
 	}
 
@@ -189,11 +189,11 @@ class SC_Debug {
 	 */
 	public static function sfVarDump($prefix = '<div style="background-color:white;width:100%;overflow-x:auto;" class="sc_debug">', $suffix = '</div>') {
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 
 		if (! empty(self::$_DUMP)) {
 
-			if (TRUE !== self::$_IS_CLI) {
+			if (true !== self::$_IS_CLI) {
 				echo $prefix;
 				echo '<style>pre{margin:0}</style>';
 			}
@@ -202,7 +202,7 @@ class SC_Debug {
 				self::_sfVarDump($varinfo);
 			}
 
-			if (TRUE !== self::$_IS_CLI) {
+			if (true !== self::$_IS_CLI) {
 				echo $suffix;
 			}
 		}
@@ -317,7 +317,7 @@ class SC_Debug {
 	 */
 	public static function sfLog($var_name, &$var = null) {
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 
 		$arrTrace = self::getTraceArray();
 
@@ -354,7 +354,7 @@ class SC_Debug {
 			return $path;
 		}
 
-		if (TRUE === self::$_CLEAN_PATH) {
+		if (true === self::$_CLEAN_PATH) {
 			//$tmp = str_replace(DIR_DATA_ROOT, DIR_DATA_NAME, $tmp);
 			//$tmp = str_replace(DIR_HTML_ROOT, DIR_HTML_NAME, $tmp);
 			$tmp = str_replace(self::$_ROOT_PATH, "", $tmp);
@@ -367,7 +367,7 @@ class SC_Debug {
 	 *
 	 */
 	function __destruct() {
-		if (TRUE === self::$_DESTRUCT_DUMP) {
+		if (true === self::$_DESTRUCT_DUMP) {
 			self::sfVardump();
 		}
 	}

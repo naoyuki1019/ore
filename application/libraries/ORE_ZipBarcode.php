@@ -114,7 +114,7 @@ class ORE_ZipBarcode {
 		$this->_zip_org = $zip;
 		$this->_addr_org = $addr;
 		$code_extracted = $this->_extract($zip, $addr);
-		if (FALSE === $code_extracted) {
+		if (false === $code_extracted) {
 			return false;
 		}
 		$code_cc_20 = $this->_cc_20($code_extracted);
@@ -506,13 +506,13 @@ class ORE_ZipBarcode {
 		$mem_a = '0';
 		$mem_b = '0';
 		$mem_c = '0';
-		$nonpower = FALSE;
+		$nonpower = false;
 		foreach ($numstr as $val) {
 			if (array_key_exists($val, $prefix_a)) {
 				if ($mem_c == '0') $mem_c = '1';
 				$mem_b = bcadd($mem_b, bcmul($mem_c, bcpow('10', $prefix_a[$val])));
 				$mem_c = '0';
-				$nonpower = TRUE;
+				$nonpower = true;
 				continue;
 			}
 
@@ -520,7 +520,7 @@ class ORE_ZipBarcode {
 				$mem_a = bcadd($mem_a, bcmul(bcadd($mem_b, $mem_c), bcpow('10', $prefix_b[$val])));
 				$mem_b = '0';
 				$mem_c = '0';
-				$nonpower = TRUE;
+				$nonpower = true;
 				continue;
 			}
 
@@ -530,7 +530,7 @@ class ORE_ZipBarcode {
 
 			if (is_numeric($val)) {
 				$mem_c = ($nonpower) ? bcadd($mem_c, $val) : bcadd(bcmul($mem_c, '10'), $val);
-				$nonpower = FALSE;
+				$nonpower = false;
 				continue;
 			}
 			break;
@@ -538,4 +538,3 @@ class ORE_ZipBarcode {
 		return bcadd($mem_a, bcadd($mem_b, $mem_c));
 	}
 }
-

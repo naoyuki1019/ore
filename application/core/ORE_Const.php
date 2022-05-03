@@ -60,7 +60,7 @@ class ORE_Const {
 		if (array_key_exists($key, $this->_array)) {
 			return $this->_array[$key];
 		}
-		if (TRUE == $this->_strict) {
+		if (true == $this->_strict) {
 			// trigger_error ( "key[{$key}] was not found");
 			throw new \Exception("key[{$key}] was not found");
 		}

@@ -214,7 +214,7 @@ class ORE_DuplicateStringDelete {
 				$sss['array'][$i] = self::_ssss($delimiter, $a, $dup);
 			}
 			else {
-				if (FALSE != strpos($a, $delimiter)) {
+				if (false != strpos($a, $delimiter)) {
 					$sss['array'][$i] = [];
 					$sss['array'][$i]['delimiter'] = $delimiter;
 					$sss['array'][$i]['array'] = explode($delimiter, $a);
@@ -234,4 +234,3 @@ class ORE_DuplicateStringDelete {
 		return $sss;
 	}
 }
-

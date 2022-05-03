@@ -159,11 +159,11 @@ class ORE_Data_validation extends MY_Form_validation {
 	 */
 	public function run($group = '')
 	{
-		// Do we even have any data to process?  Mm?
-		if (count($this->_data_array) === 0)
-		{
-			return FALSE;
-		}
+		// // Do we even have any data to process?  Mm?
+		// if (count($this->_data_array) === 0)
+		// {
+		// 	return FALSE;
+		// }
 
 		// Does the _field_data array containing the validation rules exist?
 		// If not, we look to see if they were assigned via a config file

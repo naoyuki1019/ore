@@ -192,7 +192,7 @@ class ORE_HttpPost {
 
 		$content = $this->_make_content();
 		if (! empty($this->_errors)) {
-			return FALSE;
+			return false;
 		}
 
 		//
@@ -222,14 +222,14 @@ class ORE_HttpPost {
 
 		$this->_ini_set($stream_context_options);
 
-		$response = FALSE;
+		$response = false;
 
 		$stream_context = stream_context_create($stream_context_options);
 		if ($stream_context) {
 			$fp = fopen($this->_url, "rb", false, $stream_context);
 			if ($fp) {
 				$response = stream_get_contents($fp);
-				if (FALSE === $response) {
+				if (false === $response) {
 					$this->_errors[] = "Error: stream_get_contents";
 				}
 			}

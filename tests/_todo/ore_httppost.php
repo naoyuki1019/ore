@@ -12,7 +12,7 @@ $o->add_text('limit', '25');
 $o->add_text('page_no', '1');
 $res = $o->submit();
 
-if (FALSE === $res) {
+if (false === $res) {
 	$errors = $o->errors();
 }
 else {

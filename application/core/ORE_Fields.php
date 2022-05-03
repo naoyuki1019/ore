@@ -29,7 +29,7 @@ class ORE_Fields extends ORE_Params {
 
 		if ('object' === gettype($params)) {
 			foreach ($public_vars as $key => $default) {
-				if (TRUE === property_exists($params, $key)) {
+				if (true === property_exists($params, $key)) {
 					$val = $params->{$key};
 					if ($this->is_btnf($key) && '' === strval($val)) {
 						$val = NULL;
@@ -39,7 +39,7 @@ class ORE_Fields extends ORE_Params {
 			}
 		}
 		else {
-			if (TRUE === array_key_exists($params, $public_vars)) {
+			if (true === array_key_exists($params, $public_vars)) {
 				$this->{$params} = $value;
 			}
 		}
@@ -86,7 +86,7 @@ class ORE_Fields extends ORE_Params {
 		$public_vars = get_class_public_vars(get_class($this));
 		foreach ($public_vars as $key => $default) {
 			$param_key = $param_key_prefix.$key;
-			if (TRUE === property_exists($params, $param_key)) {
+			if (true === property_exists($params, $param_key)) {
 				$data[$key] = $params->{$param_key};
 			}
 		}
@@ -99,4 +99,3 @@ class ORE_Fields extends ORE_Params {
 		}
 	}
 }
-

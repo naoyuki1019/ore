@@ -26,20 +26,20 @@ class ORE_ExecutionTime {
 
 	public static $DEFAULT_PREFIX = '<div style="background-color:white;margin:20px 0;width:100%;overflow-x:auto;" class="ore_executiontime">';
 	public static $DEFAULT_SUFFIX = '</div>';
-	public static $DEFAULT_OUTPUT_FORMAT = TRUE;
+	public static $DEFAULT_OUTPUT_FORMAT = true;
 
 	/**
 	 *
 	 */
 	public static function ENABLE() {
-		self::$_ENABLE = TRUE;
+		self::$_ENABLE = true;
 	}
 
 	/**
 	 *
 	 */
 	public static function DISABLE() {
-		self::$_ENABLE = FALSE;
+		self::$_ENABLE = false;
 	}
 
 	/**
@@ -64,11 +64,11 @@ class ORE_ExecutionTime {
 			return;
 		}
 
-		if (defined('DEBUG_MODE') && TRUE === DEBUG_MODE) {
-			self::$_ENABLE = TRUE;
+		if (defined('DEBUG_MODE') && true === DEBUG_MODE) {
+			self::$_ENABLE = true;
 		}
 		else {
-			self::$_ENABLE = FALSE;
+			self::$_ENABLE = false;
 		}
 	}
 
@@ -85,7 +85,7 @@ class ORE_ExecutionTime {
 	 */
 	public static function START($name) {
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 
 		if (! array_key_exists($name, self::$_arr)) {
 			$o = new ORE_ExecutionTimeVolume();
@@ -101,7 +101,7 @@ class ORE_ExecutionTime {
 	 */
 	public static function END($name) {
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 
 		/** @var ORE_ExecutionTimeVolume $o */
 		if (array_key_exists($name, self::$_arr)) {
@@ -124,7 +124,7 @@ class ORE_ExecutionTime {
 	 */
 	public static function sfDump($is_html = null, $prefix = null, $suffix = null) {
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 
 		if ($is_html) {
 			if (is_null($prefix)) {
@@ -179,7 +179,7 @@ class ORE_ExecutionTime {
 	 */
 	public static function sfLog() {
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 
 		if (! empty(self::$_arr)) {
 

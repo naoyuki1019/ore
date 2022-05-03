@@ -140,7 +140,7 @@ class ORE_Params {
 
 		$keys = [];
 		$tmp = [];
-		if (TRUE === $public) {
+		if (true === $public) {
 			$array = $this->to_public_array();
 		}
 		else {

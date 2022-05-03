@@ -137,7 +137,7 @@ class ORE_DBInsert {
 		$this->values_cnt++;
 		$arr = [];
 		foreach ($this->cols_header as $col_nm) {
-			if (TRUE !== array_key_exists($col_nm, $cols)) {
+			if (true !== array_key_exists($col_nm, $cols)) {
 				$msg = "Error: col_nm[{$col_nm}]が設定されていない";
 				$this->echo_flush($msg.'<br>');
 				throw new \Exception($msg);

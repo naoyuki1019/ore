@@ -108,7 +108,7 @@ class ORE_Array {
 		if (array_key_exists($key, $this->_array)) {
 			return $this->_array[$key];
 		}
-		if (TRUE == $this->_strict) {
+		if (true == $this->_strict) {
 			throw new \Exception("key[{$key}] was not found");
 		}
 		return null;
@@ -124,7 +124,7 @@ class ORE_Array {
 			$this->_array[$key] = $val;
 		}
 		else {
-			if (TRUE == $this->_add) {
+			if (true == $this->_add) {
 				$this->_array[$key] = $val;
 			}
 		}
@@ -205,7 +205,7 @@ class ORE_Array {
 	public function str_replace($search, $replace, $recursive = true) {
 		$this->__search = $search;
 		$this->__replace = $replace;
-		if (TRUE === $recursive) {
+		if (true === $recursive) {
 			array_walk_recursive($this->_array, function(&$val, $key) {
 				$val = str_replace($this->__search, $this->__replace, $val);
 			});

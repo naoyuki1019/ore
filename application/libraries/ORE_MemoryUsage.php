@@ -27,14 +27,14 @@ class ORE_MemoryUsage {
 	 *
 	 */
 	public static function ENABLE() {
-		self::$_ENABLE = TRUE;
+		self::$_ENABLE = true;
 	}
 
 	/**
 	 *
 	 */
 	public static function DISABLE() {
-		self::$_ENABLE = FALSE;
+		self::$_ENABLE = false;
 	}
 
 	/**
@@ -59,11 +59,11 @@ class ORE_MemoryUsage {
 			return;
 		}
 
-		if (defined('DEBUG_MODE') && TRUE === DEBUG_MODE) {
-			self::$_ENABLE = TRUE;
+		if (defined('DEBUG_MODE') && true === DEBUG_MODE) {
+			self::$_ENABLE = true;
 		}
 		else {
-			self::$_ENABLE = FALSE;
+			self::$_ENABLE = false;
 		}
 	}
 
@@ -73,7 +73,7 @@ class ORE_MemoryUsage {
 	 */
 	public static function CHECK($name) {
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 		$o = new ORE_MemoryUsageVolume();
 		$o->usage = memory_get_usage();
 		$o->name = $name;
@@ -93,7 +93,7 @@ class ORE_MemoryUsage {
 	 */
 	public static function DUMP() {
 		self::_SET_ENABLE();
-		if (TRUE !== self::$_ENABLE) return;
+		if (true !== self::$_ENABLE) return;
 
 		if (! empty(self::$_arr)) {
 			echo '<div style="background-color:white;margin:20px 0;width:100%;overflow-x:scroll;" class="ore_memoryusage">';
@@ -119,4 +119,3 @@ class ORE_MemoryUsageVolume {
 	public $name = 'name';
 	public $usage = 0;
 }
-

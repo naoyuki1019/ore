@@ -85,7 +85,7 @@ exit 0
 		if ($this->echo) {
 			echo($msg);
 		}
-		if (TRUE === $this->flush) {
+		if (true === $this->flush) {
 			if (0 < ob_get_level()) {
 				ob_flush();
 				flush();
@@ -152,7 +152,7 @@ exit 0
 			$check = false;
 		}
 
-		if (TRUE !== $check) {
+		if (true !== $check) {
 			return false;
 		}
 
@@ -190,7 +190,7 @@ exit 0
 
 		$cnt226msg = 0;
 		foreach ($output as $ftp_message) {
-			if (FALSE !== strpos($ftp_message, '226 Transfer complete')) {
+			if (false !== strpos($ftp_message, '226 Transfer complete')) {
 				$cnt226msg++;
 			}
 		}
@@ -255,4 +255,3 @@ exit 0
 		unlink($this->_sh_dir.$this->sh_file_nm);
 	}
 }
-

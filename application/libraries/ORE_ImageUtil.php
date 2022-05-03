@@ -169,7 +169,7 @@ class resize_volume {
 	 */
 	public function setQuality($quality) {
 		$quality = intval($quality);
-		if (TRUE === $this->_between($quality)) {
+		if (true === $this->_between($quality)) {
 			$this->quality_thumb = $quality;
 		}
 	}
@@ -179,7 +179,7 @@ class resize_volume {
 	 */
 	public function setQualityTim($quality) {
 		$quality = intval($quality);
-		if (TRUE === $this->_between($quality)) {
+		if (true === $this->_between($quality)) {
 			$this->quality_optim = $quality;
 		}
 	}
@@ -203,4 +203,3 @@ class resize_volume {
 		return (bool)($low <= $str && $str <= $high);
 	}
 }
-

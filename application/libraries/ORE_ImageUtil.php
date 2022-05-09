@@ -116,7 +116,7 @@ class ORE_ImageUtil {
 	 */
 	public static function calc_image_size($image_path, $max_width, $max_height) {
 
-		if (! file_exists($image_path)) {
+		if (! is_file($image_path)) {
 			return [0, 0];
 		}
 

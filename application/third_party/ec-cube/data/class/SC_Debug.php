@@ -168,15 +168,15 @@ class SC_Debug {
 		$varinfo->is_html = $is_html;
 		if (SC_Debug::undefined === $var
 			OR (('array' === gettype($var_name) || 'object' === gettype($var_name))
-				AND ('array' !== gettype($var) && 'object' !== gettype($var) && '' === strval($var))
+				&& ('array' !== gettype($var) && 'object' !== gettype($var) && '' === strval($var))
 			)
 		) {
 			$varinfo->var_name = '';
-			$varinfo->var = $var_name;
+			$varinfo->var = print_r($var_name, true);
 		}
 		else {
 			$varinfo->var_name = $var_name;
-			$varinfo->var = $var;
+			$varinfo->var = print_r($var, true);
 		}
 		$arrTrace = self::getTraceArray();
 		$varinfo->caller = $arrTrace[$tracenumber + 1];
@@ -261,10 +261,10 @@ class SC_Debug {
 		}
 
 		if ($varinfo->is_html) {
-			echo("<div>{$caller}{$var_title}".print_r($varinfo->var, true)."</div>");
+			echo("<div>{$caller}{$var_title}{$varinfo->var}</div>");
 		}
 		else {
-			echo("<div>{$caller}{$var_title}".nl2br(str_replace(" ", "&nbsp;", htmlspecialchars(print_r($varinfo->var, true)))).'</div>');
+			echo("<div>{$caller}{$var_title}".nl2br(str_replace(" ", "&nbsp;", htmlspecialchars($varinfo->var))).'</div>');
 		}
 	}
 

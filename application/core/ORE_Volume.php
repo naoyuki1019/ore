@@ -109,9 +109,9 @@ class ORE_Volume extends ORE_Params {
 	];
 
 	/**
-	 * @var null
+	 * @var bool
 	 */
-	protected $_result = null;
+	protected $_result = false;
 
 	/**
 	 * @var array
@@ -136,7 +136,7 @@ class ORE_Volume extends ORE_Params {
 	/**
 	 * @param mixed $params
 	 * @param mixed $value
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set($params = [], $value = null) {
 
@@ -180,7 +180,7 @@ class ORE_Volume extends ORE_Params {
 
 	/**
 	 * @param $find_fileds
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_find_fileds($find_fileds) {
 		$this->find_fileds = $find_fileds;
@@ -188,7 +188,7 @@ class ORE_Volume extends ORE_Params {
 	}
 
 	/**
-	 * @return string
+	 * @return array|string
 	 */
 	public function find_fileds() {
 		return $this->find_fileds;
@@ -203,7 +203,7 @@ class ORE_Volume extends ORE_Params {
 
 	/**
 	 * @param mixed $result
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_result($result) {
 		$this->_result = $result;
@@ -211,7 +211,7 @@ class ORE_Volume extends ORE_Params {
 	}
 
 	/**
-	 * @return mixed
+	 * @return bool
 	 */
 	public function result() {
 		return $this->_result;
@@ -219,7 +219,7 @@ class ORE_Volume extends ORE_Params {
 
 	/**
 	 * @param int $page 明細ページング処理のページ番号
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_page($page) {
 		$page = mb_convert_kana(mb_trim((string)$page), 'as');
@@ -241,7 +241,7 @@ class ORE_Volume extends ORE_Params {
 
 	/**
 	 * @param int $limit 明細ページング処理の明細数
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_limit($limit) {
 		$limit = mb_convert_kana(mb_trim((string)$limit), 'as');
@@ -260,7 +260,7 @@ class ORE_Volume extends ORE_Params {
 
 	/**
 	 * @param int $limit 明細ページング処理の明細数
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_max_limit($max_limit) {
 		$max_limit = mb_convert_kana(mb_trim((string)$max_limit), 'as');
@@ -273,7 +273,7 @@ class ORE_Volume extends ORE_Params {
 
 	/**
 	 * @param int $total 総件数
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_total($total) {
 		$total = mb_convert_kana(mb_trim((string)$total), 'as');
@@ -313,7 +313,7 @@ class ORE_Volume extends ORE_Params {
 
 	/**
 	 * @param mixed $allows
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_sort_key_allows($allows) {
 		if ('ALL' === $allows) {
@@ -396,10 +396,12 @@ class ORE_Volume extends ORE_Params {
 	/**
 	 * @param string $sort_key
 	 * @param string $sort_ud 'asc' OR 'desc'
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_sort_key($sort_key, $sort_ud = null) {
-		if (! isset($sort_key) || '' === $sort_key) return;
+		if (! isset($sort_key) || '' === $sort_key) {
+			return $this;
+		}
 		$bk = $this->_sort_key;
 		$this->_sort_key = [];
 		$this->add_sort_key($sort_key, $sort_ud);
@@ -420,10 +422,12 @@ class ORE_Volume extends ORE_Params {
 
 	/**
 	 * @param string $sort_ud 'asc' OR 'desc'
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_sort_ud($sort_ud) {
-		if (is_null($sort_ud) || '' === $sort_ud) return;
+		if (is_null($sort_ud) || '' === $sort_ud) {
+			return $this;
+		}
 		$this->_sort_ud = $this->_get_sort_ud($sort_ud);
 		return $this;
 	}
@@ -438,10 +442,12 @@ class ORE_Volume extends ORE_Params {
 	/**
 	 * @param mixed $sort_key
 	 * @param string $sort_ud 'asc' OR 'desc'
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function add_sort_key($sort_key, $sort_ud = null) {
-		if (! isset($sort_key) || '' === $sort_key) return;
+		if (! isset($sort_key) || '' === $sort_key) {
+			return $this;
+		}
 		if (is_array($sort_key)) {
 			foreach ($sort_key as $tmp => $sort_ud) {
 				$this->_add_sort_key($tmp, $sort_ud);
@@ -455,7 +461,7 @@ class ORE_Volume extends ORE_Params {
 	/**
 	 * @param string $sort_key
 	 * @param string $sort_ud 'asc' OR 'desc'
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	private function _add_sort_key($sort_key, $sort_ud) {
 		if (! isset($sort_key) || '' === $sort_key) {
@@ -553,7 +559,7 @@ class ORE_Volume extends ORE_Params {
 
 	/**
 	 * @params array $errors
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_errors($errors) {
 		$this->_errors = $errors;
@@ -643,7 +649,7 @@ class ORE_Volume extends ORE_Params {
 
 	/**
 	 * @params array $messages
-	 * @return $this
+	 * @return ORE_Volume $this
 	 */
 	public function set_messages($messages) {
 		$this->_messages = $messages;
